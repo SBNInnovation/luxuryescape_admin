@@ -1,10 +1,10 @@
-import AddTourForm from "@/components/tours/AddTourForm"
+import CreateTourForm from "@/components/tours/AddTourFrom"
 import React from "react"
 
 const page = () => {
   return (
     <div className="w-full">
-      <AddTourForm />
+      <CreateTourForm />
     </div>
   )
 }
