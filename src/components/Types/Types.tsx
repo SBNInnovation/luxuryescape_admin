@@ -13,13 +13,19 @@ interface Link {
   url: string
 }
 
+interface AccommodationType {
+  accommodationTitle: string
+  accommodationPics: File[]
+  accommodationDescription: string
+}
+
 export interface ItineraryType {
-  day: number
+  day: string
   title: string
-  details: string
-  accommodations: string
-  meals: string
-  links: Link[]
+  description: string
+  itineraryDayPhoto: string
+  accommodation: AccommodationType[]
+  links: { text: string; url: string }[]
 }
 
 export interface ServicesType {

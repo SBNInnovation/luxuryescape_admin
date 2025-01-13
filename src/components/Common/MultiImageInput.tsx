@@ -2,15 +2,16 @@ import React from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
-const MAX_IMAGES = 10
+const MAX_IMAGES = 3
 
 interface MultiImageInputProps {
   images: (string | File)[]
   setImages: React.Dispatch<React.SetStateAction<(string | File)[]>>
   previews: string[]
   setPreviews: React.Dispatch<React.SetStateAction<string[]>>
-  error: string
-  setError: React.Dispatch<React.SetStateAction<string>>
+  // error: string
+  imageError: string
+  setImageError: React.Dispatch<React.SetStateAction<string>>
 }
 
 const MultiImageInput: React.FC<MultiImageInputProps> = ({
@@ -18,15 +19,16 @@ const MultiImageInput: React.FC<MultiImageInputProps> = ({
   setImages,
   previews,
   setPreviews,
-  error,
-  setError,
+  // error,
+  imageError,
+  setImageError,
 }) => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (!files) return
 
     if (images.length + files.length > MAX_IMAGES) {
-      setError(`You can only upload up to ${MAX_IMAGES} images.`)
+      setImageError(`You can only upload up to ${MAX_IMAGES} images.`)
       return
     }
 
@@ -35,7 +37,7 @@ const MultiImageInput: React.FC<MultiImageInputProps> = ({
 
     setImages((prev) => [...prev, ...newImages])
     setPreviews((prev) => [...prev, ...newPreviews])
-    setError("")
+    setImageError("")
   }
 
   const removeImage = (index: number) => {
@@ -66,7 +68,8 @@ const MultiImageInput: React.FC<MultiImageInputProps> = ({
         disabled={images.length >= MAX_IMAGES}
         className="block w-full mb-4 border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {/* {error && <p className="text-red-500 mb-4">{error}</p>} */}
+      {imageError && <p className="text-red-500 mb-4">{imageError}</p>}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         {previews.map((preview, index) => (
@@ -97,14 +100,6 @@ const MultiImageInput: React.FC<MultiImageInputProps> = ({
           You have reached the upload limit of {MAX_IMAGES} images.
         </p>
       )}
-
-      <Button
-        onClick={() => console.log("Uploaded Images:", images)}
-        disabled={images.length === 0}
-        className="mt-6"
-      >
-        Submit Images
-      </Button>
     </div>
   )
 }

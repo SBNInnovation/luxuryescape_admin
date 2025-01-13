@@ -35,6 +35,7 @@ import {
   FAQType,
 } from "../Types/Types"
 import MultiImageInput from "../Common/MultiImageInput"
+import VideoUploadInput from "../Common/VideoInput"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -99,6 +100,11 @@ const CreateTourForm = () => {
     exclusives: [],
   })
   const [faqs, setFaqs] = useState<FAQType[]>([])
+  const [images, setImages] = useState<(string | File)[]>([])
+  const [previews, setPreviews] = useState<string[]>([])
+  const [imageError, setImageError] = useState("")
+
+  const [video, setVideo] = useState<File | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<{
@@ -421,6 +427,17 @@ const CreateTourForm = () => {
           <FAQInput faqs={faqs} setFaqs={setFaqs} />
 
           {/* MULTIPLE IMAGES  */}
+          <MultiImageInput
+            images={images}
+            setImages={setImages}
+            previews={previews}
+            setPreviews={setPreviews}
+            imageError={imageError}
+            setImageError={setImageError}
+          />
+
+          {/* VIDEO  */}
+          <VideoUploadInput video={video} setVideo={setVideo} />
         </div>
         <button
           type="submit"
