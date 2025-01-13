@@ -32,21 +32,24 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { usePathname, useRouter } from "next/navigation"
 
 export function AppSidebar() {
   const pathname = usePathname()
   const resource = pathname.split("/")[1]
 
+  const isActive = (url: string) => {
+    return pathname === url || pathname.startsWith(url + "/")
+  }
+
   // Menu items
   const items = [
-    { title: "Home", url: "/home", icon: Home },
+    { title: "Home", url: "/", icon: Home },
     { title: "Trekkings", url: "/trekkings", icon: MountainSnow },
     { title: "Tours", url: "/tours", icon: Binoculars },
     { title: "Wellness", url: "/wellness", icon: TicketsPlane },
     { title: "Blogs", url: "/blogs", icon: BookOpen },
-    { title: "Activities", url: "/activities", icon: Sailboat },
     { title: "Plan Trip", url: "/plan-trip", icon: Bus },
     { title: "Requests & Mails", url: "/requests-mails", icon: Mails },
     { title: "Clients Info", url: "/users-info", icon: Users2Icon },
@@ -56,7 +59,8 @@ export function AppSidebar() {
     <>
       <Sidebar>
         <SidebarHeader>
-          <Image src="/going.png" alt="Logo" width={140} height={140} />
+          {/* <Image src="/going.png" alt="Logo" width={140} height={140} /> */}
+          {/* <Image src="/logo_gmn.jpg" alt="Logo" width={140} height={140} /> */}
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
@@ -69,10 +73,8 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
                       <Link
-                        className={`mt-2 hover:text-primary ${
-                          resource === item.title.toLowerCase()
-                            ? "bg-secondary text-white"
-                            : ""
+                        className={`mt-2 hover:bg-secondary ${
+                          isActive(item.url) ? "bg-primary text-white" : ""
                         }`}
                         href={item.url}
                       >
