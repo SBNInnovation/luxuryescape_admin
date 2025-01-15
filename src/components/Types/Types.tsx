@@ -20,7 +20,7 @@ interface AccommodationType {
 }
 
 export interface ItineraryType {
-  day: string
+  day: number
   title: string
   description: string
   itineraryDayPhoto: string

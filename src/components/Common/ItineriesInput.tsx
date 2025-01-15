@@ -25,7 +25,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
 
   const addItinerary = () => {
     const newItinerary: ItineraryType = {
-      day: (itineraries.length + 1).toString(),
+      day: itineraries.length + 1 || 1,
       title: "",
       description: "",
       itineraryDayPhoto: "",

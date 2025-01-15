@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { z } from "zod"
+import { set, z } from "zod"
 
 import TitleInput from "../Common/TitleInput"
 import PriceInput from "../Common/PriceInput"
@@ -52,6 +52,7 @@ import {
 } from "../Types/Types"
 import MultiImageInput from "../Common/MultiImageInput"
 import VideoUploadInput from "../Common/VideoInput"
+import { Button } from "../ui/button"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -293,6 +294,135 @@ const CreateTourForm = () => {
     }
   }
 
+  const handleAutofill = () => {
+    setTitle("Luxury Everest Base Camp Trek")
+    setPrice(5000)
+    setCountry("Nepal")
+    setLocation("Kathmandu")
+    setLanguage("English")
+    setSuitableAge("18+")
+    setMaxAltitude(5545)
+    setThumbnail(null)
+    setMealType("Included")
+    setSelectedSeasons(["Spring", "Autumn"])
+    setMinDays(14)
+    setMaxDays(14)
+    setMinGroupSize(2)
+    setMaxGroupSize(12)
+    setArrivalLocation("Tribhuvan International Airport")
+    setDepartureLocation("Tribhuvan International Airport")
+    setStartingLocation("Kathmandu")
+    setEndingLocation("Kathmandu")
+    setOverview(
+      "Embark on a once-in-a-lifetime journey to the base of the world's highest mountain, Mount Everest. Our Luxury Everest Base Camp Trek is a 14-day adventure that takes you through the heart of the Himalayas, where you'll experience stunning landscapes, rich culture, and warm hospitality. From the bustling streets of Kathmandu to the serene trails of the Khumbu region, this trek is the perfect blend of luxury and adventure. Join us and create memories that will last a lifetime."
+    )
+    setAccommodations([
+      "5-star hotel in Kathmandu",
+      "Luxury lodges along the trek",
+    ])
+    setThingsToKnow([
+      "You need to be physically fit to complete this trek",
+      "The trek involves long hours of walking each day",
+      "The weather can be unpredictable in the mountains",
+    ])
+    setNote(
+      "This trek is suitable for experienced trekkers who are looking for a luxurious experience in the Himalayas."
+    )
+
+    setServices({
+      inclusives: [
+        "Airport transfers",
+        "Accommodation in Kathmandu",
+        "Accommodation during the trek",
+        "Meals during the trek",
+        "Experienced trekking guide",
+        "Porter service",
+        "TIMS and Sagarmatha National Park permits",
+      ],
+      exclusives: [
+        "International flights",
+        "Nepal visa fees",
+        "Travel insurance",
+        "Personal expenses",
+        "Tips for guide and porters",
+      ],
+    })
+    setHighlights([
+      {
+        content: "Explore the vibrant city of Kathmandu",
+        links: [
+          {
+            text: "Kathmandu",
+            url: "https://en.wikipedia.org/wiki/Kathmandu",
+          },
+        ],
+      },
+      {
+        content: "Trek through the picturesque villages of the Khumbu region",
+        links: [],
+      },
+      {
+        content: "Visit the famous Tengboche Monastery",
+        links: [],
+      },
+      {
+        content: "Experience the breathtaking views of Mount Everest",
+        links: [],
+      },
+    ])
+
+    setItineraries([
+      {
+        day: 1,
+        title: "Arrival in Kathmandu",
+        description:
+          "Arrive at Tribhuvan International Airport in Kathmandu and transfer to your hotel. Meet your trekking guide and fellow trekkers for a briefing about the trek. Overnight at a 5-star hotel in Kathmandu.",
+        itineraryDayPhoto: "",
+        accommodation: [
+          {
+            accommodationTitle: "5-star hotel in Kathmandu",
+            accommodationPics: [],
+            accommodationDescription: "Luxurious accommodation in Kathmandu",
+          },
+        ],
+        links: [],
+      },
+      {
+        day: 2,
+        title: "Fly to Lukla and trek to Phakding",
+        description:
+          "Take an early morning flight to Lukla and start your trek to Phakding. The trail descends through the Dudh Koshi River valley, passing through small villages and lush forests. Overnight at a luxury lodge in Phakding.",
+        itineraryDayPhoto: "",
+        accommodation: [
+          {
+            accommodationTitle: "Luxury lodge in Phakding",
+            accommodationPics: [],
+            accommodationDescription: "Comfortable lodge with modern amenities",
+          },
+          {
+            accommodationTitle: "Hotel Annapurna",
+            accommodationPics: [],
+            accommodationDescription: "Comfortable lodge with modern amenities",
+          },
+        ],
+        links: [],
+      },
+    ])
+
+    setFaqs([
+      {
+        question: "Is this trek suitable for beginners?",
+        answer:
+          "This trek is suitable for experienced trekkers who are looking for a luxurious experience in the Himalayas.",
+      },
+      {
+        question: "What is the best time to do this trek?",
+        answer:
+          "The best time to do this trek is during the spring (March to May) and autumn (September to November) seasons.",
+      },
+    ])
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // if (!validateForm()) return
@@ -358,6 +488,7 @@ const CreateTourForm = () => {
           <p className="text-lg text-blue-400">
             Transform Dreams into Extraordinary Journeys
           </p>
+          <Button onClick={handleAutofill}>Autofill Form</Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
