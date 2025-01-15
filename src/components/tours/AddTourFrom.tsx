@@ -293,15 +293,54 @@ const CreateTourForm = () => {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!validateForm()) return
+    // if (!validateForm()) return
+
     const formData = {
       title,
-
       price,
+      country,
+      location,
+      language,
+      suitableAge,
+      maxAltitude,
+      thumbnail,
+      mealType,
+      selectedSeasons,
+      minDays,
+      maxDays,
+      minGroupSize,
+      maxGroupSize,
+      arrivalLocation,
+      departureLocation,
+      startingLocation,
+      endingLocation,
+      overview,
+      accommodations,
+      thingsToKnow,
+      note,
+      highlights,
+      itineraries,
+      services,
+      faqs,
+      images,
+      video,
     }
     console.log("Form Data Submitted:", formData)
+    const response = await fetch(
+      // `${process.env.NEXT_PUBLIC_API_URL_DEV}/add-tours`,
+      `http://localhost:4000/add-tours`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: JSON.stringify(formData),
+      }
+    )
+    const data = await response.json()
+    console.log(data, "test")
     setLoading(true)
   }
 
@@ -556,6 +595,7 @@ const CreateTourForm = () => {
           <div className="pt-8">
             <button
               type="submit"
+              onClick={handleSubmit}
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
               rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
               shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
