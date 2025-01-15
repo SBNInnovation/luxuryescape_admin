@@ -425,53 +425,68 @@ const CreateTourForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // if (!validateForm()) return
 
-    const formData = {
-      title,
-      price,
-      country,
-      location,
-      language,
-      suitableAge,
-      maxAltitude,
-      thumbnail,
-      mealType,
-      selectedSeasons,
-      minDays,
-      maxDays,
-      minGroupSize,
-      maxGroupSize,
-      arrivalLocation,
-      departureLocation,
-      startingLocation,
-      endingLocation,
-      overview,
-      accommodations,
-      thingsToKnow,
-      note,
-      highlights,
-      itineraries,
-      services,
-      faqs,
-      images,
-      video,
+    setLoading(true) // Show loading before starting the request
+
+    // Prepare form data
+    const formData = new FormData()
+    formData.append("title", title)
+    formData.append("price", price.toString())
+    formData.append("country", country)
+    formData.append("location", location)
+    formData.append("language", language)
+    formData.append("suitableAge", suitableAge.toString())
+    formData.append("maxAltitude", maxAltitude.toString())
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail)
     }
-    console.log("Form Data Submitted:", formData)
-    const response = await fetch(
-      // `${process.env.NEXT_PUBLIC_API_URL_DEV}/add-tours`,
-      `http://localhost:4000/add-tours`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: JSON.stringify(formData),
+    formData.append("mealType", mealType)
+    formData.append("selectedSeasons", JSON.stringify(selectedSeasons)) // Handle arrays as JSON
+    formData.append("minDays", minDays.toString())
+    formData.append("maxDays", maxDays.toString())
+    formData.append("minGroupSize", minGroupSize.toString())
+    formData.append("maxGroupSize", maxGroupSize.toString())
+    formData.append("arrivalLocation", arrivalLocation)
+    formData.append("departureLocation", departureLocation)
+    formData.append("startingLocation", startingLocation)
+    formData.append("endingLocation", endingLocation)
+    formData.append("overview", overview)
+    formData.append("accommodations", JSON.stringify(accommodations))
+    formData.append("thingsToKnow", JSON.stringify(thingsToKnow))
+    formData.append("note", note)
+    formData.append("highlights", JSON.stringify(highlights))
+    formData.append("itineraries", JSON.stringify(itineraries))
+    formData.append("services", JSON.stringify(services))
+    formData.append("faqs", JSON.stringify(faqs))
+
+    // Append multiple images
+    images.forEach((image) => {
+      if (image instanceof File) {
+        // Check if the image is a File
+        formData.append("images", image)
       }
-    )
-    const data = await response.json()
-    console.log(data, "test")
-    setLoading(true)
+    })
+    if (video) {
+      formData.append("video", video) // Assuming `video` is a File object
+    }
+
+    try {
+      const response = await fetch(`http://localhost:4000/add-tours`, {
+        method: "POST",
+        body: formData, // Use FormData here
+      })
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      console.log("Response Data:", data)
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    } finally {
+      setLoading(false) // Turn off loading regardless of success or failure
+    }
   }
 
   return (
