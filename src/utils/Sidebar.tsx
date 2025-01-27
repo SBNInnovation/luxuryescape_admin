@@ -8,7 +8,7 @@ import {
   ChevronUp,
   BookOpen,
   Binoculars,
-  Sailboat,
+  Hotel,
   Users2Icon,
   Mails,
 } from "lucide-react"
@@ -48,7 +48,7 @@ export function AppSidebar() {
     { title: "Home", url: "/", icon: Home },
     { title: "Trekkings", url: "/trekkings", icon: MountainSnow },
     { title: "Tours", url: "/tours", icon: Binoculars },
-    { title: "Wellness", url: "/wellness", icon: TicketsPlane },
+    { title: "Accommodations", url: "/accommodations", icon: Hotel },
     { title: "Blogs", url: "/blogs", icon: BookOpen },
     { title: "Plan Trip", url: "/plan-trip", icon: Bus },
     { title: "Requests & Mails", url: "/requests-mails", icon: Mails },

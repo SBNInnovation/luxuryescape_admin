@@ -62,7 +62,7 @@ type SortOption = {
   order: SortOrder
 }
 
-const TourHome: React.FC = () => {
+const BlogHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
@@ -151,27 +151,20 @@ const TourHome: React.FC = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-4xl font-bold text-gray-900 tracking-tight">
-            Tour Manager
+            Blog Manager
           </h2>
           <div className="flex  gap-6">
             <Button
-              onClick={() => router.push("/tours/tour-types")}
-              className="bg-blue-500 hover:bg-blue-500/90 text-white px-6 py-2 rounded-full flex items-center gap-2"
-            >
-              <TreePine size={20} />
-              Tour Type
-            </Button>
-            <Button
-              onClick={() => router.push("/tours/create-tour")}
+              onClick={() => router.push("/accommodations/add-accommodation")}
               className="bg-primary hover:bg-primary/90 px-6 py-2 rounded-full flex items-center gap-2"
             >
               <Plus size={20} />
-              Create New Tour
+              Add New Blog
             </Button>
           </div>
         </div>
         <p className="text-lg text-gray-600">
-          Manage your luxurious packages with multiple options
+          Manage your luxurious blog with multiple options
         </p>
       </div>
 
@@ -232,7 +225,7 @@ const TourHome: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search treks..."
+              placeholder="Search blogs..."
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
             />
           </div>
@@ -320,12 +313,6 @@ const TourHome: React.FC = () => {
                           }
                         />
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">
-                          {new Date(trek.createdAt).toLocaleDateString()}
-                        </p>
-                        <p className="text-sm font-semibold">${trek.price}</p>
-                      </div>
                     </div>
                   </td>
 
@@ -389,4 +376,4 @@ const TourHome: React.FC = () => {
   )
 }
 
-export default TourHome
+export default BlogHome
