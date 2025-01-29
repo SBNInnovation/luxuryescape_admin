@@ -122,7 +122,7 @@ const AddAccommodation = () => {
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))
     formData.append("accommodationAmenities", JSON.stringify(amenities))
-    formData.append("accommodationImages", JSON.stringify(images))
+    formData.append("accommodationPics", JSON.stringify(images))
     formData.append("accommodationRooms", JSON.stringify(rooms))
 
     try {
