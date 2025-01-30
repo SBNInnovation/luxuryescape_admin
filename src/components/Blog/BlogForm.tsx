@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback, useRef } from "react"
+import React, { useState, useCallback, useRef, useEffect } from "react"
 import { Editor as TinyMCEEditor } from "tinymce"
 import { Editor } from "@tinymce/tinymce-react"
 import axios from "axios"
@@ -29,10 +29,18 @@ interface BlogPostProps {
     image: File | null
     description: string
     links: BlogLink[]
+    tourTypeId: string // Add this field
   }) => Promise<void> | void
 }
 
-const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
+interface TripsTours {
+  _id: string
+  tourType: string
+  thumbnail: string
+  description: string
+}
+
+const BlogForm = () => {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [image, setImage] = useState<File | null>(null)
@@ -42,6 +50,10 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
   const editorRef = useRef<TinyMCEEditor | null>(null)
   const route = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [tripsTours, setTripsTours] = useState<TripsTours[]>([])
+  const [loading, setLoading] = useState(false)
+  const [selectedTourTypeId, setSelectedTourTypeId] = useState<string>("") // New state for selected tour type ID
 
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +91,12 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
   }
 
   const handleAddBlog = async () => {
-    if (!title || !description.replace(/<[^>]*>/g, "").trim() || !image) {
+    if (
+      !title ||
+      !description.replace(/<[^>]*>/g, "").trim() ||
+      //   !image ||
+      !selectedTourTypeId
+    ) {
       toast.error("Please fill in all required fields")
       return
     }
@@ -94,28 +111,38 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
       const formData = new FormData()
       formData.append("title", title)
       formData.append("description", description)
-      formData.append("links", JSON.stringify(validLinks))
+      formData.append("link", JSON.stringify(validLinks))
+      formData.append("category", selectedTourTypeId) // Add selected tour type ID
 
       if (image) {
-        formData.append("image", image as Blob)
+        formData.append("thumbnail", image as Blob)
       }
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_DEV}/blogs/add-blog`,
-        formData,
+      //   const response = await axios.post(
+      //     `${process.env.NEXT_PUBLIC_API_URL_DEV}/blog/add-blog`,
+      //     formData,
+      //     {
+      //       headers: {
+      //         "Content-Type": "multipart/form-data",
+      //       },
+      //     }
+      //   )
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/blog/add-blog`,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          method: "POST",
+          body: formData,
         }
       )
 
-      if (response.data.success) {
-        toast.success(response.data.message)
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success(data.message)
         resetForm()
         route.push("/blogs")
       } else {
-        toast.error(response.data.message)
+        toast.error(data.message)
       }
     } catch (error) {
       toast.error("Failed to create blog post")
@@ -131,6 +158,7 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
     setImage(null)
     setImagePreview(null)
     setLinks([{ text: "", url: "" }])
+    setSelectedTourTypeId("") // Reset selected tour type ID
 
     if (editorRef.current) {
       editorRef.current.setContent("")
@@ -148,6 +176,27 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
       fileInputRef.current.value = ""
     }
   }
+
+  // Fetch Trips and Tours
+  const fetchTripsTours = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get-all-tour-types`
+      )
+      if (response.data.success) {
+        setTripsTours(response.data.allTourTypes)
+      } else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.error("Error fetching trips/tours:", error)
+      toast.error("Failed to fetch Trips/Tours")
+    }
+  }
+
+  useEffect(() => {
+    fetchTripsTours()
+  }, [])
 
   return (
     <div className="min-h-screen">
@@ -230,6 +279,30 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
                     </div>
                   )}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tour Type Dropdown Section */}
+          <Card className="backdrop-blur-md border border-white/20">
+            <CardContent className="p-8">
+              <div className="flex gap-2 text-2xl font-semibold">
+                <span className="text-blue-400">🌍</span> Select Category
+              </div>
+              <div className="mt-8">
+                <select
+                  value={selectedTourTypeId}
+                  onChange={(e) => setSelectedTourTypeId(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  disabled={isSubmitting}
+                >
+                  <option value="">Select a tour type</option>
+                  {tripsTours.map((tour) => (
+                    <option key={tour._id} value={tour._id}>
+                      {tour.tourType}
+                    </option>
+                  ))}
+                </select>
               </div>
             </CardContent>
           </Card>
@@ -341,7 +414,8 @@ const BlogForm: React.FC<BlogPostProps> = ({ onSubmit }) => {
               disabled={
                 !title ||
                 !description.replace(/<[^>]*>/g, "").trim() ||
-                !image ||
+                // !image ||
+                !selectedTourTypeId ||
                 isSubmitting
               }
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 

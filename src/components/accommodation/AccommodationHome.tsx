@@ -15,45 +15,12 @@ import {
   MapPin,
   SortAsc,
   TreePine,
+  Star,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
-
-const dummyTrekking = [
-  {
-    _id: "1",
-    name: "Luxury Everest Base Camp",
-    slug: "luxury-everest-base-camp",
-    thumbnail:
-      "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=800",
-    country: "Nepal",
-    location: "Solukhumbu",
-    tourType: "Trekking",
-    difficulty: "Difficult",
-    price: 5000,
-    days: { min: 14, max: 16 },
-    groupSize: { min: 5, max: 10 },
-    createdAt: "2024-01-15",
-    isActivated: true,
-  },
-  {
-    _id: "2",
-    name: "Glamorous Annapurna Trek",
-    slug: "glamorous-annapurna-trek",
-    thumbnail: "./logo_gmn.jpg",
-    country: "Nepal",
-    location: "Annapurna",
-    tourType: "Adventure",
-    difficulty: "Moderate",
-    price: 3000,
-    days: { min: 10, max: 12 },
-    groupSize: { min: 3, max: 8 },
-    createdAt: "2024-01-20",
-    isActivated: false,
-  },
-]
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
@@ -62,11 +29,28 @@ type SortOption = {
   order: SortOrder
 }
 
+interface AccommodationType {
+  _id: string
+  accommodationTitle: string
+  accommodationLocation: string
+  accommodationRating: number
+  accommodationPics: string[]
+  rooms: {
+    roomTitle: string
+    roomPhotos: string[]
+    roomStandard: string
+    roomDescription: string
+    roomFacilities: string[]
+  }[]
+  isActivated: boolean
+  slug: string
+}
+
 const AccommodationHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const [trekking, setTrekking] = useState(dummyTrekking)
+  const [accommodations, setAccommodations] = useState<AccommodationType[]>([])
   const [search, setSearch] = useState<string>("")
   const [difficulty, setDifficulty] = useState<string>("")
   const [location, setLocation] = useState<string>("")
@@ -81,69 +65,7 @@ const AccommodationHome: React.FC = () => {
     { value: "price_desc", label: "Price (High to Low)" },
   ]
 
-  const parseSortOption = (option: string): SortOption | null => {
-    if (!option) return null
-    const [field, order] = option.split("_") as [SortField, SortOrder]
-    return { field, order }
-  }
-
-  const sortData = (data: typeof dummyTrekking, sort: SortOption | null) => {
-    if (!sort) return data
-
-    return [...data].sort((a, b) => {
-      const { field, order } = sort
-      const multiplier = order === "asc" ? 1 : -1
-
-      if (field === "name") {
-        return multiplier * a.name.localeCompare(b.name)
-      }
-      if (field === "createdAt") {
-        return (
-          multiplier *
-          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-        )
-      }
-      if (field === "price") {
-        return multiplier * (a.price - b.price)
-      }
-      return 0
-    })
-  }
-
-  const filterTrekking = () => {
-    let filtered = dummyTrekking
-
-    if (search) {
-      filtered = filtered.filter((trek) =>
-        trek.name.toLowerCase().includes(search.toLowerCase())
-      )
-    }
-
-    if (difficulty) {
-      filtered = filtered.filter((trek) => trek.difficulty === difficulty)
-    }
-
-    if (location) {
-      filtered = filtered.filter((trek) => trek.location === location)
-    }
-
-    filtered = sortData(filtered, parseSortOption(sortOption))
-    setTrekking(filtered)
-  }
-
-  useEffect(() => {
-    filterTrekking()
-  }, [search, difficulty, location, sortOption])
-
-  const handleToggle = (trekId: string, field: "isActivated") => {
-    setTrekking((prev) =>
-      prev.map((trek) =>
-        trek._id === trekId ? { ...trek, [field]: !trek[field] } : trek
-      )
-    )
-  }
-
-  const totalPages = Math.ceil(dummyTrekking.length / 10)
+  const totalPages = Math.ceil(accommodations?.length / 10)
 
   const getAccommodations = async () => {
     setLoading(true)
@@ -154,7 +76,10 @@ const AccommodationHome: React.FC = () => {
       }
     )
     const data = await response.json()
-    console.log(data)
+
+    if (data.success) {
+      setAccommodations(data.data.accommodations)
+    }
 
     setLoading(false)
   }
@@ -257,7 +182,8 @@ const AccommodationHome: React.FC = () => {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Tour Details ({trekking.length}/{dummyTrekking.length})
+                  Tour Details
+                  {/* Tour Details ({accommodations.length}/{dummyTrekking.length}) */}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <div className="flex items-center justify-between">
@@ -271,94 +197,94 @@ const AccommodationHome: React.FC = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {trekking.map((trek) => (
-                <tr
-                  key={trek._id}
-                  className="hover:bg-gray-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        src={trek.thumbnail}
-                        alt={trek.name}
-                        className="h-24 w-32 object-cover rounded-lg shadow-sm"
-                      />
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {trek.name}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            <MapPin size={10} className="mr-1" />
-                            {trek.location}, {trek.country}
-                          </Badge>
+              {accommodations &&
+                accommodations.map((acco) => (
+                  <tr
+                    key={acco._id}
+                    className="hover:bg-gray-50/50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={acco?.accommodationPics[0]}
+                          alt={acco?.accommodationTitle}
+                          className="h-24 w-32 object-cover rounded-lg shadow-sm"
+                        />
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {acco?.accommodationTitle}
+                          </h3>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              <MapPin size={10} className="mr-1" />
+                              {acco?.accommodationLocation}
+                            </Badge>
+                          </div>
+                          <div className="mt-1 space-x-2">
+                            <Badge variant="secondary" className="text-xs">
+                              <Star size={10} className="mr-1" />
+                              {acco?.accommodationRating}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className={`text-xs"text-yellow-600 border-yellow-200 bg-yellow-50
+                                  
+                              }`}
+                            >
+                              {acco?.rooms.length} Rooms
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="mt-1 space-x-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {trek.tourType}
-                          </Badge>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${
-                              trek.difficulty === "Difficult"
-                                ? "text-red-600 border-red-200 bg-red-50"
-                                : trek.difficulty === "Moderate"
-                                ? "text-yellow-600 border-yellow-200 bg-yellow-50"
-                                : "text-green-600 border-green-200 bg-green-50"
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-sm font-medium ${
+                              acco.isActivated
+                                ? "text-green-600"
+                                : "text-red-600"
                             }`}
                           >
-                            {trek.difficulty}
-                          </Badge>
+                            {acco.isActivated ? "Active" : "Inactive"}
+                          </span>
+                          <Switch
+                            checked={acco.isActivated}
+                            // onCheckedChange={() =>
+                            //   handleToggle(trek._id, "isActivated")
+                            // }
+                          />
                         </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-sm font-medium ${
-                            trek.isActivated ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {trek.isActivated ? "Active" : "Inactive"}
-                        </span>
-                        <Switch
-                          checked={trek.isActivated}
-                          onCheckedChange={() =>
-                            handleToggle(trek._id, "isActivated")
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center space-x-3">
+                        <Button
+                          onClick={() =>
+                            router.push(`/tours/edit-tour/${acco.slug}`)
                           }
-                        />
+                          className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          onClick={() => {
+                            setAccommodations((prev) =>
+                              prev.filter((item) => item._id !== acco._id)
+                            )
+                          }}
+                          className="px-4 py-2 rounded-lg hover:bg-red-600/90"
+                        >
+                          <Trash2 size={18} />
+                        </Button>
                       </div>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center space-x-3">
-                      <Button
-                        onClick={() =>
-                          router.push(`/tours/edit-tour/${trek.slug}`)
-                        }
-                        className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => {
-                          setTrekking((prev) =>
-                            prev.filter((item) => item._id !== trek._id)
-                          )
-                        }}
-                        className="px-4 py-2 rounded-lg hover:bg-red-600/90"
-                      >
-                        <Trash2 size={18} />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -371,7 +297,7 @@ const AccommodationHome: React.FC = () => {
         </div>
       )}
 
-      {!loading && dummyTrekking.length === 0 && (
+      {!loading && accommodations?.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
           <p className="text-2xl text-gray-400 font-medium">No tours found</p>
           <p className="text-gray-500 mt-2">
@@ -381,7 +307,7 @@ const AccommodationHome: React.FC = () => {
       )}
 
       {/* Pagination */}
-      {dummyTrekking.length > 0 && (
+      {accommodations?.length > 0 && (
         <div className="mt-6">
           <CustomPagination
             currentPage={page}

@@ -35,11 +35,10 @@ import { useRouter } from "next/navigation"
 // Define type for Trip/Tour
 interface TripTour {
   _id: string
-  title: string
-  description?: string
-  coverImage: string
+  tourType: string
+  thumbnail: string
   createdAt: string
-  totalTours: number
+  description: string
 }
 
 const TripsAndToursManagement: React.FC = () => {
@@ -63,10 +62,14 @@ const TripsAndToursManagement: React.FC = () => {
     try {
       setListLoading(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_}/tour/get-all-tour-types`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get-all-tour-types`
       )
-      setTripsTours(response.data.data)
-      setListLoading(false)
+      if (response.data.success) {
+        setTripsTours(response.data.allTourTypes)
+        setListLoading(false)
+      } else {
+        toast.error(response.data.message)
+      }
     } catch (error) {
       console.error("Error fetching trips/tours:", error)
       toast.error("Failed to fetch Trips/Tours")
@@ -182,9 +185,9 @@ const TripsAndToursManagement: React.FC = () => {
 
   const handleEditTrip = (trip: TripTour) => {
     setSelectedTrip(trip)
-    setTitle(trip.title)
+    setTitle(trip.tourType)
     setDescription(trip.description || "")
-    setImagePreview(trip.coverImage)
+    setImagePreview(trip.thumbnail)
     setIsEditModalOpen(true)
     setIsEditing(true)
   }
@@ -334,21 +337,15 @@ const TripsAndToursManagement: React.FC = () => {
                   >
                     <div className="flex items-center space-x-4">
                       <img
-                        src={trip.coverImage}
-                        alt={trip.title}
+                        src={trip?.thumbnail}
+                        alt={trip?.tourType}
                         className="w-16 h-16 object-cover rounded-md"
                       />
                       <div>
-                        <h3 className="font-semibold">{trip.title}</h3>
+                        <h3 className="font-semibold">{trip?.tourType}</h3>
                         <p className="text-sm text-muted-foreground">
                           Created:{" "}
                           {new Date(trip.createdAt).toLocaleDateString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Total Tours:{" "}
-                          <span className="font-semibold text-primary">
-                            {trip.totalTours}
-                          </span>
                         </p>
                       </div>
                     </div>
@@ -442,8 +439,8 @@ const TripsAndToursManagement: React.FC = () => {
                     </Label>
 
                     <img
-                      src={imagePreview || selectedTrip.coverImage}
-                      alt={selectedTrip.title}
+                      src={imagePreview || selectedTrip.thumbnail}
+                      alt={selectedTrip.tourType}
                       className="w-full max-w-[300px] h-auto rounded-lg object-cover"
                     />
                   </div>
