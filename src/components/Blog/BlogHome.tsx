@@ -7,55 +7,41 @@ import { Switch } from "@/components/ui/switch"
 import {
   Trash2,
   Plus,
-  MapIcon,
+  BookOpen,
   Filter,
   ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  MapPin,
-  SortAsc,
-  TreePine,
+  Clock,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 
-const dummyTrekking = [
+const dummyBlogs = [
   {
-    _id: "1",
-    name: "Luxury Everest Base Camp",
-    slug: "luxury-everest-base-camp",
+    _id: "67a0f3afcf7136169a91e8c2",
+    title: "Tiger",
+    slug: "tiger",
     thumbnail:
-      "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=800",
-    country: "Nepal",
-    location: "Solukhumbu",
-    tourType: "Trekking",
-    difficulty: "Difficult",
-    price: 5000,
-    days: { min: 14, max: 16 },
-    groupSize: { min: 5, max: 10 },
-    createdAt: "2024-01-15",
-    isActivated: true,
+      "https://res.cloudinary.com/dtcfxh0z5/image/upload/v1738601393/LuxuryEscape/blogs/thumbnail/zweab8dc2q2czye5mc9p.png",
+    category: "Wildlife",
+    readTime: "1 min read",
+    createdAt: "2025-02-03T16:49:51.530Z",
+    isActivate: true,
   },
   {
-    _id: "2",
-    name: "Glamorous Annapurna Trek",
-    slug: "glamorous-annapurna-trek",
-    thumbnail: "./logo_gmn.jpg",
-    country: "Nepal",
-    location: "Annapurna",
-    tourType: "Adventure",
-    difficulty: "Moderate",
-    price: 3000,
-    days: { min: 10, max: 12 },
-    groupSize: { min: 3, max: 8 },
-    createdAt: "2024-01-20",
-    isActivated: false,
+    _id: "67a0f3afcf7136169a91e8c3",
+    title: "Everest Expedition",
+    slug: "everest-expedition",
+    thumbnail: "https://example.com/everest.jpg",
+    category: "Adventure",
+    readTime: "3 min read",
+    createdAt: "2025-01-15T10:30:00.000Z",
+    isActivate: false,
   },
 ]
 
-type SortField = "name" | "createdAt" | "price"
+type SortField = "title" | "createdAt"
 type SortOrder = "asc" | "desc"
 type SortOption = {
   field: SortField
@@ -66,19 +52,16 @@ const BlogHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const [trekking, setTrekking] = useState(dummyTrekking)
+  const [blogs, setBlogs] = useState(dummyBlogs)
   const [search, setSearch] = useState<string>("")
-  const [difficulty, setDifficulty] = useState<string>("")
-  const [location, setLocation] = useState<string>("")
+  const [category, setCategory] = useState<string>("")
   const [sortOption, setSortOption] = useState<string>("")
 
   const sortOptions = [
-    { value: "name_asc", label: "Title (A-Z)" },
-    { value: "name_desc", label: "Title (Z-A)" },
+    { value: "title_asc", label: "Title (A-Z)" },
+    { value: "title_desc", label: "Title (Z-A)" },
     { value: "createdAt_asc", label: "Date (Oldest First)" },
     { value: "createdAt_desc", label: "Date (Newest First)" },
-    { value: "price_asc", label: "Price (Low to High)" },
-    { value: "price_desc", label: "Price (High to Low)" },
   ]
 
   const parseSortOption = (option: string): SortOption | null => {
@@ -87,15 +70,15 @@ const BlogHome: React.FC = () => {
     return { field, order }
   }
 
-  const sortData = (data: typeof dummyTrekking, sort: SortOption | null) => {
+  const sortData = (data: typeof dummyBlogs, sort: SortOption | null) => {
     if (!sort) return data
 
     return [...data].sort((a, b) => {
       const { field, order } = sort
       const multiplier = order === "asc" ? 1 : -1
 
-      if (field === "name") {
-        return multiplier * a.name.localeCompare(b.name)
+      if (field === "title") {
+        return multiplier * a.title.localeCompare(b.title)
       }
       if (field === "createdAt") {
         return (
@@ -103,47 +86,40 @@ const BlogHome: React.FC = () => {
           (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         )
       }
-      if (field === "price") {
-        return multiplier * (a.price - b.price)
-      }
       return 0
     })
   }
 
-  const filterTrekking = () => {
-    let filtered = dummyTrekking
+  const filterBlogs = () => {
+    let filtered = dummyBlogs
 
     if (search) {
-      filtered = filtered.filter((trek) =>
-        trek.name.toLowerCase().includes(search.toLowerCase())
+      filtered = filtered.filter((blog) =>
+        blog.title.toLowerCase().includes(search.toLowerCase())
       )
     }
 
-    if (difficulty) {
-      filtered = filtered.filter((trek) => trek.difficulty === difficulty)
-    }
-
-    if (location) {
-      filtered = filtered.filter((trek) => trek.location === location)
+    if (category) {
+      filtered = filtered.filter((blog) => blog.category === category)
     }
 
     filtered = sortData(filtered, parseSortOption(sortOption))
-    setTrekking(filtered)
+    setBlogs(filtered)
   }
 
   useEffect(() => {
-    filterTrekking()
-  }, [search, difficulty, location, sortOption])
+    filterBlogs()
+  }, [search, category, sortOption])
 
-  const handleToggle = (trekId: string, field: "isActivated") => {
-    setTrekking((prev) =>
-      prev.map((trek) =>
-        trek._id === trekId ? { ...trek, [field]: !trek[field] } : trek
+  const handleToggle = (blogId: string, field: "isActivate") => {
+    setBlogs((prev) =>
+      prev.map((blog) =>
+        blog._id === blogId ? { ...blog, [field]: !blog[field] } : blog
       )
     )
   }
 
-  const totalPages = Math.ceil(dummyTrekking.length / 10)
+  const totalPages = Math.ceil(dummyBlogs.length / 10)
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen w-full">
@@ -153,7 +129,7 @@ const BlogHome: React.FC = () => {
           <h2 className="text-4xl font-bold text-gray-900 tracking-tight">
             Blog Manager
           </h2>
-          <div className="flex  gap-6">
+          <div className="flex gap-6">
             <Button
               onClick={() => router.push("/blogs/add-blog")}
               className="bg-primary hover:bg-primary/90 px-6 py-2 rounded-full flex items-center gap-2"
@@ -164,31 +140,28 @@ const BlogHome: React.FC = () => {
           </div>
         </div>
         <p className="text-lg text-gray-600">
-          Manage your luxurious blog with multiple options
+          Manage and curate your blog content efficiently
         </p>
       </div>
 
       {/* Filters Section */}
       <Card className="p-6 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="relative">
-            <MapIcon
-              className="absolute left-3 top-2 text-gray-400"
-              size={20}
-            />
+            <Filter className="absolute left-3 top-2 text-gray-400" size={20} />
             <select
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
             >
-              <option value="">All Locations</option>
-              <option value="Solukhumbu">Solukhumbu</option>
-              <option value="Annapurna">Annapurna</option>
+              <option value="">All Categories</option>
+              <option value="Wildlife">Wildlife</option>
+              <option value="Adventure">Adventure</option>
             </select>
           </div>
 
           <div className="relative">
-            <SortAsc
+            <ArrowUpDown
               className="absolute left-3 top-2 text-gray-400"
               size={20}
             />
@@ -218,14 +191,13 @@ const BlogHome: React.FC = () => {
         </div>
       </Card>
 
-      {/* Rest of the component remains the same */}
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Tour Details ({trekking.length}/{dummyTrekking.length})
+                  Blog Details ({blogs.length}/{dummyBlogs.length})
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <div className="flex items-center justify-between">
@@ -239,43 +211,30 @@ const BlogHome: React.FC = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {trekking.map((trek) => (
+              {blogs.map((blog) => (
                 <tr
-                  key={trek._id}
+                  key={blog._id}
                   className="hover:bg-gray-50/50 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-4">
                       <img
-                        src={trek.thumbnail}
-                        alt={trek.name}
+                        src={blog.thumbnail}
+                        alt={blog.title}
                         className="h-24 w-32 object-cover rounded-lg shadow-sm"
                       />
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {trek.name}
+                          {blog.title}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">
-                            <MapPin size={10} className="mr-1" />
-                            {trek.location}, {trek.country}
+                            <Filter size={10} className="mr-1" />
+                            {blog.category}
                           </Badge>
-                        </div>
-                        <div className="mt-1 space-x-2">
                           <Badge variant="secondary" className="text-xs">
-                            {trek.tourType}
-                          </Badge>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${
-                              trek.difficulty === "Difficult"
-                                ? "text-red-600 border-red-200 bg-red-50"
-                                : trek.difficulty === "Moderate"
-                                ? "text-yellow-600 border-yellow-200 bg-yellow-50"
-                                : "text-green-600 border-green-200 bg-green-50"
-                            }`}
-                          >
-                            {trek.difficulty}
+                            <Clock size={10} className="mr-1" />
+                            {blog.readTime}
                           </Badge>
                         </div>
                       </div>
@@ -287,15 +246,15 @@ const BlogHome: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-sm font-medium ${
-                            trek.isActivated ? "text-green-600" : "text-red-600"
+                            blog.isActivate ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {trek.isActivated ? "Active" : "Inactive"}
+                          {blog.isActivate ? "Active" : "Inactive"}
                         </span>
                         <Switch
-                          checked={trek.isActivated}
+                          checked={blog.isActivate}
                           onCheckedChange={() =>
-                            handleToggle(trek._id, "isActivated")
+                            handleToggle(blog._id, "isActivate")
                           }
                         />
                       </div>
@@ -306,7 +265,7 @@ const BlogHome: React.FC = () => {
                     <div className="flex items-center justify-center space-x-3">
                       <Button
                         onClick={() =>
-                          router.push(`/tours/edit-tour/${trek.slug}`)
+                          router.push(`/blogs/edit-blog/${blog.slug}`)
                         }
                         className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                       >
@@ -315,8 +274,8 @@ const BlogHome: React.FC = () => {
                       <Button
                         variant="destructive"
                         onClick={() => {
-                          setTrekking((prev) =>
-                            prev.filter((item) => item._id !== trek._id)
+                          setBlogs((prev) =>
+                            prev.filter((item) => item._id !== blog._id)
                           )
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
@@ -334,14 +293,14 @@ const BlogHome: React.FC = () => {
 
       {/* Loading and Empty States */}
       {loading && (
-        <div className="flex justify-center  mt-40">
+        <div className="flex justify-center mt-40">
           <MainSpinner />
         </div>
       )}
 
-      {!loading && dummyTrekking.length === 0 && (
+      {!loading && dummyBlogs.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
-          <p className="text-2xl text-gray-400 font-medium">No tours found</p>
+          <p className="text-2xl text-gray-400 font-medium">No blogs found</p>
           <p className="text-gray-500 mt-2">
             Try adjusting your search or filters
           </p>
@@ -349,7 +308,7 @@ const BlogHome: React.FC = () => {
       )}
 
       {/* Pagination */}
-      {dummyTrekking.length > 0 && (
+      {dummyBlogs.length > 0 && (
         <div className="mt-6">
           <CustomPagination
             currentPage={page}
