@@ -19,7 +19,7 @@ import { FaArrowLeft } from "react-icons/fa6"
 
 // Types
 interface BlogLink {
-  text: string
+  key: string
   url: string
 }
 
@@ -45,7 +45,7 @@ const BlogForm = () => {
   const [description, setDescription] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [links, setLinks] = useState<BlogLink[]>([{ text: "", url: "" }])
+  const [links, setLinks] = useState<BlogLink[]>([{ key: "", url: "" }])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const editorRef = useRef<TinyMCEEditor | null>(null)
   const route = useRouter()
@@ -72,12 +72,12 @@ const BlogForm = () => {
   )
 
   const handleAddLink = () => {
-    setLinks([...links, { text: "", url: "" }])
+    setLinks([...links, { key: "", url: "" }])
   }
 
   const handleRemoveLink = (index: number) => {
     const newLinks = links.filter((_, i) => i !== index)
-    setLinks(newLinks.length > 0 ? newLinks : [{ text: "", url: "" }])
+    setLinks(newLinks.length > 0 ? newLinks : [{ key: "", url: "" }])
   }
 
   const handleLinkChange = (
@@ -102,7 +102,7 @@ const BlogForm = () => {
     }
 
     const validLinks = links.filter(
-      (link) => link.text.trim() && link.url.trim()
+      (link) => link.key.trim() && link.url.trim()
     )
 
     try {
@@ -157,7 +157,7 @@ const BlogForm = () => {
     setDescription("")
     setImage(null)
     setImagePreview(null)
-    setLinks([{ text: "", url: "" }])
+    setLinks([{ key: "", url: "" }])
     setSelectedTourTypeId("") // Reset selected tour type ID
 
     if (editorRef.current) {
@@ -367,9 +367,9 @@ const BlogForm = () => {
                   <div key={index} className="flex space-x-2 items-center">
                     <Input
                       placeholder="Link Text"
-                      value={link.text}
+                      value={link.key}
                       onChange={(e) =>
-                        handleLinkChange(index, "text", e.target.value)
+                        handleLinkChange(index, "key", e.target.value)
                       }
                       className="flex-1"
                       disabled={isSubmitting}
