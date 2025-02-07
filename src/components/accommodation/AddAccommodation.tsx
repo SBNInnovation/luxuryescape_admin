@@ -51,7 +51,7 @@ const AddAccommodation = () => {
   const [overview, setOverview] = useState<string>("")
   const [features, setFeatures] = useState<string[]>([""])
   const [amenities, setAmenities] = useState<string[]>([""])
-  const [images, setImages] = useState<string[]>([])
+  const [images, setImages] = useState<File[]>([])
   const [rooms, setRooms] = useState<Room[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -122,7 +122,10 @@ const AddAccommodation = () => {
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))
     formData.append("accommodationAmenities", JSON.stringify(amenities))
-    formData.append("accommodationPics", JSON.stringify(images))
+    // formData.append("accommodationPics", images)
+    images.forEach((image, index) => {
+      formData.append("accommodationPics", image, `image_${index}`)
+    })
     formData.append("accommodationRooms", JSON.stringify(rooms))
 
     try {

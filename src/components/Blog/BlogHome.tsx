@@ -16,30 +16,24 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
+import axios from "axios"
+import { toast } from "sonner"
+import { set } from "zod"
 
-const dummyBlogs = [
-  {
-    _id: "67a0f3afcf7136169a91e8c2",
-    title: "Tiger",
-    slug: "tiger",
-    thumbnail:
-      "https://res.cloudinary.com/dtcfxh0z5/image/upload/v1738601393/LuxuryEscape/blogs/thumbnail/zweab8dc2q2czye5mc9p.png",
-    category: "Wildlife",
-    readTime: "1 min read",
-    createdAt: "2025-02-03T16:49:51.530Z",
-    isActivate: true,
-  },
-  {
-    _id: "67a0f3afcf7136169a91e8c3",
-    title: "Everest Expedition",
-    slug: "everest-expedition",
-    thumbnail: "https://example.com/everest.jpg",
-    category: "Adventure",
-    readTime: "3 min read",
-    createdAt: "2025-01-15T10:30:00.000Z",
-    isActivate: false,
-  },
-]
+type Blog = {
+  _id: string
+  title: string
+  slug: string
+  description: string
+  category: {
+    tourType: string
+  }
+  readTime: string
+  thumbnail: string
+  isActive: boolean
+  isFeatured: boolean
+  createdAt: string
+}
 
 type SortField = "title" | "createdAt"
 type SortOrder = "asc" | "desc"
@@ -48,78 +42,82 @@ type SortOption = {
   order: SortOrder
 }
 
+interface DeleteParams {
+  id: string // Adjust type as necessary
+  title: string
+}
+
 const BlogHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const [blogs, setBlogs] = useState(dummyBlogs)
+  const [blogs, setBlogs] = useState<Blog[]>([])
   const [search, setSearch] = useState<string>("")
   const [category, setCategory] = useState<string>("")
   const [sortOption, setSortOption] = useState<string>("")
+  const [totalPages, setTotalPages] = useState(0)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const sortOptions = [
-    { value: "title_asc", label: "Title (A-Z)" },
-    { value: "title_desc", label: "Title (Z-A)" },
-    { value: "createdAt_asc", label: "Date (Oldest First)" },
-    { value: "createdAt_desc", label: "Date (Newest First)" },
+    { value: "asc", label: "Date (Oldest First)" },
+    { value: "desc", label: "Date (Newest First)" },
   ]
 
-  const parseSortOption = (option: string): SortOption | null => {
-    if (!option) return null
-    const [field, order] = option.split("_") as [SortField, SortOrder]
-    return { field, order }
-  }
-
-  const sortData = (data: typeof dummyBlogs, sort: SortOption | null) => {
-    if (!sort) return data
-
-    return [...data].sort((a, b) => {
-      const { field, order } = sort
-      const multiplier = order === "asc" ? 1 : -1
-
-      if (field === "title") {
-        return multiplier * a.title.localeCompare(b.title)
-      }
-      if (field === "createdAt") {
-        return (
-          multiplier *
-          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-        )
-      }
-      return 0
-    })
-  }
-
-  const filterBlogs = () => {
-    let filtered = dummyBlogs
-
-    if (search) {
-      filtered = filtered.filter((blog) =>
-        blog.title.toLowerCase().includes(search.toLowerCase())
+  const getBlogHandler = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/blog/get-all?page=1&limit=10&search=${search}&filter=&sort=${sortOption}`
       )
+      if (response.data.success) {
+        setBlogs(response.data.data.blogs)
+        setTotalPages(response.data.data.pagination.totalPages)
+      } else {
+        console.log(response.data.message)
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
     }
-
-    if (category) {
-      filtered = filtered.filter((blog) => blog.category === category)
-    }
-
-    filtered = sortData(filtered, parseSortOption(sortOption))
-    setBlogs(filtered)
   }
+
+  const handleDelete = async ({ id, title }: DeleteParams) => {
+    const confirmation = window.confirm(
+      `Are you sure you want to delete "${title}"?`
+    )
+    if (!confirmation) return
+    try {
+      setDeleteLoading(true)
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/blog/delete/${id}`
+      )
+      if (response.data.success) {
+        getBlogHandler()
+        toast.success(response.data.message || "Blog deleted successfully")
+      } else {
+        console.log(response.data.message)
+        toast.error(response.data.message || "Failed to delete blog")
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error("Something went wrong")
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  // debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      getBlogHandler()
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [search])
 
   useEffect(() => {
-    filterBlogs()
-  }, [search, category, sortOption])
-
-  const handleToggle = (blogId: string, field: "isActivate") => {
-    setBlogs((prev) =>
-      prev.map((blog) =>
-        blog._id === blogId ? { ...blog, [field]: !blog[field] } : blog
-      )
-    )
-  }
-
-  const totalPages = Math.ceil(dummyBlogs.length / 10)
+    getBlogHandler()
+  }, [category, sortOption])
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen w-full">
@@ -197,7 +195,7 @@ const BlogHome: React.FC = () => {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Blog Details ({blogs.length}/{dummyBlogs.length})
+                  Blog Details ({blogs.length})
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <div className="flex items-center justify-between">
@@ -211,81 +209,101 @@ const BlogHome: React.FC = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {blogs.map((blog) => (
-                <tr
-                  key={blog._id}
-                  className="hover:bg-gray-50/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        src={blog.thumbnail}
-                        alt={blog.title}
-                        className="h-24 w-32 object-cover rounded-lg shadow-sm"
-                      />
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {blog.title}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">
-                            <Filter size={10} className="mr-1" />
-                            {blog.category}
-                          </Badge>
-                          <Badge variant="secondary" className="text-xs">
-                            <Clock size={10} className="mr-1" />
-                            {blog.readTime}
-                          </Badge>
+              {blogs &&
+                blogs.map((blog) => (
+                  <tr
+                    key={blog._id}
+                    className="hover:bg-gray-50/50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={blog.thumbnail || "/going.png"}
+                          alt={blog.title}
+                          className="h-24 w-32 object-cover rounded-lg shadow-sm"
+                        />
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 truncate max-w-lg">
+                            {blog.title}
+                          </h3>
+
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              <Filter size={10} className="mr-1" />
+                              {blog.category?.tourType}
+                            </Badge>
+                            <Badge variant="secondary" className="text-xs">
+                              <Clock size={10} className="mr-1" />
+                              {blog.readTime}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-sm font-medium ${
-                            blog.isActivate ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {blog.isActivate ? "Active" : "Inactive"}
-                        </span>
-                        <Switch
-                          checked={blog.isActivate}
-                          onCheckedChange={() =>
-                            handleToggle(blog._id, "isActivate")
-                          }
-                        />
+                    <td className="flex flex-col gap-4 justify-center items-center px-6 py-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-sm font-medium ${
+                              blog.isActive ? "text-green-600" : "text-red-600"
+                            }`}
+                          >
+                            {blog.isActive ? "Active" : "Inactive"}
+                          </span>
+                          <Switch
+                            checked={blog.isActive}
+                            // onCheckedChange={() =>
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                      {/* featured  */}
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-sm font-medium ${
+                              blog.isFeatured
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {blog.isFeatured ? "Featured" : "Not Featured"}
+                          </span>
+                          <Switch
+                            checked={blog.isFeatured}
+                            // onCheckedChange={() =>
+                            //   handleToggle(blog._id, "isFeatured")
+                            // }
+                          />
+                        </div>
+                      </div>
+                    </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center space-x-3">
-                      <Button
-                        onClick={() =>
-                          router.push(`/blogs/edit-blog/${blog.slug}`)
-                        }
-                        className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => {
-                          setBlogs((prev) =>
-                            prev.filter((item) => item._id !== blog._id)
-                          )
-                        }}
-                        className="px-4 py-2 rounded-lg hover:bg-red-600/90"
-                      >
-                        <Trash2 size={18} />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center space-x-3">
+                        <Button
+                          onClick={() =>
+                            router.push(`/blogs/edit-blog/${blog.slug}`)
+                          }
+                          disabled={deleteLoading}
+                          className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          onClick={() => {
+                            handleDelete({ id: blog._id, title: blog.title })
+                          }}
+                          disabled={deleteLoading}
+                          className="px-4 py-2 rounded-lg hover:bg-red-600/90"
+                        >
+                          <Trash2 size={18} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -298,7 +316,7 @@ const BlogHome: React.FC = () => {
         </div>
       )}
 
-      {!loading && dummyBlogs.length === 0 && (
+      {!loading && blogs.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
           <p className="text-2xl text-gray-400 font-medium">No blogs found</p>
           <p className="text-gray-500 mt-2">
@@ -308,7 +326,7 @@ const BlogHome: React.FC = () => {
       )}
 
       {/* Pagination */}
-      {dummyBlogs.length > 0 && (
+      {blogs.length > 0 && (
         <div className="mt-6">
           <CustomPagination
             currentPage={page}

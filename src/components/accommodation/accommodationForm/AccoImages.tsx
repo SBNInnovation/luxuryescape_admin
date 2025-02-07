@@ -1,26 +1,50 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 
 interface AccoImagesProps {
-  images: string[]
-  setImages: React.Dispatch<React.SetStateAction<string[]>>
-  error: string
+  images: File[]
+  setImages: React.Dispatch<React.SetStateAction<File[]>>
+  error?: string
+  maxImages?: number
+  maxFileSize?: number
 }
 
 const AccoImages: React.FC<AccoImagesProps> = ({
   images,
   setImages,
   error,
+  maxImages = 6,
+  maxFileSize = 5 * 1024 * 1024, // 5MB default
 }) => {
+  const [previews, setPreviews] = useState<string[]>([])
+
+  // Handle creating and cleaning up image previews
+  useEffect(() => {
+    // Create object URLs for previews
+    const objectUrls = images.map((image) => URL.createObjectURL(image))
+    setPreviews(objectUrls)
+
+    // Cleanup function to revoke object URLs
+    return () => {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [images])
+
   // Handle adding new images
   const handleAccommodationImages = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = e.target.files
     if (files) {
-      const newImages = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
+      // Convert FileList to Array and apply validations
+      const newImages = Array.from(files).filter(
+        (file) => file.type.startsWith("image/") && file.size <= maxFileSize
       )
-      setImages((prev) => [...prev, ...newImages])
+
+      setImages((prev) => {
+        // Combine and slice to max images
+        const combinedImages = [...prev, ...newImages]
+        return combinedImages.slice(0, maxImages)
+      })
     }
   }
 
@@ -35,6 +59,7 @@ const AccoImages: React.FC<AccoImagesProps> = ({
         Accommodation Images <span className="text-red-700">*</span>
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
+
       <div className="mt-2">
         <input
           type="file"
@@ -43,24 +68,31 @@ const AccoImages: React.FC<AccoImagesProps> = ({
           multiple
           className="mb-2"
         />
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          {images.map((image, index) => (
-            <div key={index} className="relative">
-              <img
-                src={image}
-                alt={`Accommodation ${index + 1}`}
-                className="w-full h-32 object-cover rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
+        <p className="text-sm text-gray-600 mb-2">
+          Max {maxImages} images, each up to {maxFileSize / 1024 / 1024}MB
+        </p>
+
+        {images.length > 0 && (
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {previews.map((preview, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={preview}
+                  alt={`Accommodation ${index + 1}`}
+                  className="w-full h-32 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  aria-label={`Remove image ${index + 1}`}
+                  className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

@@ -206,7 +206,7 @@ const AccommodationHome: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-4">
                         <img
-                          src={acco?.accommodationPics[0]}
+                          src={acco?.accommodationPics[0] || "/going.png"}
                           alt={acco?.accommodationTitle}
                           className="h-24 w-32 object-cover rounded-lg shadow-sm"
                         />

@@ -3,13 +3,16 @@ import Image from "next/image"
 
 const MainSpinner = () => {
   return (
-    <div className="flex items-center justify-center h-full w-full  relative">
-      {/* Spinner */}
-      <div className="absolute animate-spin rounded-full border-t-4 border-primary border-solid border-opacity-75 h-[150px] w-[150px]"></div>
-
+    <div className="flex items-center justify-center h-screen w-full relative bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Logo */}
       <div className="z-10 flex items-center justify-center">
-        <Image src="/going.png" alt="Logo" width={"100"} height={"100"} />
+        <Image
+          src="/going.png"
+          alt="Logo"
+          width={100}
+          height={100}
+          className="object-contain animate-pulse"
+        />
       </div>
     </div>
   )
