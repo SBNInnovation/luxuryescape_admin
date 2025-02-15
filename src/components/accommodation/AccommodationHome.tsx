@@ -264,7 +264,9 @@ const AccommodationHome: React.FC = () => {
                       <div className="flex items-center justify-center space-x-3">
                         <Button
                           onClick={() =>
-                            router.push(`/tours/edit-tour/${acco.slug}`)
+                            router.push(
+                              `/accommodations/edit-accommodation/${acco._id}`
+                            )
                           }
                           className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                         >
@@ -299,7 +301,9 @@ const AccommodationHome: React.FC = () => {
 
       {!loading && accommodations?.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
-          <p className="text-2xl text-gray-400 font-medium">No tours found</p>
+          <p className="text-2xl text-gray-400 font-medium">
+            No accommodations found
+          </p>
           <p className="text-gray-500 mt-2">
             Try adjusting your search or filters
           </p>

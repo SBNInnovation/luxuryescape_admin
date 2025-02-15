@@ -1,13 +1,32 @@
-import React, { useRef } from "react"
+"use client"
+import React, { useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Trash2, Camera, BedDouble, Plus, X, Upload } from "lucide-react"
+import {
+  Trash2,
+  Camera,
+  BedDouble,
+  Plus,
+  X,
+  Upload,
+  HotelIcon,
+  MapPin,
+} from "lucide-react"
 import { ItineraryType } from "../Types/Types"
 
 interface AccommodationType {
   accommodationTitle: string
   accommodationPics: File[]
   accommodationDescription: string
+}
+
+interface AccommodationResponseType {
+  _id: string
+  accommodationTitle: string
+  accommodationPics: string[]
+  accommodationLocation: string
+  accommodationRating: string
+  slug: string
 }
 
 interface ItinerariesInputProps {
@@ -21,6 +40,10 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   setItineraries,
   error,
 }) => {
+  const [accommodations, setAccommodations] = React.useState<
+    AccommodationResponseType[]
+  >([])
+
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
   const addItinerary = () => {
@@ -171,6 +194,25 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     updateItinerary(index, updatedItinerary)
   }
 
+  //fetching data for the accommodations
+  const getAccommodations = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-all-accommodation`,
+      {
+        method: "GET",
+      }
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      setAccommodations(data.data.accommodations)
+    }
+  }
+
+  useEffect(() => {
+    getAccommodations()
+  }, [])
+
   return (
     <div>
       <label className="block text-lg font-medium text-gray-700">
@@ -209,108 +251,61 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
             className="mb-4"
           />
 
+          {/* accommodations  */}
           <div className="mb-4">
             <h3 className="text-lg font-bold mb-2">Accommodations</h3>
-            {itinerary.accommodation.map((acc, accIndex) => (
-              <div key={accIndex} className="border p-3 rounded-md mb-3">
-                <Input
-                  type="text"
-                  placeholder="Accommodation Title"
-                  value={acc.accommodationTitle}
-                  onChange={(e) =>
-                    updateAccommodation(
-                      index,
-                      accIndex,
-                      "accommodationTitle",
-                      e.target.value
-                    )
-                  }
-                  className="mb-2"
-                />
-                <textarea
-                  className="w-full p-2 border border-gray-300 rounded-md mb-2"
-                  placeholder="Accommodation Description"
-                  value={acc.accommodationDescription}
-                  onChange={(e) =>
-                    updateAccommodation(
-                      index,
-                      accIndex,
-                      "accommodationDescription",
-                      e.target.value
-                    )
-                  }
-                />
+            {accommodations.length > 0 && (
+              <details className="border rounded-lg p-4 bg-white shadow-sm">
+                <summary className="cursor-pointer font-semibold text-gray-700 list-none">
+                  View Accommodations ({accommodations.length})
+                </summary>
+                <div
+                  className={`mt-2 ${
+                    accommodations.length > 5 ? "max-h-64 overflow-y-auto" : ""
+                  }`}
+                >
+                  <div className="grid grid-cols-1 gap-4">
+                    {accommodations.map((acc, accIndex) => (
+                      <div
+                        key={accIndex}
+                        className="flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow duration-200"
+                      >
+                        {/* Image */}
+                        <div className="flex-shrink-0">
+                          <img
+                            src={acc.accommodationPics[0]}
+                            alt={acc.accommodationTitle}
+                            className="w-20 h-20 object-cover rounded-md"
+                          />
+                        </div>
+                        {/* Details */}
+                        <div className="ml-4 flex-1">
+                          <div className="flex items-center">
+                            <HotelIcon
+                              size={20}
+                              className="mr-2 text-gray-600"
+                            />
+                            <p className="font-semibold text-gray-700">
+                              {acc.accommodationTitle}
+                            </p>
+                          </div>
+                          <div className="flex items-center mt-1 gap-4">
+                            <p className="flex text-sm text-blue-500">
+                              <MapPin size={10} className="mr-1" />
+                              {acc.accommodationLocation}
+                            </p>
 
-                {/* Images Section */}
-                <div className="mt-4">
-                  <h4 className="font-medium mb-2">Accommodation Images</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
-                    {acc.accommodationPics.map((file, picIndex) => (
-                      <div key={picIndex} className="relative group">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Accommodation ${picIndex + 1}`}
-                          className="w-full h-32 object-cover rounded-md"
-                        />
-                        <button
-                          onClick={() =>
-                            removeAccommodationImage(index, accIndex, picIndex)
-                          }
-                          className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full 
-                                   opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X size={14} />
-                        </button>
+                            <p className="text-sm text-gray-500">
+                              Rating: {acc.accommodationRating}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
-
-                  <Input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    className="hidden"
-                    ref={(el) => {
-                      fileInputRefs.current[`${index}-${accIndex}`] = el
-                    }}
-                    onChange={(e) =>
-                      handleFileUpload(index, accIndex, e.target.files)
-                    }
-                  />
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full mb-4"
-                    onClick={() =>
-                      fileInputRefs.current[`${index}-${accIndex}`]?.click()
-                    }
-                  >
-                    <Upload size={16} className="mr-2" />
-                    Upload Images
-                  </Button>
                 </div>
-
-                <Button
-                  type="button"
-                  onClick={() => removeAccommodation(index, accIndex)}
-                  variant="destructive"
-                  size="sm"
-                >
-                  <Trash2 size={16} className="mr-2" />
-                  Remove Accommodation
-                </Button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              onClick={() => addAccommodation(index)}
-              variant="outline"
-              className="mt-2"
-            >
-              <BedDouble size={16} className="mr-2" />
-              Add Accommodation
-            </Button>
+              </details>
+            )}
           </div>
 
           <div className="mb-4">

@@ -8,7 +8,9 @@ const page = () => {
   const { id } = router
   const idString = Array.isArray(id) ? id[0] : id || ""
   return (
-    <div className="w-full">{/* <EditAccommodation id={idString} /> */}</div>
+    <div className="w-full">
+      <EditAccommodation id={idString} />
+    </div>
   )
 }
 

@@ -2,7 +2,7 @@ import React from "react"
 
 interface Room {
   roomTitle: string
-  roomPhotos: string[]
+  roomPhotos: File[] // Updated to File[]
   roomStandard: string
   roomDescription: string
   roomFacilities: string[]
@@ -33,9 +33,7 @@ const RoomInput: React.FC<RoomInputProps> = ({ rooms, setRooms, error }) => {
   ) => {
     const files = e.target.files
     if (files) {
-      const newImages = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
-      )
+      const newImages = Array.from(files) // Store File objects directly
       setRooms((prev) =>
         prev.map((room, i) =>
           i === index
@@ -66,7 +64,7 @@ const RoomInput: React.FC<RoomInputProps> = ({ rooms, setRooms, error }) => {
       ...prev,
       {
         roomTitle: "",
-        roomPhotos: [],
+        roomPhotos: [], // Initialize as File[]
         roomStandard: "",
         roomDescription: "",
         roomFacilities: [""],
@@ -141,7 +139,7 @@ const RoomInput: React.FC<RoomInputProps> = ({ rooms, setRooms, error }) => {
               {room.roomPhotos.map((photo, photoIndex) => (
                 <div key={photoIndex} className="relative">
                   <img
-                    src={photo}
+                    src={URL.createObjectURL(photo)} // Convert File to URL for display
                     alt={`Room ${roomIndex + 1} - ${photoIndex + 1}`}
                     className="w-full h-32 object-cover rounded-lg"
                   />

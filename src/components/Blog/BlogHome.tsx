@@ -18,7 +18,6 @@ import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import axios from "axios"
 import { toast } from "sonner"
-import { set } from "zod"
 
 type Blog = {
   _id: string
@@ -31,7 +30,7 @@ type Blog = {
   readTime: string
   thumbnail: string
   isActive: boolean
-  isFeatured: boolean
+  isFeature: boolean
   createdAt: string
 }
 
@@ -104,6 +103,35 @@ const BlogHome: React.FC = () => {
       toast.error("Something went wrong")
     } finally {
       setDeleteLoading(false)
+    }
+  }
+
+  //update visibility
+
+  const handleUpdateVisibility = async (
+    blogId: string,
+    vType: string,
+    status: boolean
+  ) => {
+    try {
+      setLoading(true)
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/blog/update-status/${blogId}?${vType}=${status}`
+      )
+      if (response.data.success) {
+        getBlogHandler()
+        toast.success(
+          response.data.message || "Visibility updated successfully"
+        )
+      } else {
+        console.log(response.data.message)
+        toast.error(response.data.message || "Failed to update visibility")
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error("Something went wrong")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -253,7 +281,13 @@ const BlogHome: React.FC = () => {
                           </span>
                           <Switch
                             checked={blog.isActive}
-                            // onCheckedChange={() =>
+                            onCheckedChange={() =>
+                              handleUpdateVisibility(
+                                blog._id,
+                                "isActive",
+                                !blog.isActive
+                              )
+                            }
                           />
                         </div>
                       </div>
@@ -262,18 +296,20 @@ const BlogHome: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span
                             className={`text-sm font-medium ${
-                              blog.isFeatured
-                                ? "text-green-600"
-                                : "text-red-600"
+                              blog.isFeature ? "text-green-600" : "text-red-600"
                             }`}
                           >
-                            {blog.isFeatured ? "Featured" : "Not Featured"}
+                            {blog.isFeature ? "Featured" : "Not Featured"}
                           </span>
                           <Switch
-                            checked={blog.isFeatured}
-                            // onCheckedChange={() =>
-                            //   handleToggle(blog._id, "isFeatured")
-                            // }
+                            checked={blog.isFeature}
+                            onCheckedChange={() =>
+                              handleUpdateVisibility(
+                                blog._id,
+                                "isFeature",
+                                !blog.isFeature
+                              )
+                            }
                           />
                         </div>
                       </div>
@@ -285,7 +321,7 @@ const BlogHome: React.FC = () => {
                           onClick={() =>
                             router.push(`/blogs/edit-blog/${blog.slug}`)
                           }
-                          disabled={deleteLoading}
+                          disabled={deleteLoading || loading}
                           className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                         >
                           View Details
@@ -295,7 +331,7 @@ const BlogHome: React.FC = () => {
                           onClick={() => {
                             handleDelete({ id: blog._id, title: blog.title })
                           }}
-                          disabled={deleteLoading}
+                          disabled={deleteLoading || loading}
                           className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                         >
                           <Trash2 size={18} />

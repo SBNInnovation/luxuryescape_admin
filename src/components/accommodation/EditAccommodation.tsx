@@ -1,6 +1,6 @@
 "use client"
-import React, { useState, ChangeEvent } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import React, { useState, ChangeEvent, useEffect } from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 import axios from "axios"
 import { set, z } from "zod"
@@ -15,7 +15,6 @@ import AccoImages from "./accommodationForm/AccoImages"
 import RoomInput from "./accommodationForm/RoomInput"
 import { toast } from "sonner"
 import { Loader } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 interface Room {
   roomTitle: string
@@ -45,7 +44,11 @@ const formSchema = z.object({
   ),
 })
 
-const AddAccommodation = () => {
+interface EditAccommodationProps {
+  id: string
+}
+
+const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
   const [title, setTitle] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [rating, setRating] = useState<number>(1)
@@ -56,8 +59,6 @@ const AddAccommodation = () => {
   const [rooms, setRooms] = useState<Room[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
-
-  const router = useRouter()
 
   //error type
   const [errors, setErrors] = useState<{
@@ -114,6 +115,50 @@ const AddAccommodation = () => {
     }
   }
 
+  //getAccommodation
+  const getAccommodation = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-accommodation`
+      )
+      const data = response.data
+      if (data.success) {
+        setTitle(data.accommodation.accommodationTitle)
+        setLocation(data.accommodation.accommodationLocation)
+        setRating(data.accommodation.accommodationRating)
+        setOverview(data.accommodation.accommodationDescription)
+        setFeatures(data.accommodation.accommodationFeatures)
+        setAmenities(data.accommodation.accommodationAmenities)
+        setImages(data.accommodation.accommodationPics)
+        setRooms(data.accommodation.accommodationRooms)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // get single accommodation
+  const getSingleAccommodation = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get/${id}`
+      )
+      const data = response.data
+      if (data.success) {
+        setTitle(data.accommodation.accommodationTitle)
+        setLocation(data.accommodation.accommodationLocation)
+        setRating(data.accommodation.accommodationRating)
+        setOverview(data.accommodation.accommodationDescription)
+        setFeatures(data.accommodation.accommodationFeatures)
+        setAmenities(data.accommodation.accommodationAmenities)
+        setImages(data.accommodation.accommodationPics)
+        setRooms(data.accommodation.accommodationRooms)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   //submit form
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -129,7 +174,7 @@ const AddAccommodation = () => {
     images.forEach((image, index) => {
       formData.append("accommodationPics", image, `image_${index}`)
     })
-    formData.append("rooms", JSON.stringify(rooms))
+    formData.append("accommodationRooms", JSON.stringify(rooms))
 
     try {
       setLoading(true)
@@ -143,7 +188,6 @@ const AddAccommodation = () => {
       const data = await response.json()
       if (data.success) {
         toast.success("Accommodation added successfully")
-        router.push("/accommodations")
       } else {
         toast.error("Failed to add accommodation")
       }
@@ -155,6 +199,10 @@ const AddAccommodation = () => {
     }
   }
 
+  useEffect(() => {
+    getSingleAccommodation()
+  }, [])
+
   return (
     <div className="min-h-screen">
       {/* Top accent line */}
@@ -164,11 +212,8 @@ const AddAccommodation = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-serif text-primary mb-4">
-            Create Your Luxury Accommodation
+            Edit Your Luxury Accommodation
           </h1>
-          <p className="text-lg text-blue-400">
-            Transform Spaces into Unforgettable Experiences
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -307,4 +352,4 @@ const AddAccommodation = () => {
   )
 }
 
-export default AddAccommodation
+export default EditAccommodation
