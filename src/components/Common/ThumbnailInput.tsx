@@ -44,7 +44,7 @@ const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
           <img
             src={preview}
             alt="Thumbnail Preview"
-            className="h-32 w-32 object-cover rounded-md border border-gray-300"
+            className="h-56 w-96 object-cover rounded-md border border-gray-300"
           />
         </div>
       )}

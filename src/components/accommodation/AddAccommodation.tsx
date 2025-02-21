@@ -115,21 +115,85 @@ const AddAccommodation = () => {
   }
 
   //submit form
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   console.log(rooms)
+  //   e.preventDefault()
+  //   const formData = new FormData()
+
+  //   formData.append("accommodationTitle", title)
+  //   formData.append("accommodationLocation", location)
+  //   formData.append("accommodationRating", rating.toString())
+  //   formData.append("accommodationDescription", overview)
+  //   formData.append("accommodationFeatures", JSON.stringify(features))
+  //   formData.append("accommodationAmenities", JSON.stringify(amenities))
+  //   // formData.append("accommodationPics", images)
+  //   images.forEach((image, index) => {
+  //     formData.append("accommodationPics", image, `image_${index}`)
+  //   })
+  //   formData.append("rooms", JSON.stringify(rooms))
+
+  //   try {
+  //     setLoading(true)
+  //     const response = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/add-accommodation`,
+  //       {
+  //         method: "POST",
+  //         body: formData,
+  //       }
+  //     )
+  //     const data = await response.json()
+  //     if (data.success) {
+  //       toast.success("Accommodation added successfully")
+  //       router.push("/accommodations")
+  //     } else {
+  //       toast.error("Failed to add accommodation")
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast.error("An error occurred")
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData()
 
+    // Append basic accommodation details
     formData.append("accommodationTitle", title)
     formData.append("accommodationLocation", location)
     formData.append("accommodationRating", rating.toString())
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))
     formData.append("accommodationAmenities", JSON.stringify(amenities))
-    // formData.append("accommodationPics", images)
+
+    // Append accommodation images
     images.forEach((image, index) => {
       formData.append("accommodationPics", image, `image_${index}`)
     })
-    formData.append("rooms", JSON.stringify(rooms))
+
+    // Append rooms data
+    rooms.forEach((room, roomIndex) => {
+      formData.append(`rooms[${roomIndex}][roomTitle]`, room.roomTitle)
+      formData.append(`rooms[${roomIndex}][roomStandard]`, room.roomStandard)
+      formData.append(
+        `rooms[${roomIndex}][roomDescription]`,
+        room.roomDescription
+      )
+      formData.append(
+        `rooms[${roomIndex}][roomFacilities]`,
+        JSON.stringify(room.roomFacilities)
+      )
+
+      // Append room photos
+      room.roomPhotos.forEach((photo, photoIndex) => {
+        formData.append(
+          `rooms[${roomIndex}][roomPhotos]`,
+          photo,
+          `room_${roomIndex}_photo_${photoIndex}`
+        )
+      })
+    })
 
     try {
       setLoading(true)

@@ -1,4 +1,4 @@
-import CreateTourForm from "@/components/tours/AddTourFrom"
+import CreateTourForm from "@/components/tours/CreateTour"
 import React from "react"
 
 const page = () => {

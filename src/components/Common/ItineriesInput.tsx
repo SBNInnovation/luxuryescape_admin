@@ -1,23 +1,18 @@
 "use client"
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Trash2,
-  Camera,
-  BedDouble,
-  Plus,
-  X,
-  Upload,
-  HotelIcon,
-  MapPin,
-} from "lucide-react"
-import { ItineraryType } from "../Types/Types"
+import { Trash2, Camera, HotelIcon, MapPin, Search } from "lucide-react"
 
-interface AccommodationType {
-  accommodationTitle: string
-  accommodationPics: File[]
-  accommodationDescription: string
+// Update ItineraryType to include file type for photo and string[] for accommodation IDs
+interface ItineraryType {
+  day: string
+  title: string
+  description: string
+  itineraryDayPhoto: File | null
+  itineraryDayPhotoPreview?: string
+  accommodationIds: string[]
+  links: Array<{ text: string; url: string }>
 }
 
 interface AccommodationResponseType {
@@ -40,19 +35,21 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   setItineraries,
   error,
 }) => {
-  const [accommodations, setAccommodations] = React.useState<
+  const [accommodations, setAccommodations] = useState<
     AccommodationResponseType[]
   >([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
   const addItinerary = () => {
     const newItinerary: ItineraryType = {
-      day: itineraries.length + 1 || 1,
+      day: "",
       title: "",
       description: "",
-      itineraryDayPhoto: "",
-      accommodation: [],
+      itineraryDayPhoto: null,
+      accommodationIds: [],
       links: [],
     }
     setItineraries([...itineraries, newItinerary])
@@ -72,98 +69,45 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
 
   const updateField = (
     index: number,
-    key: keyof Omit<ItineraryType, "accommodation" | "links">,
+    key: keyof Omit<
+      ItineraryType,
+      | "accommodation"
+      | "links"
+      | "itineraryDayPhoto"
+      | "itineraryDayPhotoPreview"
+    >,
     value: string
   ) => {
     const updatedItinerary = { ...itineraries[index], [key]: value }
     updateItinerary(index, updatedItinerary)
   }
 
-  const addAccommodation = (index: number) => {
-    const newAccommodation: AccommodationType = {
-      accommodationTitle: "",
-      accommodationPics: [],
-      accommodationDescription: "",
-    }
-    const updatedAccommodations = [
-      ...itineraries[index].accommodation,
-      newAccommodation,
-    ]
-    const updatedItinerary = {
-      ...itineraries[index],
-      accommodation: updatedAccommodations,
-    }
-    updateItinerary(index, updatedItinerary)
-  }
-
-  const updateAccommodation = (
+  const handleFileChange = (
     index: number,
-    accIndex: number,
-    key: keyof AccommodationType,
-    value: string | File[]
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const updatedAccommodations = [...itineraries[index].accommodation]
-    updatedAccommodations[accIndex] = {
-      ...updatedAccommodations[accIndex],
-      [key]: value,
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const updatedItinerary = { ...itineraries[index] }
+        updatedItinerary.itineraryDayPhoto = file
+        updatedItinerary.itineraryDayPhotoPreview = reader.result as string
+        updateItinerary(index, updatedItinerary)
+      }
+      reader.readAsDataURL(file)
     }
-    const updatedItinerary = {
-      ...itineraries[index],
-      accommodation: updatedAccommodations,
-    }
-    updateItinerary(index, updatedItinerary)
   }
 
-  const handleFileUpload = (
-    index: number,
-    accIndex: number,
-    files: FileList | null
-  ) => {
-    if (!files) return
+  const toggleAccommodation = (index: number, accommodationId: string) => {
+    const updatedItinerary = { ...itineraries[index] }
+    const accommodationIndex =
+      updatedItinerary.accommodationIds.indexOf(accommodationId)
 
-    const updatedAccommodations = [...itineraries[index].accommodation]
-    const currentPics = updatedAccommodations[accIndex].accommodationPics
-    const newFiles = Array.from(files)
-
-    updatedAccommodations[accIndex] = {
-      ...updatedAccommodations[accIndex],
-      accommodationPics: [...currentPics, ...newFiles],
-    }
-
-    const updatedItinerary = {
-      ...itineraries[index],
-      accommodation: updatedAccommodations,
-    }
-    updateItinerary(index, updatedItinerary)
-  }
-
-  const removeAccommodationImage = (
-    index: number,
-    accIndex: number,
-    imageIndex: number
-  ) => {
-    const updatedAccommodations = [...itineraries[index].accommodation]
-    const updatedPics = updatedAccommodations[
-      accIndex
-    ].accommodationPics.filter((_, i) => i !== imageIndex)
-    updatedAccommodations[accIndex] = {
-      ...updatedAccommodations[accIndex],
-      accommodationPics: updatedPics,
-    }
-    const updatedItinerary = {
-      ...itineraries[index],
-      accommodation: updatedAccommodations,
-    }
-    updateItinerary(index, updatedItinerary)
-  }
-
-  const removeAccommodation = (index: number, accIndex: number) => {
-    const updatedAccommodations = itineraries[index].accommodation.filter(
-      (_, i) => i !== accIndex
-    )
-    const updatedItinerary = {
-      ...itineraries[index],
-      accommodation: updatedAccommodations,
+    if (accommodationIndex === -1) {
+      updatedItinerary.accommodationIds.push(accommodationId)
+    } else {
+      updatedItinerary.accommodationIds.splice(accommodationIndex, 1)
     }
     updateItinerary(index, updatedItinerary)
   }
@@ -194,18 +138,28 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     updateItinerary(index, updatedItinerary)
   }
 
-  //fetching data for the accommodations
-  const getAccommodations = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-all-accommodation`,
-      {
-        method: "GET",
-      }
-    )
-    const data = await response.json()
+  const filteredAccommodations = accommodations.filter((acc) =>
+    acc.accommodationTitle.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
-    if (data.success) {
-      setAccommodations(data.data.accommodations)
+  const getAccommodations = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-all-accommodation`,
+        {
+          method: "GET",
+        }
+      )
+      const data = await response.json()
+
+      if (data.success) {
+        setAccommodations(data.data.accommodations)
+      }
+    } catch (error) {
+      console.error("Error fetching accommodations:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -222,7 +176,14 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
 
       {itineraries.map((itinerary, index) => (
         <div key={index} className="mb-4 border p-4 rounded-md border-primary">
-          <h2 className="text-lg font-bold mb-2">Day {itinerary.day}</h2>
+          <Input
+            type="text"
+            placeholder="Day"
+            value={itinerary.day}
+            onChange={(e) => updateField(index, "day", e.target.value)}
+            className="mb-4"
+            required
+          />
 
           <Input
             type="text"
@@ -241,70 +202,90 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
             required
           />
 
-          <Input
-            type="text"
-            placeholder="Day Photo URL"
-            value={itinerary.itineraryDayPhoto}
-            onChange={(e) =>
-              updateField(index, "itineraryDayPhoto", e.target.value)
-            }
-            className="mb-4"
-          />
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Day Photo
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileChange(index, e)}
+              className="mt-1"
+            />
+            {itinerary.itineraryDayPhotoPreview && (
+              <img
+                src={itinerary.itineraryDayPhotoPreview}
+                alt="Day Photo"
+                className="mt-2 w-20 h-20 object-cover rounded-md"
+              />
+            )}
+          </div>
 
-          {/* accommodations  */}
           <div className="mb-4">
             <h3 className="text-lg font-bold mb-2">Accommodations</h3>
-            {accommodations.length > 0 && (
-              <details className="border rounded-lg p-4 bg-white shadow-sm">
-                <summary className="cursor-pointer font-semibold text-gray-700 list-none">
-                  View Accommodations ({accommodations.length})
-                </summary>
-                <div
-                  className={`mt-2 ${
-                    accommodations.length > 5 ? "max-h-64 overflow-y-auto" : ""
-                  }`}
-                >
-                  <div className="grid grid-cols-1 gap-4">
-                    {accommodations.map((acc, accIndex) => (
-                      <div
-                        key={accIndex}
-                        className="flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow duration-200"
-                      >
-                        {/* Image */}
-                        <div className="flex-shrink-0">
-                          <img
-                            src={acc.accommodationPics[0]}
-                            alt={acc.accommodationTitle}
-                            className="w-20 h-20 object-cover rounded-md"
-                          />
-                        </div>
-                        {/* Details */}
-                        <div className="ml-4 flex-1">
-                          <div className="flex items-center">
-                            <HotelIcon
-                              size={20}
-                              className="mr-2 text-gray-600"
-                            />
-                            <p className="font-semibold text-gray-700">
-                              {acc.accommodationTitle}
-                            </p>
-                          </div>
-                          <div className="flex items-center mt-1 gap-4">
-                            <p className="flex text-sm text-blue-500">
-                              <MapPin size={10} className="mr-1" />
-                              {acc.accommodationLocation}
-                            </p>
-
-                            <p className="text-sm text-gray-500">
-                              Rating: {acc.accommodationRating}
-                            </p>
-                          </div>
-                        </div>
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search accommodations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            {/* for loading  */}
+            {loading && accommodations.length === 0 && (
+              <p className="text-gray-500">Loading accommodations...</p>
+            )}
+            {/* for no accommodations  */}
+            {!loading && filteredAccommodations.length === 0 && (
+              <p className="text-gray-500">
+                No accommodations found. Try adding!
+              </p>
+            )}
+            {filteredAccommodations.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredAccommodations.map((acc, accIndex) => (
+                  <div
+                    key={accIndex}
+                    className="flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                    onClick={() => toggleAccommodation(index, acc._id)}
+                  >
+                    <div className="flex-shrink-0">
+                      <img
+                        src={acc.accommodationPics[0]}
+                        alt={acc.accommodationTitle}
+                        className="w-20 h-20 object-cover rounded-md"
+                      />
+                    </div>
+                    <div className="ml-4 flex-1">
+                      <div className="flex items-center">
+                        <HotelIcon size={20} className="mr-2 text-gray-600" />
+                        <p className="font-semibold text-gray-700">
+                          {acc.accommodationTitle}
+                        </p>
                       </div>
-                    ))}
+                      <div className="flex items-center mt-1 gap-4">
+                        <p className="flex text-sm text-blue-500">
+                          <MapPin size={10} className="mr-1" />
+                          {acc.accommodationLocation}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Rating: {acc.accommodationRating}
+                        </p>
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={itinerary.accommodationIds.includes(acc._id)}
+                      onChange={() => toggleAccommodation(index, acc._id)}
+                      className="ml-2"
+                    />
                   </div>
-                </div>
-              </details>
+                ))}
+              </div>
             )}
           </div>
 
@@ -361,7 +342,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
         </div>
       ))}
 
-      <Button type="button" onClick={addItinerary} className="mt-4">
+      <Button type="button" onClick={addItinerary} className="mt-4 text-white">
         Add Itinerary
       </Button>
     </div>

@@ -19,13 +19,24 @@ interface AccommodationType {
   accommodationDescription: string
 }
 
+// export interface ItineraryType {
+//   day: string
+//   title: string
+//   description: string
+//   itineraryDayPhoto: File | null
+//   itineraryDayPhotoPreview: string | null
+//   accommodation: AccommodationType[]
+//   links: { text: string; url: string }[]
+// }
+
 export interface ItineraryType {
-  day: number
+  day: string
   title: string
   description: string
-  itineraryDayPhoto: string
-  accommodation: AccommodationType[]
-  links: { text: string; url: string }[]
+  itineraryDayPhoto: File | null
+  itineraryDayPhotoPreview?: string
+  accommodationIds: string[]
+  links: Array<{ text: string; url: string }>
 }
 
 export interface ServicesType {

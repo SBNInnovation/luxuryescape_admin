@@ -2,7 +2,7 @@ import React from "react"
 
 interface Room {
   roomTitle: string
-  roomPhotos: File[] // Updated to File[]
+  roomPhotos: File[]
   roomStandard: string
   roomDescription: string
   roomFacilities: string[]
@@ -33,7 +33,7 @@ const RoomInput: React.FC<RoomInputProps> = ({ rooms, setRooms, error }) => {
   ) => {
     const files = e.target.files
     if (files) {
-      const newImages = Array.from(files) // Store File objects directly
+      const newImages = Array.from(files)
       setRooms((prev) =>
         prev.map((room, i) =>
           i === index
@@ -64,7 +64,7 @@ const RoomInput: React.FC<RoomInputProps> = ({ rooms, setRooms, error }) => {
       ...prev,
       {
         roomTitle: "",
-        roomPhotos: [], // Initialize as File[]
+        roomPhotos: [],
         roomStandard: "",
         roomDescription: "",
         roomFacilities: [""],
