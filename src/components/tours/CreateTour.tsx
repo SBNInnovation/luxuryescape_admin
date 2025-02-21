@@ -54,6 +54,7 @@ import MultiImageInput from "../Common/MultiImageInput"
 import VideoUploadInput from "../Common/VideoInput"
 import { Button } from "../ui/button"
 import Inclusion from "../Common/Inclusion"
+import Duration from "../Common/Duration"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -87,14 +88,48 @@ const formSchema = z.object({
     inclusives: z.array(z.string()).min(1, "Inclusives is required"),
     exclusives: z.array(z.string()).min(1, "Exclusives is required"),
   }),
+  days: z.number().min(1, "Duration is required"),
+  faqs: z.array(z.string()).min(1, "FAQs is required"),
 })
+
+// Example type definition for errors
+type ErrorsType = {
+  title?: string
+  hobbies?: string
+  price?: string
+  country?: string
+  location?: string
+  language?: string
+  suitableAge?: string
+  maxAltitude?: string
+  thumbnail?: string
+  mealType?: string
+  selectedSeasons?: string
+  minDays?: string
+  maxDays?: string
+  minGroupSize?: string
+  maxGroupSize?: string
+  arrivalLocation?: string
+  departureLocation?: string
+  startingLocation?: string
+  endingLocation?: string
+  overview?: string
+  accommodations?: string
+  thingsToKnow?: string
+  inclusion?: string
+  highlights?: string
+  itinerary?: string
+  services?: string
+  days?: string
+  faqs?: string
+}
 
 const CreateTourForm = () => {
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState<number>(0)
   const [country, setCountry] = useState<string>("")
   const [location, setLocation] = useState<string>("")
-
+  const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
 
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>([])
@@ -113,34 +148,7 @@ const CreateTourForm = () => {
   const [imageError, setImageError] = useState("")
 
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<{
-    title?: string
-    hobbies?: string
-    price?: string
-    country?: string
-    location?: string
-    language?: string
-    suitableAge?: string
-    maxAltitude?: string
-    thumbnail?: string
-    mealType?: string
-    selectedSeasons?: string
-    minDays?: string
-    maxDays?: string
-    minGroupSize?: string
-    maxGroupSize?: string
-    arrivalLocation?: string
-    departureLocation?: string
-    startingLocation?: string
-    endingLocation?: string
-    overview?: string
-    accommodations?: string
-    thingsToKnow?: string
-    inclusion?: string
-    highlights?: string
-    itinerary?: string
-    services?: string
-  }>({})
+  const [errors, setErrors] = useState<ErrorsType>({})
 
   // Validate form data with Zod schema
   const validateForm = () => {
@@ -150,58 +158,22 @@ const CreateTourForm = () => {
         price,
         country,
         location,
-        // language,
-        // suitableAge,
-        // maxAltitude,
+        days,
         thumbnail,
-        // mealType,
+
         selectedSeasons,
-        // minDays,
-        // maxDays,
-        // minGroupSize,
-        // maxGroupSize,
-        // arrivalLocation,
-        // departureLocation,
-        // startingLocation,
-        // endingLocation,
-        // overview,
+
         accommodations,
-        // thingsToKnow,
+
         highlights,
         itinerary: itineraries,
-        // services,
+        faqs,
       })
       setErrors({})
       return true
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const newErrors: {
-          title?: string
-
-          price?: string
-          country?: string
-          location?: string
-          language?: string
-          suitableAge?: string
-          maxAltitude?: string
-          thumbnail?: string
-          mealType?: string
-          selectedSeasons?: string
-          minDays?: string
-          maxDays?: string
-          minGroupSize?: string
-          maxGroupSize?: string
-          arrivalLocation?: string
-          departureLocation?: string
-          startingLocation?: string
-          endingLocation?: string
-          overview?: string
-          accommodations?: string
-          thingsToKnow?: string
-          highlights?: string
-          itinerary?: string
-          services?: string
-        } = {}
+        const newErrors: ErrorsType = {}
         err.errors.forEach((error) => {
           if (error.path[0] === "title") {
             newErrors.title = error.message
@@ -275,6 +247,12 @@ const CreateTourForm = () => {
           }
           if (error.path[0] === "services") {
             newErrors.services = error.message
+          }
+          if (error.path[0] === "days") {
+            newErrors.days = error.message
+          }
+          if (error.path[0] === "faqs") {
+            newErrors.faqs = error.message
           }
         })
         setErrors(newErrors)
@@ -387,6 +365,11 @@ const CreateTourForm = () => {
                     country={country}
                     setCountry={setCountry}
                     error={errors.country || ""}
+                  />
+                  <Duration
+                    days={days}
+                    setDays={setDays}
+                    error={errors.days || ""}
                   />
                   <LocationInput
                     location={location}
