@@ -53,7 +53,6 @@ const AddAccommodation = () => {
   const [features, setFeatures] = useState<string[]>([""])
   const [amenities, setAmenities] = useState<string[]>([""])
   const [images, setImages] = useState<File[]>([])
-  const [rooms, setRooms] = useState<Room[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -82,7 +81,6 @@ const AddAccommodation = () => {
         features,
         amenities,
         images,
-        rooms,
       })
       setErrors({})
     } catch (error) {
@@ -170,29 +168,6 @@ const AddAccommodation = () => {
     // Append accommodation images
     images.forEach((image, index) => {
       formData.append("accommodationPics", image, `image_${index}`)
-    })
-
-    // Append rooms data
-    rooms.forEach((room, roomIndex) => {
-      formData.append(`rooms[${roomIndex}][roomTitle]`, room.roomTitle)
-      formData.append(`rooms[${roomIndex}][roomStandard]`, room.roomStandard)
-      formData.append(
-        `rooms[${roomIndex}][roomDescription]`,
-        room.roomDescription
-      )
-      formData.append(
-        `rooms[${roomIndex}][roomFacilities]`,
-        JSON.stringify(room.roomFacilities)
-      )
-
-      // Append room photos
-      room.roomPhotos.forEach((photo, photoIndex) => {
-        formData.append(
-          `rooms[${roomIndex}][roomPhotos]`,
-          photo,
-          `room_${roomIndex}_photo_${photoIndex}`
-        )
-      })
     })
 
     try {
@@ -327,22 +302,6 @@ const AddAccommodation = () => {
                   amenities={amenities}
                   setAmenities={setAmenities}
                   error={errors.amenities || ""}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Rooms Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">🛏️</span> Rooms
-              </div>
-              <div className="mt-8">
-                <RoomInput
-                  rooms={rooms}
-                  setRooms={setRooms}
-                  error={errors.rooms || ""}
                 />
               </div>
             </CardContent>

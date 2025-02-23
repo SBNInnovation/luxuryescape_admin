@@ -14,7 +14,7 @@ import AmenitiesInput from "./accommodationForm/AmenitiesInput"
 import AccoImages from "./accommodationForm/AccoImages"
 import RoomInput from "./accommodationForm/RoomInput"
 import { toast } from "sonner"
-import { Loader } from "lucide-react"
+import { Loader, PlusIcon } from "lucide-react"
 
 interface Room {
   roomTitle: string
@@ -56,9 +56,10 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
   const [features, setFeatures] = useState<string[]>([""])
   const [amenities, setAmenities] = useState<string[]>([""])
   const [images, setImages] = useState<File[]>([])
-  const [rooms, setRooms] = useState<Room[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
+
+  const [showAddRoomForm, setShowAddRoomForm] = useState<boolean>(false)
 
   //error type
   const [errors, setErrors] = useState<{
@@ -83,7 +84,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
         features,
         amenities,
         images,
-        rooms,
       })
       setErrors({})
     } catch (error) {
@@ -130,7 +130,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
         setFeatures(data.accommodation.accommodationFeatures)
         setAmenities(data.accommodation.accommodationAmenities)
         setImages(data.accommodation.accommodationPics)
-        setRooms(data.accommodation.accommodationRooms)
       }
     } catch (error) {
       console.error(error)
@@ -152,7 +151,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
         setFeatures(data.accommodation.accommodationFeatures)
         setAmenities(data.accommodation.accommodationAmenities)
         setImages(data.accommodation.accommodationPics)
-        setRooms(data.accommodation.accommodationRooms)
       }
     } catch (error) {
       console.error(error)
@@ -174,7 +172,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
     images.forEach((image, index) => {
       formData.append("accommodationPics", image, `image_${index}`)
     })
-    formData.append("accommodationRooms", JSON.stringify(rooms))
 
     try {
       setLoading(true)
@@ -205,10 +202,15 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
 
   return (
     <div className="min-h-screen">
-      {/* Top accent line */}
-      <div className="h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600" />
+      <div className="max-w-7xl mx-auto px-4 py-12 relative">
+        {/* Overlay for darkening the background */}
+        {showAddRoomForm && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10"
+            onClick={() => setShowAddRoomForm(false)} // Close the form when clicking outside
+          />
+        )}
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-serif text-primary mb-4">
@@ -216,6 +218,32 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
           </h1>
         </div>
 
+        {/* Button for adding room */}
+        <div className="flex justify-start mb-8">
+          <button
+            className="flex bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 
+            transition-all duration-200"
+            onClick={() => setShowAddRoomForm(!showAddRoomForm)}
+          >
+            <PlusIcon className="w-6 h-6 mr-2" /> Add Room
+          </button>
+        </div>
+
+        {/* Room Form */}
+        {showAddRoomForm && (
+          <Card className="backdrop-blur-md border border-white/20 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-11/12 max-w-2xl">
+            <CardContent className="p-8">
+              <div className="flex gap-2 text-2xl font-semibold">
+                <span className="text-blue-400">🛏️</span> Add Room
+              </div>
+              <div className="mt-8">
+                <RoomInput accommodationId={id} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Main Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information Section */}
           <Card className="backdrop-blur-md border border-white/20">
@@ -308,22 +336,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
                   amenities={amenities}
                   setAmenities={setAmenities}
                   error={errors.amenities || ""}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Rooms Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">🛏️</span> Rooms
-              </div>
-              <div className="mt-8">
-                <RoomInput
-                  rooms={rooms}
-                  setRooms={setRooms}
-                  error={errors.rooms || ""}
                 />
               </div>
             </CardContent>

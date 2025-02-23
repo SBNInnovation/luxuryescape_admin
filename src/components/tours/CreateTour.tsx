@@ -55,6 +55,8 @@ import VideoUploadInput from "../Common/VideoInput"
 import { Button } from "../ui/button"
 import Inclusion from "../Common/Inclusion"
 import Duration from "../Common/Duration"
+import AddTourType from "./AddTourType"
+import axios from "axios"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -100,8 +102,7 @@ type ErrorsType = {
   country?: string
   location?: string
   language?: string
-  suitableAge?: string
-  maxAltitude?: string
+  tripTourId?: string
   thumbnail?: string
   mealType?: string
   selectedSeasons?: string
@@ -131,6 +132,7 @@ const CreateTourForm = () => {
   const [location, setLocation] = useState<string>("")
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
+  const [tripTourId, setTripTourId] = useState<string>("")
 
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>([])
 
@@ -191,11 +193,8 @@ const CreateTourForm = () => {
           if (error.path[0] === "language") {
             newErrors.language = error.message
           }
-          if (error.path[0] === "suitableAge") {
-            newErrors.suitableAge = error.message
-          }
-          if (error.path[0] === "maxAltitude") {
-            newErrors.maxAltitude = error.message
+          if (error.path[0] === "tripTourId") {
+            newErrors.tripTourId = error.message
           }
           if (error.path[0] === "thumbnail") {
             newErrors.thumbnail = error.message
@@ -262,63 +261,142 @@ const CreateTourForm = () => {
     }
   }
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setLoading(true)
+
+  //   try {
+  //     // Validation checks
+  //     if (!title || !country || !location || !tripTourId) {
+  //       throw new Error("Please fill in all required fields")
+  //     }
+
+  //     const formData = new FormData()
+  //     formData.append("tourName", title.trim())
+
+  //     if (thumbnail) {
+  //       formData.append("thumbnail", thumbnail)
+  //     }
+
+  //     // Validate and append multiple images
+  //     if (images.length > 0) {
+  //       images.forEach((image, index) => {
+  //         if (image instanceof File) {
+  //           formData.append("gallery", image)
+  //         } else {
+  //           console.warn(`Skipping invalid image at index ${index}`)
+  //         }
+  //       })
+  //     }
+
+  //     // Required fields
+  //     formData.append("country", country.trim())
+  //     formData.append("location", location.trim())
+  //     formData.append("tourTypes", tripTourId)
+
+  //     // Arrays and objects need to be stringified
+  //     formData.append("idealTime", JSON.stringify(selectedSeasons))
+  //     formData.append("keyHighlights", JSON.stringify(highlights))
+  //     formData.append("tourInclusion", JSON.stringify(inclusion))
+  //     formData.append("tourItinerary", JSON.stringify(itineraries))
+  //     formData.append("faq", JSON.stringify(faqs))
+
+  //     // Numbers should be converted to strings
+  //     formData.append("cost", price.toString())
+  //     formData.append("duration", days.toString())
+  //     formData.append("tourOverview", overview.trim())
+
+  //     // Corrected axios request
+  //     const response = await axios.post(
+  //       `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
+  //       formData // Pass FormData directly
+  //     )
+
+  //     if (response.data.success) {
+  //       alert("Tour added successfully!")
+  //     } else {
+  //       alert("Failed to add tour")
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error)
+  //     alert(
+  //       error instanceof Error ? error.message : "An unexpected error occurred"
+  //     )
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    setLoading(true) // Show loading before starting the request
-
-    // Prepare form data
-    const formData = new FormData()
-    formData.append("tourName", title) // ✅
-    if (thumbnail) {
-      formData.append("thumbnail", thumbnail) //✅
-    }
-    //gallery images
-    // Append multiple images
-    images.forEach((image) => {
-      if (image instanceof File) {
-        // Check if the image is a File
-        formData.append("images", image)
-      }
-    })
-    formData.append("country", country) //✅
-    formData.append("location", location) //✅
-    formData.append("ideaTime", JSON.stringify(selectedSeasons)) //✅ (change to string)
-    formData.append("cost", price.toString()) // ✅
-
-    formData.append("tourOverview", overview) //✅
-    formData.append("keyHighlights", JSON.stringify(highlights)) //✅
-    // formData.append("accommodations", JSON.stringify(accommodations))
-    // formData.append("thingsToKnow", JSON.stringify(thingsToKnow))
-    formData.append("tourInclusion", JSON.stringify(inclusion))
-    // formData.append("note", note) //(not in schema)
-    formData.append("tourItinerary", JSON.stringify(itineraries))
-    // formData.append("services", JSON.stringify(services))
-    formData.append("faq", JSON.stringify(faqs)) //✅
-
-    // if (video) {
-    //   formData.append("video", video) // Assuming `video` is a File object
-    // }
+    setLoading(true)
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_PROD}/add-tours`,
+      // Validation checks
+      if (
+        !title ||
+        !country ||
+        !location ||
+        !tripTourId ||
+        !price ||
+        !days ||
+        !overview
+      ) {
+        throw new Error("Please fill in all required fields")
+      }
+
+      const formData = new FormData()
+      formData.append("tourName", title.trim())
+      formData.append("country", country.trim())
+      formData.append("location", location.trim())
+      formData.append("tourTypes", tripTourId)
+      formData.append("cost", price.toString())
+      formData.append("duration", days.toString())
+      formData.append("tourOverview", overview.trim())
+
+      // Append thumbnail if provided
+      if (thumbnail) {
+        formData.append("thumbnail", thumbnail)
+      }
+
+      // Append gallery images if provided
+      if (images.length > 0) {
+        images.forEach((image) => {
+          if (image instanceof File) {
+            formData.append("gallery", image)
+          }
+        })
+      }
+
+      // Append arrays and objects as JSON strings
+      formData.append("idealTime", JSON.stringify(selectedSeasons))
+      formData.append("keyHighlights", JSON.stringify(highlights))
+      formData.append("tourInclusion", JSON.stringify(inclusion))
+      formData.append("tourItinerary", JSON.stringify(itineraries))
+      formData.append("faq", JSON.stringify(faqs))
+
+      // Send the request to the backend
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
+        formData,
         {
-          method: "POST",
-          body: formData, // Use FormData here
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       )
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`)
+      if (response.data.success) {
+        alert("Tour added successfully!")
+      } else {
+        alert("Failed to add tour")
       }
-
-      const data = await response.json()
-      console.log("Response Data:", data)
     } catch (error) {
       console.error("Error submitting form:", error)
+      alert(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      )
     } finally {
-      setLoading(false) // Turn off loading regardless of success or failure
+      setLoading(false)
     }
   }
 
@@ -389,6 +467,13 @@ const CreateTourForm = () => {
                     selectedSeasons={selectedSeasons}
                     setSelectedSeasons={setSelectedSeasons}
                     error={errors.selectedSeasons || ""}
+                  />
+                </div>
+                <div className="space-y-6 mt-8">
+                  <AddTourType
+                    tripsTourId={tripTourId}
+                    setTripsTourId={setTripTourId}
+                    error={errors.tripTourId || ""}
                   />
                 </div>
               </div>

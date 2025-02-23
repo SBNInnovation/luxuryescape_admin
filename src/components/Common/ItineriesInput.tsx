@@ -3,17 +3,18 @@ import React, { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trash2, Camera, HotelIcon, MapPin, Search } from "lucide-react"
+import { ItineraryType } from "../Types/Types"
 
 // Update ItineraryType to include file type for photo and string[] for accommodation IDs
-interface ItineraryType {
-  day: string
-  title: string
-  description: string
-  itineraryDayPhoto: File | null
-  itineraryDayPhotoPreview?: string
-  accommodationIds: string[]
-  links: Array<{ text: string; url: string }>
-}
+// interface ItineraryType {
+//   day: string
+//   title: string
+//   description: string
+//   itineraryDayPhoto: File | null
+//   itineraryDayPhotoPreview?: string
+//   accommodation: string[]
+//   links: Array<{ text: string; url: string }>
+// }
 
 interface AccommodationResponseType {
   _id: string
@@ -49,7 +50,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
       title: "",
       description: "",
       itineraryDayPhoto: null,
-      accommodationIds: [],
+      accommodation: [],
       links: [],
     }
     setItineraries([...itineraries, newItinerary])
@@ -102,12 +103,12 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   const toggleAccommodation = (index: number, accommodationId: string) => {
     const updatedItinerary = { ...itineraries[index] }
     const accommodationIndex =
-      updatedItinerary.accommodationIds.indexOf(accommodationId)
+      updatedItinerary.accommodation.indexOf(accommodationId)
 
     if (accommodationIndex === -1) {
-      updatedItinerary.accommodationIds.push(accommodationId)
+      updatedItinerary.accommodation.push(accommodationId)
     } else {
-      updatedItinerary.accommodationIds.splice(accommodationIndex, 1)
+      updatedItinerary.accommodation.splice(accommodationIndex, 1)
     }
     updateItinerary(index, updatedItinerary)
   }
@@ -279,7 +280,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
                     </div>
                     <input
                       type="checkbox"
-                      checked={itinerary.accommodationIds.includes(acc._id)}
+                      checked={itinerary.accommodation.includes(acc._id)}
                       onChange={() => toggleAccommodation(index, acc._id)}
                       className="ml-2"
                     />
