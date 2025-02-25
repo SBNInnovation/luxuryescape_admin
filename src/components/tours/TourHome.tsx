@@ -20,57 +20,33 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
+import axios from "axios"
 
-const dummyTrekking = [
-  {
-    _id: "1",
-    name: "Luxury Everest Base Camp",
-    slug: "luxury-everest-base-camp",
-    thumbnail:
-      "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=800",
-    country: "Nepal",
-    location: "Solukhumbu",
-    tourType: "Trekking",
-    difficulty: "Difficult",
-    price: 5000,
-    days: { min: 14, max: 16 },
-    groupSize: { min: 5, max: 10 },
-    createdAt: "2024-01-15",
-    isActivated: true,
-  },
-  {
-    _id: "2",
-    name: "Glamorous Annapurna Trek",
-    slug: "glamorous-annapurna-trek",
-    thumbnail: "./logo_gmn.jpg",
-    country: "Nepal",
-    location: "Annapurna",
-    tourType: "Adventure",
-    difficulty: "Moderate",
-    price: 3000,
-    days: { min: 10, max: 12 },
-    groupSize: { min: 3, max: 8 },
-    createdAt: "2024-01-20",
-    isActivated: false,
-  },
-]
-
-type SortField = "name" | "createdAt" | "price"
-type SortOrder = "asc" | "desc"
-type SortOption = {
-  field: SortField
-  order: SortOrder
+type TourType = {
+  _id: string
+  tourName: string
+  slug: string
+  location: string
+  cost: number
+  country: string
+  difficulty: string
+  tourType: string
+  thumbnail: string
+  isActivated: boolean
+  createdAt: string
 }
 
 const TourHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const [trekking, setTrekking] = useState(dummyTrekking)
+  const [tours, setTours] = useState<TourType[]>([])
   const [search, setSearch] = useState<string>("")
   const [difficulty, setDifficulty] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [sortOption, setSortOption] = useState<string>("")
+
+  const [totalPages, setTotalPages] = useState(0)
 
   const sortOptions = [
     { value: "name_asc", label: "Title (A-Z)" },
@@ -81,69 +57,39 @@ const TourHome: React.FC = () => {
     { value: "price_desc", label: "Price (High to Low)" },
   ]
 
-  const parseSortOption = (option: string): SortOption | null => {
-    if (!option) return null
-    const [field, order] = option.split("_") as [SortField, SortOrder]
-    return { field, order }
-  }
-
-  const sortData = (data: typeof dummyTrekking, sort: SortOption | null) => {
-    if (!sort) return data
-
-    return [...data].sort((a, b) => {
-      const { field, order } = sort
-      const multiplier = order === "asc" ? 1 : -1
-
-      if (field === "name") {
-        return multiplier * a.name.localeCompare(b.name)
-      }
-      if (field === "createdAt") {
-        return (
-          multiplier *
-          (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-        )
-      }
-      if (field === "price") {
-        return multiplier * (a.price - b.price)
-      }
-      return 0
-    })
-  }
-
-  const filterTrekking = () => {
-    let filtered = dummyTrekking
-
-    if (search) {
-      filtered = filtered.filter((trek) =>
-        trek.name.toLowerCase().includes(search.toLowerCase())
+  const handleGetTours = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get-all`
       )
+      const data = response.data
+      if (data.success) {
+        setTours(data.data.tours)
+        console.log(data.data.tours)
+        setTotalPages(data.data.pagination.totalPages)
+      }
+    } catch (error) {
+      console.log(error)
     }
-
-    if (difficulty) {
-      filtered = filtered.filter((trek) => trek.difficulty === difficulty)
-    }
-
-    if (location) {
-      filtered = filtered.filter((trek) => trek.location === location)
-    }
-
-    filtered = sortData(filtered, parseSortOption(sortOption))
-    setTrekking(filtered)
   }
+
+  // useEffect(() => {
+  //   filterTrekking()
+  // }, [search, difficulty, location, sortOption])
 
   useEffect(() => {
-    filterTrekking()
-  }, [search, difficulty, location, sortOption])
+    handleGetTours()
+  }, [])
+
+  console.log("Tour Data", tours)
 
   const handleToggle = (trekId: string, field: "isActivated") => {
-    setTrekking((prev) =>
-      prev.map((trek) =>
-        trek._id === trekId ? { ...trek, [field]: !trek[field] } : trek
+    setTours((prev) =>
+      prev.map((tour) =>
+        tour._id === trekId ? { ...tour, [field]: !tour[field] } : tour
       )
     )
   }
-
-  const totalPages = Math.ceil(dummyTrekking.length / 10)
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen w-full">
@@ -246,7 +192,7 @@ const TourHome: React.FC = () => {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Tour Details ({trekking.length}/{dummyTrekking.length})
+                  Tour Details
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <div className="flex items-center justify-between">
@@ -260,43 +206,26 @@ const TourHome: React.FC = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {trekking.map((trek) => (
+              {tours?.map((tour) => (
                 <tr
-                  key={trek._id}
+                  key={tour._id}
                   className="hover:bg-gray-50/50 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-4">
                       <img
-                        src={trek.thumbnail}
-                        alt={trek.name}
+                        src={tour.thumbnail}
+                        alt={tour.tourName}
                         className="h-24 w-32 object-cover rounded-lg shadow-sm"
                       />
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {trek.name}
+                          {tour.tourName}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">
                             <MapPin size={10} className="mr-1" />
-                            {trek.location}, {trek.country}
-                          </Badge>
-                        </div>
-                        <div className="mt-1 space-x-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {trek.tourType}
-                          </Badge>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${
-                              trek.difficulty === "Difficult"
-                                ? "text-red-600 border-red-200 bg-red-50"
-                                : trek.difficulty === "Moderate"
-                                ? "text-yellow-600 border-yellow-200 bg-yellow-50"
-                                : "text-green-600 border-green-200 bg-green-50"
-                            }`}
-                          >
-                            {trek.difficulty}
+                            {tour.location}, {tour.country}
                           </Badge>
                         </div>
                       </div>
@@ -308,23 +237,23 @@ const TourHome: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-sm font-medium ${
-                            trek.isActivated ? "text-green-600" : "text-red-600"
+                            tour.isActivated ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {trek.isActivated ? "Active" : "Inactive"}
+                          {tour.isActivated ? "Active" : "Inactive"}
                         </span>
                         <Switch
-                          checked={trek.isActivated}
+                          checked={tour.isActivated}
                           onCheckedChange={() =>
-                            handleToggle(trek._id, "isActivated")
+                            handleToggle(tour._id, "isActivated")
                           }
                         />
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600">
-                          {new Date(trek.createdAt).toLocaleDateString()}
+                          {new Date(tour.createdAt).toLocaleDateString()}
                         </p>
-                        <p className="text-sm font-semibold">${trek.price}</p>
+                        <p className="text-sm font-semibold">${tour.cost}</p>
                       </div>
                     </div>
                   </td>
@@ -333,7 +262,7 @@ const TourHome: React.FC = () => {
                     <div className="flex items-center justify-center space-x-3">
                       <Button
                         onClick={() =>
-                          router.push(`/tours/edit-tour/${trek.slug}`)
+                          router.push(`/tours/edit-tour/${tour.slug}`)
                         }
                         className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                       >
@@ -342,8 +271,8 @@ const TourHome: React.FC = () => {
                       <Button
                         variant="destructive"
                         onClick={() => {
-                          setTrekking((prev) =>
-                            prev.filter((item) => item._id !== trek._id)
+                          setTours((prev) =>
+                            prev.filter((item) => item._id !== tour._id)
                           )
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
@@ -366,7 +295,7 @@ const TourHome: React.FC = () => {
         </div>
       )}
 
-      {!loading && dummyTrekking.length === 0 && (
+      {!loading && tours?.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
           <p className="text-2xl text-gray-400 font-medium">No tours found</p>
           <p className="text-gray-500 mt-2">
@@ -376,7 +305,7 @@ const TourHome: React.FC = () => {
       )}
 
       {/* Pagination */}
-      {dummyTrekking.length > 0 && (
+      {tours?.length > 0 && (
         <div className="mt-6">
           <CustomPagination
             currentPage={page}

@@ -377,12 +377,7 @@ const CreateTourForm = () => {
       // Send the request to the backend
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       )
 
       if (response.data.success) {

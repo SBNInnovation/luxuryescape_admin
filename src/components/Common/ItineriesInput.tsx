@@ -5,21 +5,10 @@ import { Input } from "@/components/ui/input"
 import { Trash2, Camera, HotelIcon, MapPin, Search } from "lucide-react"
 import { ItineraryType } from "../Types/Types"
 
-// Update ItineraryType to include file type for photo and string[] for accommodation IDs
-// interface ItineraryType {
-//   day: string
-//   title: string
-//   description: string
-//   itineraryDayPhoto: File | null
-//   itineraryDayPhotoPreview?: string
-//   accommodation: string[]
-//   links: Array<{ text: string; url: string }>
-// }
-
 interface AccommodationResponseType {
   _id: string
   accommodationTitle: string
-  accommodationPics: string[]
+  accommodationPics: string[] // Changed from File[] to string[]
   accommodationLocation: string
   accommodationRating: string
   slug: string
@@ -42,14 +31,13 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
-
   const addItinerary = () => {
     const newItinerary: ItineraryType = {
       day: "",
       title: "",
       description: "",
       itineraryDayPhoto: null,
+      itineraryDayPhotoPreview: "",
       accommodation: [],
       links: [],
     }
@@ -89,16 +77,27 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   ) => {
     const file = event.target.files?.[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const updatedItinerary = { ...itineraries[index] }
-        updatedItinerary.itineraryDayPhoto = file
-        updatedItinerary.itineraryDayPhotoPreview = reader.result as string
-        updateItinerary(index, updatedItinerary)
-      }
-      reader.readAsDataURL(file)
+      const updatedItinerary = { ...itineraries[index] }
+      updatedItinerary.itineraryDayPhoto = file
+      updatedItinerary.itineraryDayPhotoPreview = URL.createObjectURL(file) // Only for preview
+      updateItinerary(index, updatedItinerary)
     }
   }
+
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      // Cleanup function to revoke all object URLs
+      itineraries.forEach((itinerary) => {
+        if (
+          itinerary.itineraryDayPhotoPreview &&
+          itinerary.itineraryDayPhotoPreview.startsWith("blob:")
+        ) {
+          URL.revokeObjectURL(itinerary.itineraryDayPhotoPreview)
+        }
+      })
+    }
+  }, [itineraries])
 
   const toggleAccommodation = (index: number, accommodationId: string) => {
     const updatedItinerary = { ...itineraries[index] }
@@ -178,7 +177,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
       {itineraries.map((itinerary, index) => (
         <div key={index} className="mb-4 border p-4 rounded-md border-primary">
           <Input
-            type="text"
+            type="number"
             placeholder="Day"
             value={itinerary.day}
             onChange={(e) => updateField(index, "day", e.target.value)}
@@ -256,7 +255,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
                   >
                     <div className="flex-shrink-0">
                       <img
-                        src={acc.accommodationPics[0]}
+                        src={acc.accommodationPics[0]} // Changed from URL.createObjectURL()
                         alt={acc.accommodationTitle}
                         className="w-20 h-20 object-cover rounded-md"
                       />
