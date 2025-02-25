@@ -6,22 +6,26 @@ interface AccoImagesProps {
   error?: string
   maxImages?: number
   maxFileSize?: number
+  previews?: string[]
+  setPreviews?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const AccoImages: React.FC<AccoImagesProps> = ({
   images,
   setImages,
+  previews,
+  setPreviews,
   error,
-  maxImages = 6,
-  maxFileSize = 5 * 1024 * 1024, // 5MB default
+  maxImages = 5,
+  maxFileSize = 1 * 1024 * 1024, // 1MB default
 }) => {
-  const [previews, setPreviews] = useState<string[]>([])
+  // const [previews, setPreviews] = useState<string[]>([])
 
   // Handle creating and cleaning up image previews
   useEffect(() => {
     // Create object URLs for previews
     const objectUrls = images.map((image) => URL.createObjectURL(image))
-    setPreviews(objectUrls)
+    setPreviews && setPreviews(objectUrls)
 
     // Cleanup function to revoke object URLs
     return () => {
@@ -53,6 +57,8 @@ const AccoImages: React.FC<AccoImagesProps> = ({
     setImages((prev) => prev.filter((_, i) => i !== index))
   }
 
+  console.log(previews)
+
   return (
     <div className="mb-4">
       <label className="block text-lg font-medium text-gray-700">
@@ -74,7 +80,7 @@ const AccoImages: React.FC<AccoImagesProps> = ({
 
         {images.length > 0 && (
           <div className="grid grid-cols-3 gap-4 mt-4">
-            {previews.map((preview, index) => (
+            {previews?.map((preview, index) => (
               <div key={index} className="relative">
                 <img
                   src={preview}

@@ -9,9 +9,6 @@ import {
   Plus,
   MapIcon,
   Filter,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
   MapPin,
   SortAsc,
   TreePine,
@@ -231,7 +228,7 @@ const AccommodationHome: React.FC = () => {
                                   
                               }`}
                             >
-                              {acco?.rooms.length} Rooms
+                              {acco?.rooms?.length} Rooms
                             </Badge>
                           </div>
                         </div>
@@ -263,11 +260,9 @@ const AccommodationHome: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center space-x-3">
                         <Button
-                          onClick={() =>
-                            router.push(
-                              `/accommodations/view-rooms?id=${acco._id}`
-                            )
-                          }
+                          // onClick={() =>
+                          //   router.push(`/accommodations/`)
+                          // }
                           className="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg"
                         >
                           View Rooms
@@ -275,7 +270,7 @@ const AccommodationHome: React.FC = () => {
                         <Button
                           onClick={() =>
                             router.push(
-                              `/accommodations/edit-accommodation/${acco._id}`
+                              `/accommodations/edit-accommodation/${acco.slug}`
                             )
                           }
                           className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"

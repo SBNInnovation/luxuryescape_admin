@@ -14,7 +14,7 @@ import AmenitiesInput from "./accommodationForm/AmenitiesInput"
 import AccoImages from "./accommodationForm/AccoImages"
 import RoomInput from "./accommodationForm/RoomInput"
 import { toast } from "sonner"
-import { Loader } from "lucide-react"
+import { Loader, Loader2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface Room {
@@ -317,7 +317,7 @@ const AddAccommodation = () => {
             >
               {loading ? (
                 <div className="flex justify-center items-center">
-                  <Loader className="w-6 h-6 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin" />
+                  <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
                 </div>
               ) : (
                 "Add Accommodation"

@@ -4,12 +4,11 @@ import { useParams } from "next/navigation"
 import React from "react"
 
 const page = () => {
-  const router = useParams()
-  const { id } = router
-  const idString = Array.isArray(id) ? id[0] : id || ""
+  const slugId = useParams()
+  const slug = `${slugId.slug}`
   return (
     <div className="w-full">
-      <EditAccommodation id={idString} />
+      <EditAccommodation slug={slug} />
     </div>
   )
 }

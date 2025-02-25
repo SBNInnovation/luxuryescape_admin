@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, ChangeEvent, useEffect } from "react"
+import React, { useState, ChangeEvent, useEffect, use } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 import axios from "axios"
@@ -14,11 +14,20 @@ import AmenitiesInput from "./accommodationForm/AmenitiesInput"
 import AccoImages from "./accommodationForm/AccoImages"
 import RoomInput from "./accommodationForm/RoomInput"
 import { toast } from "sonner"
-import { Loader, PlusIcon } from "lucide-react"
+import {
+  DeleteIcon,
+  Loader,
+  Loader2Icon,
+  PlusCircle,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react"
 
 interface Room {
+  _id: string
+  slug: string
   roomTitle: string
-  roomPhotos: File[]
+  roomPhotos: string[]
   roomStandard: string
   roomDescription: string
   roomFacilities: string[]
@@ -45,10 +54,11 @@ const formSchema = z.object({
 })
 
 interface EditAccommodationProps {
-  id: string
+  slug: string
 }
 
-const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
+const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
+  const [id, setId] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [rating, setRating] = useState<number>(1)
@@ -56,6 +66,10 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
   const [features, setFeatures] = useState<string[]>([""])
   const [amenities, setAmenities] = useState<string[]>([""])
   const [images, setImages] = useState<File[]>([])
+  const [previews, setPreviews] = useState<string[]>([])
+
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -115,42 +129,24 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
     }
   }
 
-  //getAccommodation
-  const getAccommodation = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-accommodation`
-      )
-      const data = response.data
-      if (data.success) {
-        setTitle(data.accommodation.accommodationTitle)
-        setLocation(data.accommodation.accommodationLocation)
-        setRating(data.accommodation.accommodationRating)
-        setOverview(data.accommodation.accommodationDescription)
-        setFeatures(data.accommodation.accommodationFeatures)
-        setAmenities(data.accommodation.accommodationAmenities)
-        setImages(data.accommodation.accommodationPics)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   // get single accommodation
   const getSingleAccommodation = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-by/${slug}`
       )
       const data = response.data
+
       if (data.success) {
-        setTitle(data.accommodation.accommodationTitle)
-        setLocation(data.accommodation.accommodationLocation)
-        setRating(data.accommodation.accommodationRating)
-        setOverview(data.accommodation.accommodationDescription)
-        setFeatures(data.accommodation.accommodationFeatures)
-        setAmenities(data.accommodation.accommodationAmenities)
-        setImages(data.accommodation.accommodationPics)
+        setId(data.data._id)
+        setTitle(data.data.accommodationTitle)
+        setLocation(data.data.accommodationLocation)
+        setRating(data.data.accommodationRating)
+        setOverview(data.data.accommodationDescription)
+        setFeatures(data.data.accommodationFeatures)
+        setAmenities(data.data.accommodationAmenities)
+        setPreviews(data.data.accommodationPics)
+        setRooms(data.data.rooms)
       }
     } catch (error) {
       console.error(error)
@@ -194,6 +190,25 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  // delete room
+  const handleRoomDelete = async ({
+    roomId,
+    roomName,
+  }: {
+    roomId: string
+    roomName: string
+  }) => {
+    setDeleteLoading(true)
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${roomName}"?`
+    )
+    if (!confirmDelete) return
+    alert(`Deleted temporarily for now : ${roomId}`)
+    setTimeout(() => {
+      setDeleteLoading(false)
+    }, 3000)
   }
 
   useEffect(() => {
@@ -287,6 +302,8 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
                 <AccoImages
                   images={images}
                   setImages={setImages}
+                  previews={previews}
+                  setPreviews={setPreviews}
                   error={errors.images || ""}
                 />
               </div>
@@ -351,14 +368,115 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ id }) => {
             >
               {loading ? (
                 <div className="flex justify-center items-center">
-                  <Loader className="w-6 h-6 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin" />
+                  <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
                 </div>
               ) : (
-                "Add Accommodation"
+                "Update Accommodation"
               )}
             </button>
           </div>
         </form>
+
+        {/* room data  */}
+        <div className="mt-8">
+          <Card>
+            <CardContent>
+              <div>
+                <div className="flex justify-between items-center mb-6 mt-6">
+                  {/* Rooms section */}
+                  <h2 className="text-xl font-bold mb-6">Available Rooms</h2>
+                  <div className="flex justify-start mb-8">
+                    <button
+                      className="flex bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 
+            transition-all duration-200"
+                      onClick={() => setShowAddRoomForm(!showAddRoomForm)}
+                    >
+                      <PlusIcon className="w-6 h-6 mr-2" /> Add Room
+                    </button>
+                  </div>
+                </div>
+
+                {rooms.length === 0 ? (
+                  <p className="text-gray-500">
+                    No rooms available for this accommodation.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {rooms.map((room) => (
+                      <div
+                        key={room._id}
+                        className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                      >
+                        {/* Room image */}
+                        <div className="relative h-48 w-full">
+                          {room.roomPhotos && room.roomPhotos.length > 0 ? (
+                            <img
+                              src={room.roomPhotos[0]}
+                              alt={room.roomTitle}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-gray-500">
+                                No image available
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Room details */}
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="text-xl font-semibold">
+                              {room.roomTitle}
+                            </h3>
+                            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                              {room.roomStandard}
+                            </span>
+                          </div>
+
+                          <p className="text-gray-600 mb-4">
+                            {room.roomDescription}
+                          </p>
+
+                          {/* Facilities */}
+                          <div className="mb-4">
+                            <h4 className="text-sm font-medium text-gray-900 mb-2">
+                              Facilities:
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {room.roomFacilities.map((facility, index) => (
+                                <span
+                                  key={index}
+                                  className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+                                >
+                                  {facility}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          disabled={deleteLoading}
+                          onClick={() =>
+                            handleRoomDelete({
+                              roomId: room._id,
+                              roomName: room.roomTitle,
+                            })
+                          }
+                          className="flex w-full items-center justify-center bg-red-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-red-600 transition-all duration-200"
+                        >
+                          <Trash2Icon className="w-6 h-6" />
+                          <span className="ml-2">Delete</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

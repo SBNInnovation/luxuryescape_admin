@@ -1,5 +1,7 @@
+import axios from "axios"
 import { Loader2Icon } from "lucide-react"
 import React, { useState } from "react"
+import { toast } from "sonner"
 
 interface Room {
   roomTitle: string
@@ -10,7 +12,7 @@ interface Room {
 }
 
 interface RoomInputProps {
-  accommodationId: string // Accommodation ID passed from parent
+  accommodationId: string
 }
 
 const RoomInput: React.FC<RoomInputProps> = ({ accommodationId }) => {
@@ -65,14 +67,45 @@ const RoomInput: React.FC<RoomInputProps> = ({ accommodationId }) => {
     }))
   }
 
-  // Handle form submission
-  const addRoomHandler = (e: React.FormEvent) => {
+  const addRoomHandler = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       setLoading(true)
-      console.log(room, accommodationId)
+      const formData = new FormData()
+      room.roomPhotos.forEach((photo) => formData.append("roomPhotos", photo))
+      formData.append("accommodation", accommodationId)
+      formData.append("roomTitle", room.roomTitle)
+      formData.append("roomStandard", room.roomStandard)
+      formData.append("roomDescription", room.roomDescription)
+      formData.append("roomFacilities", JSON.stringify(room.roomFacilities))
+
+      // Add headers to explicitly request JSON
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/room/add-room`,
+        formData
+      )
+
+      const data = response.data
+
+      if (data.success) {
+        toast.success(data.message || "Room added successfully")
+        // Reset the form
+        setRoom({
+          roomTitle: "",
+          roomPhotos: [],
+          roomStandard: "",
+          roomDescription: "",
+          roomFacilities: [""],
+        })
+      } else {
+        toast.error(data.message || "Failed to add room")
+      }
     } catch (error) {
-      console.log("Error adding room", error)
+      // Better error handling
+      console.error(
+        "Error adding room:",
+        error instanceof Error ? error.message : error
+      )
     } finally {
       setLoading(false)
     }
