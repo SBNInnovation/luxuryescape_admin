@@ -4,8 +4,8 @@ interface Link {
 }
 
 export interface HighlightType {
-  content: string
-  links: Link[]
+  highlightsTitle: string
+  highlightPicture: File | null
 }
 
 interface Link {

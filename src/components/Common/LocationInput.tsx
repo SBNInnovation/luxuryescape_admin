@@ -1,5 +1,5 @@
+import { Input } from "@/components/ui/input"
 import React from "react"
-import { Input } from "../ui/input"
 
 interface InputProps {
   location: string
@@ -25,7 +25,7 @@ const LocationInput: React.FC<InputProps> = ({
         type="text"
         value={location}
         onChange={handleChange}
-        placeholder="Enter Location"
+        placeholder="Enter location"
         className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
       />
     </div>

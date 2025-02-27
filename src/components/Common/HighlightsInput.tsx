@@ -1,9 +1,13 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { Camera, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import { HighlightType } from "../Types/Types"
+interface HighlightType {
+  highlightsTitle: string
+  highlightPicture: File | null // Keep File type for handling but won't be in final JSON
+  highlightPictureId?: string // Optional ID for existing images
+}
 
 interface HighlightsInputProps {
   highlights: HighlightType[]
@@ -16,55 +20,79 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
   setHighlights,
   error,
 }) => {
-  const updateHighlight = (index: number, updatedHighlight: HighlightType) => {
+  // State to store preview URLs
+  const [previewUrls, setPreviewUrls] = useState<string[]>(
+    Array(highlights.length).fill("")
+  )
+
+  // Initialize preview URLs when component mounts or highlights change
+  useEffect(() => {
+    // Create preview URLs for existing files
+    const urls = highlights.map((highlight) => {
+      if (highlight.highlightPicture instanceof File) {
+        return URL.createObjectURL(highlight.highlightPicture)
+      }
+      return ""
+    })
+
+    setPreviewUrls(urls)
+
+    // Cleanup function to revoke URLs when component unmounts
+    return () => {
+      urls.forEach((url) => {
+        if (url) URL.revokeObjectURL(url)
+      })
+    }
+  }, [highlights])
+
+  const updateHighlight = (
+    index: number,
+    updatedHighlight: Partial<HighlightType>
+  ) => {
     const updatedHighlights = highlights.map((highlight, i) =>
-      i === index ? updatedHighlight : highlight
+      i === index ? { ...highlight, ...updatedHighlight } : highlight
     )
     setHighlights(updatedHighlights)
   }
 
   const addHighlight = () => {
-    setHighlights([...highlights, { content: "", links: [] }])
+    setHighlights([
+      ...highlights,
+      { highlightsTitle: "", highlightPicture: null },
+    ])
+    setPreviewUrls([...previewUrls, ""])
   }
 
   const removeHighlight = (index: number) => {
+    // Clean up URL object to prevent memory leaks
+    if (previewUrls[index]) {
+      URL.revokeObjectURL(previewUrls[index])
+    }
+
     const updatedHighlights = highlights.filter((_, i) => i !== index)
     setHighlights(updatedHighlights)
+
+    const updatedPreviewUrls = [...previewUrls]
+    updatedPreviewUrls.splice(index, 1)
+    setPreviewUrls(updatedPreviewUrls)
   }
 
-  const updateLink = (
-    highlightIndex: number,
-    linkIndex: number,
-    key: "text" | "url",
-    value: string
-  ) => {
-    const updatedLinks = [...highlights[highlightIndex].links]
-    updatedLinks[linkIndex][key] = value
-    updateHighlight(highlightIndex, {
-      ...highlights[highlightIndex],
-      links: updatedLinks,
-    })
-  }
+  const handleFileChange = (index: number, file: File) => {
+    if (file) {
+      // Revoke previous URL if exists to prevent memory leaks
+      if (previewUrls[index]) {
+        URL.revokeObjectURL(previewUrls[index])
+      }
 
-  const addLink = (highlightIndex: number) => {
-    const updatedLinks = [
-      ...highlights[highlightIndex].links,
-      { text: "", url: "" },
-    ]
-    updateHighlight(highlightIndex, {
-      ...highlights[highlightIndex],
-      links: updatedLinks,
-    })
-  }
+      // Update the file in our highlights state
+      updateHighlight(index, { highlightPicture: file })
 
-  const removeLink = (highlightIndex: number, linkIndex: number) => {
-    const updatedLinks = highlights[highlightIndex].links.filter(
-      (_, i) => i !== linkIndex
-    )
-    updateHighlight(highlightIndex, {
-      ...highlights[highlightIndex],
-      links: updatedLinks,
-    })
+      // Create a temporary URL for preview
+      const fileUrl = URL.createObjectURL(file)
+      const updatedPreviewUrls = [...previewUrls]
+      updatedPreviewUrls[index] = fileUrl
+      setPreviewUrls(updatedPreviewUrls)
+    }
   }
 
   return (
@@ -73,84 +101,91 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
         Highlights:
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
+
       {highlights.map((highlight, index) => (
-        <div
-          key={index}
-          className="mb-4 border p-2 rounded-md border-primary pb-4"
-        >
-          <div className="flex items-center justify-between">
-            <Input
-              type="text"
-              required
-              placeholder="Highlight Content"
-              value={highlight.content}
-              onChange={(e) =>
-                updateHighlight(index, {
-                  ...highlight,
-                  content: e.target.value,
-                })
-              }
-              className="flex-grow"
-            />
+        <div key={index} className="mb-4 border p-4 rounded-md border-primary">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-md font-medium">Highlight {index + 1}</h3>
             <Button
               type="button"
               onClick={() => removeHighlight(index)}
-              variant={"destructive"}
-              className="ml-4"
+              variant="destructive"
+              size="sm"
             >
-              <Trash2 size={18} />
-              Remove Highlight
+              <Trash2 size={18} className="mr-2" />
+              Remove
             </Button>
           </div>
 
-          <h1 className="text-lg font-bold mt-4">Links</h1>
-
-          {highlight.links.map((link, linkIndex) => (
-            <div key={linkIndex} className="mt-2 flex items-center">
+          <div className="space-y-4">
+            {/* Title Input */}
+            <div>
               <Input
                 type="text"
-                placeholder="Key (text)"
-                value={link.text}
+                required
+                placeholder="Enter highlight title"
+                value={highlight.highlightsTitle}
                 onChange={(e) =>
-                  updateLink(index, linkIndex, "text", e.target.value)
+                  updateHighlight(index, {
+                    highlightsTitle: e.target.value,
+                  })
                 }
-                className="flex-grow mr-2"
+                className="w-full"
               />
-              <Input
-                type="text"
-                placeholder="Value (url)"
-                value={link.url}
-                onChange={(e) =>
-                  updateLink(index, linkIndex, "url", e.target.value)
-                }
-                className="flex-grow mr-2"
-              />
-              <Button
-                type="button"
-                onClick={() => removeLink(index, linkIndex)}
-                variant={"destructive"}
-              >
-                <Trash2 size={18} />
-              </Button>
             </div>
-          ))}
 
-          <Button
-            type="button"
-            onClick={() => addLink(index)}
-            className="mt-2 flex items-center text-white"
-          >
-            <Camera size={18} className="mr-2" />
-            Add Link
-          </Button>
+            {/* Picture Upload */}
+            <div>
+              <div className="flex items-center space-x-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      handleFileChange(index, file)
+                    }
+                  }}
+                  className="w-full"
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  className="flex-shrink-0"
+                >
+                  <Camera size={18} />
+                </Button>
+              </div>
+
+              {/* File name display */}
+              {highlight.highlightPicture instanceof File && (
+                <p className="mt-1 text-sm text-gray-500">
+                  Selected file: {highlight.highlightPicture.name}
+                </p>
+              )}
+
+              {/* Picture Preview */}
+              {previewUrls[index] && (
+                <div className="mt-2">
+                  <img
+                    src={previewUrls[index]}
+                    alt={`Preview of ${highlight.highlightsTitle}`}
+                    className="mt-2 max-h-32 rounded-md border border-gray-200"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       ))}
 
       <Button
         type="button"
         onClick={addHighlight}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="mt-4 flex items-center text-white"
       >
+        <Camera size={18} className="mr-2" />
         Add Highlight
       </Button>
     </div>

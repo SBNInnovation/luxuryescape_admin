@@ -1,35 +1,38 @@
 import React from "react"
 
 interface InputProps {
-  country: string
-  setCountry: React.Dispatch<React.SetStateAction<string>>
+  difficulty: string
+  setDifficulty: React.Dispatch<React.SetStateAction<string>>
   error: string
 }
 
-const CountryInput: React.FC<InputProps> = ({ country, setCountry, error }) => {
+const DifficultyInput: React.FC<InputProps> = ({
+  difficulty,
+  setDifficulty,
+  error,
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCountry(e.target.value)
+    setDifficulty(e.target.value)
   }
 
   return (
     <div className="mb-4">
       <label className="block text-lg font-medium text-gray-700">
-        Country <span className="text-red-700">*</span>
+        Difficulty <span className="text-red-700">*</span>
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <select
-        value={country}
+        value={difficulty}
         onChange={handleChange}
         className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
       >
-        <option value="">Select a country</option>
-        <option value="nepal">Nepal</option>
-        <option value="bhutan">Bhutan</option>
-        <option value="tibet">Tibet</option>
-        <option value="multidestinations">Multi-destinations</option>
+        <option value="">Select a difficulty</option>
+        <option value="easy">Easy</option>
+        <option value="moderate">Moderate</option>
+        <option value="difficult">Difficult</option>
       </select>
     </div>
   )
 }
 
-export default CountryInput
+export default DifficultyInput

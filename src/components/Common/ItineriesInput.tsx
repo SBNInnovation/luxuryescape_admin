@@ -78,8 +78,10 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     const file = event.target.files?.[0]
     if (file) {
       const updatedItinerary = { ...itineraries[index] }
+      // Store the actual file object
       updatedItinerary.itineraryDayPhoto = file
-      updatedItinerary.itineraryDayPhotoPreview = URL.createObjectURL(file) // Only for preview
+      // Create a temporary URL for preview purposes only
+      updatedItinerary.itineraryDayPhotoPreview = URL.createObjectURL(file)
       updateItinerary(index, updatedItinerary)
     }
   }
@@ -235,11 +237,11 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
                 />
               </div>
             </div>
-            {/* for loading  */}
+            {/* for loading */}
             {loading && accommodations.length === 0 && (
               <p className="text-gray-500">Loading accommodations...</p>
             )}
-            {/* for no accommodations  */}
+            {/* for no accommodations */}
             {!loading && filteredAccommodations.length === 0 && (
               <p className="text-gray-500">
                 No accommodations found. Try adding!

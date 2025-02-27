@@ -22,7 +22,7 @@ import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import axios from "axios"
 
-type TourType = {
+type TrekType = {
   _id: string
   tourName: string
   slug: string
@@ -36,11 +36,11 @@ type TourType = {
   createdAt: string
 }
 
-const TourHome: React.FC = () => {
+const TrekkingHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const [tours, setTours] = useState<TourType[]>([])
+  const [treks, setTreks] = useState<TrekType[]>([])
   const [search, setSearch] = useState<string>("")
   const [difficulty, setDifficulty] = useState<string>("")
   const [location, setLocation] = useState<string>("")
@@ -57,16 +57,16 @@ const TourHome: React.FC = () => {
     { value: "price_desc", label: "Price (High to Low)" },
   ]
 
-  const handleGetTours = async () => {
+  const handleGetAllTreks = async () => {
     try {
       setLoading(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get-all`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/get-all`
       )
       const data = response.data
       if (data.success) {
-        setTours(data.data.tours)
-        console.log(data.data.tours)
+        setTreks(data.data.treks)
+        console.log(data.data.treks)
         setTotalPages(data.data.pagination.totalPages)
       }
     } catch (error) {
@@ -76,20 +76,14 @@ const TourHome: React.FC = () => {
     }
   }
 
-  // useEffect(() => {
-  //   filterTrekking()
-  // }, [search, difficulty, location, sortOption])
-
   useEffect(() => {
-    handleGetTours()
+    handleGetAllTreks()
   }, [])
 
-  console.log("Tour Data", tours)
-
   const handleToggle = (trekId: string, field: "isActivated") => {
-    setTours((prev) =>
-      prev.map((tour) =>
-        tour._id === trekId ? { ...tour, [field]: !tour[field] } : tour
+    setTreks((prev) =>
+      prev.map((trek) =>
+        trek._id === trekId ? { ...trek, [field]: !trek[field] } : trek
       )
     )
   }
@@ -100,22 +94,15 @@ const TourHome: React.FC = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-4xl font-bold text-gray-900 tracking-tight">
-            Tour Manager
+            Trek Manager
           </h2>
           <div className="flex  gap-6">
             <Button
-              onClick={() => router.push("/tours/tour-types")}
-              className="bg-blue-500 hover:bg-blue-500/90 text-white px-6 py-2 rounded-full flex items-center gap-2"
-            >
-              <TreePine size={20} />
-              Tour Type
-            </Button>
-            <Button
-              onClick={() => router.push("/tours/create-tour")}
+              onClick={() => router.push("/trekkings/create-trek")}
               className="bg-primary hover:bg-primary/90 px-6 py-2 rounded-full flex items-center gap-2"
             >
               <Plus size={20} />
-              Create New Tour
+              Create New Trek
             </Button>
           </div>
         </div>
@@ -208,26 +195,26 @@ const TourHome: React.FC = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {tours?.map((tour) => (
+              {treks?.map((trek) => (
                 <tr
-                  key={tour._id}
+                  key={trek._id}
                   className="hover:bg-gray-50/50 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-4">
                       <img
-                        src={tour.thumbnail}
-                        alt={tour.tourName}
+                        src={trek.thumbnail}
+                        alt={trek.tourName}
                         className="h-24 w-32 object-cover rounded-lg shadow-sm"
                       />
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {tour.tourName}
+                          {trek.tourName}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">
                             <MapPin size={10} className="mr-1" />
-                            {tour.location}, {tour.country}
+                            {trek.location}, {trek.country}
                           </Badge>
                         </div>
                       </div>
@@ -239,23 +226,23 @@ const TourHome: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-sm font-medium ${
-                            tour.isActivated ? "text-green-600" : "text-red-600"
+                            trek.isActivated ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {tour.isActivated ? "Active" : "Inactive"}
+                          {trek.isActivated ? "Active" : "Inactive"}
                         </span>
                         <Switch
-                          checked={tour.isActivated}
+                          checked={trek.isActivated}
                           onCheckedChange={() =>
-                            handleToggle(tour._id, "isActivated")
+                            handleToggle(trek._id, "isActivated")
                           }
                         />
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600">
-                          {new Date(tour.createdAt).toLocaleDateString()}
+                          {new Date(trek.createdAt).toLocaleDateString()}
                         </p>
-                        <p className="text-sm font-semibold">${tour.cost}</p>
+                        <p className="text-sm font-semibold">${trek.cost}</p>
                       </div>
                     </div>
                   </td>
@@ -264,7 +251,7 @@ const TourHome: React.FC = () => {
                     <div className="flex items-center justify-center space-x-3">
                       <Button
                         onClick={() =>
-                          router.push(`/tours/edit-tour/${tour.slug}`)
+                          router.push(`/treks/edit-trek/${trek.slug}`)
                         }
                         className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                       >
@@ -273,8 +260,8 @@ const TourHome: React.FC = () => {
                       <Button
                         variant="destructive"
                         onClick={() => {
-                          setTours((prev) =>
-                            prev.filter((item) => item._id !== tour._id)
+                          setTreks((prev) =>
+                            prev.filter((item) => item._id !== trek._id)
                           )
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
@@ -297,9 +284,9 @@ const TourHome: React.FC = () => {
         </div>
       )}
 
-      {!loading && tours?.length === 0 && (
+      {!loading && treks?.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
-          <p className="text-2xl text-gray-400 font-medium">No tours found</p>
+          <p className="text-2xl text-gray-400 font-medium">No treks found</p>
           <p className="text-gray-500 mt-2">
             Try adjusting your search or filters
           </p>
@@ -307,7 +294,7 @@ const TourHome: React.FC = () => {
       )}
 
       {/* Pagination */}
-      {tours?.length > 0 && (
+      {treks?.length > 0 && (
         <div className="mt-6">
           <CustomPagination
             currentPage={page}
@@ -320,4 +307,4 @@ const TourHome: React.FC = () => {
   )
 }
 
-export default TourHome
+export default TrekkingHome

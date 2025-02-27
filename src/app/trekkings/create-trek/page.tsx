@@ -1,10 +1,10 @@
-import TrekkingHome from "@/components/trek/TrekkingHome"
+import CreateTrekForm from "@/components/trek/CreateTrek"
 import React from "react"
 
 const page = () => {
   return (
     <div className="w-full">
-      <TrekkingHome />
+      <CreateTrekForm />
     </div>
   )
 }

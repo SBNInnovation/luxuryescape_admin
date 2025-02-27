@@ -260,14 +260,6 @@ const AccommodationHome: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center space-x-3">
                         <Button
-                          // onClick={() =>
-                          //   router.push(`/accommodations/`)
-                          // }
-                          className="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg"
-                        >
-                          View Rooms
-                        </Button>
-                        <Button
                           onClick={() =>
                             router.push(
                               `/accommodations/edit-accommodation/${acco.slug}`

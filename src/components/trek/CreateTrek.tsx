@@ -55,8 +55,9 @@ import VideoUploadInput from "../Common/VideoInput"
 import { Button } from "../ui/button"
 import Inclusion from "../Common/Inclusion"
 import Duration from "../Common/Duration"
-import AddTourType from "./AddTourType"
+
 import axios from "axios"
+import DifficultyInput from "../Common/DifficultyInput"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -72,14 +73,7 @@ const formSchema = z.object({
   selectedSeasons: z
     .array(z.string())
     .min(1, "Please select at least one season"),
-  minDays: z.string().min(1, "Min Days is required"),
-  maxDays: z.string().min(1, "Max Days is required"),
-  minGroupSize: z.number().min(1, "Min Group Size is required"),
-  maxGroupSize: z.number().min(1, "Max Group Size is required"),
-  arrivalLocation: z.string().min(1, "Arrival Location is required"),
-  departureLocation: z.string().min(1, "Departure Location is required"),
-  startingLocation: z.string().min(1, "Starting Location is required"),
-  endingLocation: z.string().min(1, "Ending Location is required"),
+  difficulty: z.string().min(1, "Difficulty is required"),
   overview: z.string().min(1, "Overview is required"),
   accommodations: z.string().min(1, "Accommodations is required"),
   thingsToKnow: z.string().min(1, "Things to Know is required"),
@@ -102,7 +96,7 @@ type ErrorsType = {
   country?: string
   location?: string
   language?: string
-  tripTourId?: string
+  difficulty?: string
   thumbnail?: string
   mealType?: string
   selectedSeasons?: string
@@ -125,14 +119,15 @@ type ErrorsType = {
   faqs?: string
 }
 
-const CreateTourForm = () => {
+const CreateTrekForm = () => {
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState<number>(0)
   const [country, setCountry] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
-  const [tripTourId, setTripTourId] = useState<string>("")
+
+  const [difficulty, setDifficulty] = useState("")
 
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>([])
 
@@ -162,7 +157,7 @@ const CreateTourForm = () => {
         location,
         days,
         thumbnail,
-
+        difficulty,
         selectedSeasons,
 
         accommodations,
@@ -193,8 +188,8 @@ const CreateTourForm = () => {
           if (error.path[0] === "language") {
             newErrors.language = error.message
           }
-          if (error.path[0] === "tripTourId") {
-            newErrors.tripTourId = error.message
+          if (error.path[0] === "difficulty") {
+            newErrors.difficulty = error.message
           }
           if (error.path[0] === "thumbnail") {
             newErrors.thumbnail = error.message
@@ -205,27 +200,9 @@ const CreateTourForm = () => {
           if (error.path[0] === "selectedSeasons") {
             newErrors.selectedSeasons = error.message
           }
-          if (error.path[0] === "minDays") {
-            newErrors.minDays = error.message
-          }
-          if (error.path[0] === "maxDays") {
-            newErrors.maxDays = error.message
-          }
-          if (error.path[0] === "minGroupSize") {
-            newErrors.minGroupSize = error.message
-          }
-          if (error.path[0] === "maxGroupSize") {
-            newErrors.maxGroupSize = error.message
-          }
-          if (error.path[0] === "arrivalLocation") {
-            newErrors.arrivalLocation = error.message
-          }
-          if (error.path[0] === "departureLocation") {
-            newErrors.departureLocation = error.message
-          }
-          if (error.path[0] === "startingLocation") {
-            newErrors.startingLocation = error.message
-          }
+          // if (error.path[0] === "difficulty") {
+          //   newErrors.diff = error.message
+          // }
           if (error.path[0] === "endingLocation") {
             newErrors.endingLocation = error.message
           }
@@ -261,71 +238,6 @@ const CreateTourForm = () => {
     }
   }
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  // e.preventDefault()
-  // setLoading(true)
-
-  // try {
-  // // Validation checks
-  // if (!title || !country || !location || !tripTourId) {
-  // throw new Error("Please fill in all required fields")
-  // }
-
-  // const formData = new FormData()
-  // formData.append("tourName", title.trim())
-
-  // if (thumbnail) {
-  // formData.append("thumbnail", thumbnail)
-  // }
-
-  // // Validate and append multiple images
-  // if (images.length > 0) {
-  // images.forEach((image, index) => {
-  // if (image instanceof File) {
-  // formData.append("gallery", image)
-  // } else {
-  // console.warn(`Skipping invalid image at index ${index}`)
-  // }
-  // })
-  // }
-
-  // // Required fields
-  // formData.append("country", country.trim())
-  // formData.append("location", location.trim())
-  // formData.append("tourTypes", tripTourId)
-
-  // // Arrays and objects need to be stringified
-  // formData.append("idealTime", JSON.stringify(selectedSeasons))
-  // formData.append("keyHighlights", JSON.stringify(highlights))
-  // formData.append("tourInclusion", JSON.stringify(inclusion))
-  // formData.append("tourItinerary", JSON.stringify(itineraries))
-  // formData.append("faq", JSON.stringify(faqs))
-
-  // // Numbers should be converted to strings
-  // formData.append("cost", price.toString())
-  // formData.append("duration", days.toString())
-  // formData.append("tourOverview", overview.trim())
-
-  // // Corrected axios request
-  // const response = await axios.post(
-  // `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
-  // formData // Pass FormData directly
-  // )
-
-  // if (response.data.success) {
-  // alert("Tour added successfully!")
-  // } else {
-  // alert("Failed to add tour")
-  // }
-  // } catch (error) {
-  // console.error("Error submitting form:", error)
-  // alert(
-  // error instanceof Error ? error.message : "An unexpected error occurred"
-  // )
-  // } finally {
-  // setLoading(false)
-  // }
-  // }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -336,7 +248,7 @@ const CreateTourForm = () => {
         !title ||
         !country ||
         !location ||
-        !tripTourId ||
+        !difficulty ||
         !price ||
         !days ||
         !overview
@@ -345,10 +257,11 @@ const CreateTourForm = () => {
       }
 
       const formData = new FormData()
-      formData.append("tourName", title.trim())
+
       formData.append("country", country.trim())
       formData.append("location", location.trim())
-      formData.append("tourTypes", tripTourId)
+      formData.append("difficulty", difficulty.trim())
+
       formData.append("cost", price.toString())
       formData.append("duration", days.toString())
       formData.append("tourOverview", overview.trim())
@@ -367,45 +280,12 @@ const CreateTourForm = () => {
         })
       }
 
-      // Create a modified itineraries array for JSON data
-      const itinerariesJSON = itineraries.map((itinerary) => {
-        // Create a copy without the file objects (which can't be stringified)
-        const { itineraryDayPhoto, itineraryDayPhotoPreview, ...rest } =
-          itinerary
-        return rest
-      })
-
       // Append arrays and objects as JSON strings
       formData.append("idealTime", JSON.stringify(selectedSeasons))
-      // formData.append("keyHighlights", JSON.stringify(highlights))
+      formData.append("tourHighlights", JSON.stringify(highlights))
       formData.append("tourInclusion", JSON.stringify(inclusion))
-      formData.append("tourItinerary", JSON.stringify(itinerariesJSON))
+      formData.append("tourItinerary", JSON.stringify(itineraries))
       formData.append("faq", JSON.stringify(faqs))
-
-      // Add itinerary images separately
-      itineraries.forEach((itinerary, index) => {
-        if (itinerary.itineraryDayPhoto instanceof File) {
-          formData.append(`itineraryDayPhoto`, itinerary.itineraryDayPhoto)
-        }
-      })
-      // // Create a new array with only the titles for JSON
-      // const highlightTitles = highlights.map((highlight) => ({
-      //   highlightsTitle: highlight.highlightsTitle,
-      // }))
-
-      // // Append the JSON string with only titles
-      // formData.append("highlights", JSON.stringify(highlightTitles))
-
-      const highlightTitles = highlights.map(
-        (highlight) => highlight.highlightsTitle
-      )
-      formData.append("tourHighlights", JSON.stringify(highlightTitles))
-      highlights.forEach((highlight) => {
-        if (highlight.highlightPicture instanceof File) {
-          // Use the same field name for all highlight pictures
-          formData.append("highlightPicture", highlight.highlightPicture)
-        }
-      })
 
       // Send the request to the backend
       const response = await axios.post(
@@ -430,14 +310,11 @@ const CreateTourForm = () => {
 
   return (
     <div className="min-h-screen ">
-      {/* Top accent line */}
-      <div className="h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600" />
-
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-serif text-primary mb-4">
-            Create Your Luxury Experience
+            Create Your Luxury Trek
           </h1>
           <p className="text-lg text-blue-400">
             Transform Dreams into Extraordinary Journeys
@@ -482,6 +359,11 @@ const CreateTourForm = () => {
                     setLocation={setLocation}
                     error={errors.location || ""}
                   />
+                  <DifficultyInput
+                    difficulty={difficulty}
+                    setDifficulty={setDifficulty}
+                    error={errors.difficulty || ""}
+                  />
                 </div>
                 <div className="space-y-6">
                   <ThumbnailInput
@@ -497,13 +379,6 @@ const CreateTourForm = () => {
                     error={errors.selectedSeasons || ""}
                   />
                 </div>
-                <div className="space-y-6 mt-8">
-                  <AddTourType
-                    tripsTourId={tripTourId}
-                    setTripsTourId={setTripTourId}
-                    error={errors.tripTourId || ""}
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -517,20 +392,20 @@ const CreateTourForm = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                 <div className="space-y-6">
-                  {/* overview */}
+                  {/* overview  */}
                   <OverviewInput
                     overview={overview}
                     setOverview={setOverview}
                     error={errors.overview || ""}
                   />
 
-                  {/* accommodation */}
+                  {/* accommodation  */}
                   <AccommodationInput
                     accommodations={accommodations}
                     setAccommodations={setAccommodations}
                     error={errors.accommodations || ""}
                   />
-                  {/* things to know */}
+                  {/* things to know  */}
                   <Inclusion
                     inclusion={inclusion}
                     setInclusion={setInclusion}
@@ -551,7 +426,7 @@ const CreateTourForm = () => {
                 Services
               </div>
               <div className="space-y-6 mt-8">
-                {/* HIGHLIGHTS */}
+                {/* HIGHLIGHTS  */}
                 <HighlightsInput
                   highlights={highlights}
                   setHighlights={setHighlights}
@@ -565,13 +440,13 @@ const CreateTourForm = () => {
                 Additional Information
               </div>
               <div className="space-y-6 mt-8">
-                {/* ITINERARIES */}
+                {/* ITINERARIES  */}
                 <ItinerariesInput
                   itineraries={itineraries}
                   setItineraries={setItineraries}
                   error={errors.itinerary || ""}
                 />
-                {/* FAQ */}
+                {/* FAQ  */}
                 <FAQInput faqs={faqs} setFaqs={setFaqs} />
               </div>
             </CardContent>
@@ -587,7 +462,7 @@ const CreateTourForm = () => {
               </div>
 
               <div className="space-y-8 mt-8">
-                {/* MULTIPLE IMAGES */}
+                {/* MULTIPLE IMAGES  */}
                 <MultiImageInput
                   images={images}
                   setImages={setImages}
@@ -597,7 +472,7 @@ const CreateTourForm = () => {
                   setImageError={setImageError}
                 />
 
-                {/* VIDEO */}
+                {/* VIDEO  */}
                 {/* <VideoUploadInput video={video} setVideo={setVideo} /> */}
               </div>
             </CardContent>
@@ -609,8 +484,8 @@ const CreateTourForm = () => {
               type="submit"
               onClick={handleSubmit}
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
- rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
- shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
+              rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
+              shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
             >
               Create Your Luxury Tour
             </button>
@@ -621,4 +496,4 @@ const CreateTourForm = () => {
   )
 }
 
-export default CreateTourForm
+export default CreateTrekForm
