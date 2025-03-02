@@ -289,7 +289,7 @@ const CreateTrekForm = () => {
 
       // Send the request to the backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/add-trek`,
         formData
       )
 

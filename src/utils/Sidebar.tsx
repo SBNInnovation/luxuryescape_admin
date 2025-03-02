@@ -50,9 +50,9 @@ export function AppSidebar() {
     { title: "Tours", url: "/tours", icon: Binoculars },
     { title: "Accommodations", url: "/accommodations", icon: Hotel },
     { title: "Blogs", url: "/blogs", icon: BookOpen },
-    { title: "Plan Trip", url: "/plan-trip", icon: Bus },
-    { title: "Requests & Mails", url: "/requests-mails", icon: Mails },
-    { title: "Clients Info", url: "/users-info", icon: Users2Icon },
+    { title: "Tailor Made", url: "/tailor-made", icon: Bus },
+    { title: "Quotes", url: "/quotes", icon: Mails },
+    { title: "Clients Info", url: "/clients", icon: Users2Icon },
   ]
 
   return (
