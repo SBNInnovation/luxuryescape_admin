@@ -29,7 +29,7 @@ type TrekType = {
   location: string
   cost: number
   country: string
-  difficulty: string
+  // country: string
   tourType: string
   thumbnail: string
   isActivated: boolean
@@ -42,7 +42,7 @@ const TrekkingHome: React.FC = () => {
   const [page, setPage] = useState(1)
   const [treks, setTreks] = useState<TrekType[]>([])
   const [search, setSearch] = useState<string>("")
-  const [difficulty, setDifficulty] = useState<string>("")
+  const [country, setCountry] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [sortOption, setSortOption] = useState<string>("")
 
@@ -118,13 +118,14 @@ const TrekkingHome: React.FC = () => {
             <Filter className="absolute left-3 top-2 text-gray-400" size={20} />
             <select
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
             >
-              <option value="">All Difficulties</option>
-              <option value="Easy">Easy</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Difficult">Difficult</option>
+              <option value="">Country (all)</option>
+              <option value="Nepal">Nepal</option>
+              <option value="Bhutan">Bhutan</option>
+              <option value="Tibet">Tibet</option>
+              <option value="Multidestination">Multi-destination</option>
             </select>
           </div>
 
@@ -251,7 +252,7 @@ const TrekkingHome: React.FC = () => {
                     <div className="flex items-center justify-center space-x-3">
                       <Button
                         onClick={() =>
-                          router.push(`/treks/edit-trek/${trek.slug}`)
+                          router.push(`/trekkings/edit-trek/${trek.slug}`)
                         }
                         className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                       >

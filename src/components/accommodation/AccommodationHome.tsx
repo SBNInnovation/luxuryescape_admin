@@ -58,8 +58,6 @@ const AccommodationHome: React.FC = () => {
     { value: "name_desc", label: "Title (Z-A)" },
     { value: "createdAt_asc", label: "Date (Oldest First)" },
     { value: "createdAt_desc", label: "Date (Newest First)" },
-    { value: "price_asc", label: "Price (Low to High)" },
-    { value: "price_desc", label: "Price (High to Low)" },
   ]
 
   const totalPages = Math.ceil(accommodations?.length / 10)
@@ -118,10 +116,12 @@ const AccommodationHome: React.FC = () => {
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
             >
-              <option value="">All Difficulties</option>
-              <option value="Easy">Easy</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Difficult">Difficult</option>
+              <option value="">Ratings (All)</option>
+              <option value="one">1 star</option>
+              <option value="two">2 star</option>
+              <option value="three">3 star</option>
+              <option value="four">4 star</option>
+              <option value="five">5 star</option>
             </select>
           </div>
 
