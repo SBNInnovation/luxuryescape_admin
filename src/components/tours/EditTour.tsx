@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { set, z } from "zod"
 
 import TitleInput from "../Common/TitleInput"
@@ -41,7 +41,6 @@ import {
   Settings,
   Image,
   Video,
-  Loader2Icon,
 } from "lucide-react"
 
 //types
@@ -56,11 +55,8 @@ import VideoUploadInput from "../Common/VideoInput"
 import { Button } from "../ui/button"
 import Inclusion from "../Common/Inclusion"
 import Duration from "../Common/Duration"
-
+import AddTourType from "./AddTourType"
 import axios from "axios"
-import DifficultyInput from "../Common/DifficultyInput"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -76,7 +72,14 @@ const formSchema = z.object({
   selectedSeasons: z
     .array(z.string())
     .min(1, "Please select at least one season"),
-  difficulty: z.string().min(1, "Difficulty is required"),
+  minDays: z.string().min(1, "Min Days is required"),
+  maxDays: z.string().min(1, "Max Days is required"),
+  minGroupSize: z.number().min(1, "Min Group Size is required"),
+  maxGroupSize: z.number().min(1, "Max Group Size is required"),
+  arrivalLocation: z.string().min(1, "Arrival Location is required"),
+  departureLocation: z.string().min(1, "Departure Location is required"),
+  startingLocation: z.string().min(1, "Starting Location is required"),
+  endingLocation: z.string().min(1, "Ending Location is required"),
   overview: z.string().min(1, "Overview is required"),
   accommodations: z.string().min(1, "Accommodations is required"),
   thingsToKnow: z.string().min(1, "Things to Know is required"),
@@ -99,7 +102,7 @@ type ErrorsType = {
   country?: string
   location?: string
   language?: string
-  difficulty?: string
+  tripTourId?: string
   thumbnail?: string
   mealType?: string
   selectedSeasons?: string
@@ -122,35 +125,26 @@ type ErrorsType = {
   faqs?: string
 }
 
-const CreateTrekForm = () => {
+const EditTourForm = ({ slug }: { slug: string }) => {
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState<number>(0)
   const [country, setCountry] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
-
-  const [difficulty, setDifficulty] = useState("")
-
+  const [tripTourId, setTripTourId] = useState<string>("")
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>([])
-
   const [overview, setOverview] = useState<string>("")
   const [accommodations, setAccommodations] = useState<string[]>([])
-
   const [inclusion, setInclusion] = useState<string[]>([])
-
   const [highlights, setHighlights] = useState<HighlightType[]>([])
   const [itineraries, setItineraries] = useState<ItineraryType[]>([])
-
   const [faqs, setFaqs] = useState<FAQType[]>([])
   const [images, setImages] = useState<(string | File)[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
-
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
-
-  const router = useRouter()
 
   // Validate form data with Zod schema
   const validateForm = () => {
@@ -162,7 +156,7 @@ const CreateTrekForm = () => {
         location,
         days,
         thumbnail,
-        difficulty,
+
         selectedSeasons,
 
         accommodations,
@@ -193,8 +187,8 @@ const CreateTrekForm = () => {
           if (error.path[0] === "language") {
             newErrors.language = error.message
           }
-          if (error.path[0] === "difficulty") {
-            newErrors.difficulty = error.message
+          if (error.path[0] === "tripTourId") {
+            newErrors.tripTourId = error.message
           }
           if (error.path[0] === "thumbnail") {
             newErrors.thumbnail = error.message
@@ -205,9 +199,27 @@ const CreateTrekForm = () => {
           if (error.path[0] === "selectedSeasons") {
             newErrors.selectedSeasons = error.message
           }
-          // if (error.path[0] === "difficulty") {
-          //   newErrors.diff = error.message
-          // }
+          if (error.path[0] === "minDays") {
+            newErrors.minDays = error.message
+          }
+          if (error.path[0] === "maxDays") {
+            newErrors.maxDays = error.message
+          }
+          if (error.path[0] === "minGroupSize") {
+            newErrors.minGroupSize = error.message
+          }
+          if (error.path[0] === "maxGroupSize") {
+            newErrors.maxGroupSize = error.message
+          }
+          if (error.path[0] === "arrivalLocation") {
+            newErrors.arrivalLocation = error.message
+          }
+          if (error.path[0] === "departureLocation") {
+            newErrors.departureLocation = error.message
+          }
+          if (error.path[0] === "startingLocation") {
+            newErrors.startingLocation = error.message
+          }
           if (error.path[0] === "endingLocation") {
             newErrors.endingLocation = error.message
           }
@@ -243,25 +255,96 @@ const CreateTrekForm = () => {
     }
   }
 
+  const getTourData = async () => {
+    try {
+      const response = await axios.get<{
+        success: boolean
+        data: {
+          tourName: string
+          country: string
+          location: string
+          tourTypes: string
+          cost: number
+          duration: number
+          tourOverview: string
+          idealTime: string[]
+          accommodation: string[]
+          tourInclusion: string[]
+          tourHighlights: HighlightType[]
+          tourItinerary: ItineraryType[]
+          faq: FAQType[]
+          gallery?: (string | File)[]
+          thumbnail?: string | File
+          itineraryDayPhoto?: string[]
+          highlightPicture?: string[]
+        }
+      }>(`${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/specific/${slug}`)
+
+      const { data } = response
+
+      if (data.success) {
+        const tourData = data.data
+
+        // Set primary tour details
+        setTitle(tourData.tourName)
+        setCountry(tourData.country)
+        setLocation(tourData.location)
+        setTripTourId(tourData.tourTypes)
+        setPrice(tourData.cost)
+        setDays(tourData.duration)
+        setOverview(tourData.tourOverview)
+        setSelectedSeasons(tourData.idealTime)
+
+        // Set optional array data with null checks
+        setAccommodations(tourData.accommodation ?? [])
+        setInclusion(tourData.tourInclusion ?? [])
+        setHighlights(tourData.tourHighlights ?? [])
+        setItineraries(tourData.tourItinerary ?? [])
+        setFaqs(tourData.faq ?? [])
+
+        // Uncomment and update image handling as needed
+        // if (tourData.gallery) {
+        //   setImages(tourData.gallery);
+        // }
+        // if (tourData.thumbnail) {
+        //   setThumbnail(tourData.thumbnail);
+        // }
+      } else {
+        console.warn("Tour data fetch was not successful")
+      }
+    } catch (error) {
+      console.error("Error fetching tour data:", error)
+      // Optionally, you could set an error state here
+      // setErrorMessage('Failed to load tour details');
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
 
     try {
-      setLoading(true)
       // Validation checks
-
-      if (!title || !country || !location || !price || !days || !overview) {
+      if (
+        !title ||
+        !country ||
+        !location ||
+        !tripTourId ||
+        !price ||
+        !days ||
+        !overview
+      ) {
         throw new Error("Please fill in all required fields")
       }
 
       const formData = new FormData()
-      formData.append("trekName", title.trim())
+      formData.append("tourName", title.trim())
       formData.append("country", country.trim())
       formData.append("location", location.trim())
-      formData.append("difficultyLevel", difficulty.trim())
+      formData.append("tourTypes", tripTourId)
       formData.append("cost", price.toString())
       formData.append("duration", days.toString())
-      formData.append("trekOverview", overview.trim())
+      formData.append("tourOverview", overview.trim())
 
       // Append thumbnail if provided
       if (thumbnail) {
@@ -288,8 +371,8 @@ const CreateTrekForm = () => {
       // Append arrays and objects as JSON strings
       formData.append("idealTime", JSON.stringify(selectedSeasons))
       // formData.append("keyHighlights", JSON.stringify(highlights))
-      formData.append("trekInclusion", JSON.stringify(inclusion))
-      formData.append("trekItinerary", JSON.stringify(itinerariesJSON))
+      formData.append("tourInclusion", JSON.stringify(inclusion))
+      formData.append("tourItinerary", JSON.stringify(itinerariesJSON))
       formData.append("faq", JSON.stringify(faqs))
 
       // Add itinerary images separately
@@ -302,7 +385,7 @@ const CreateTrekForm = () => {
       const highlightTitles = highlights.map(
         (highlight) => highlight.highlightsTitle
       )
-      formData.append("trekHighlights", JSON.stringify(highlightTitles))
+      formData.append("tourHighlights", JSON.stringify(highlightTitles))
       highlights.forEach((highlight) => {
         if (highlight.highlightPicture instanceof File) {
           // Use the same field name for all highlight pictures
@@ -312,19 +395,18 @@ const CreateTrekForm = () => {
 
       // Send the request to the backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/add-trek`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
         formData
       )
 
       if (response.data.success) {
-        toast.success(response.data.message || "Trek added successfully!")
-        router.push("/trekkings")
+        alert("Tour added successfully!")
       } else {
-        toast.error(response.data.message || "Failed to add trek")
+        alert("Failed to add tour")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
-      toast.error(
+      alert(
         error instanceof Error ? error.message : "An unexpected error occurred"
       )
     } finally {
@@ -332,13 +414,20 @@ const CreateTrekForm = () => {
     }
   }
 
+  useEffect(() => {
+    getTourData()
+  }, [])
+
   return (
     <div className="min-h-screen ">
+      {/* Top accent line */}
+      <div className="h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600" />
+
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-serif text-primary mb-4">
-            Create Your Luxury Trek
+            Create Your Luxury Experience
           </h1>
           <p className="text-lg text-blue-400">
             Transform Dreams into Extraordinary Journeys
@@ -383,11 +472,6 @@ const CreateTrekForm = () => {
                     setLocation={setLocation}
                     error={errors.location || ""}
                   />
-                  <DifficultyInput
-                    difficulty={difficulty}
-                    setDifficulty={setDifficulty}
-                    error={errors.difficulty || ""}
-                  />
                 </div>
                 <div className="space-y-6">
                   <ThumbnailInput
@@ -403,6 +487,13 @@ const CreateTrekForm = () => {
                     error={errors.selectedSeasons || ""}
                   />
                 </div>
+                <div className="space-y-6 mt-8">
+                  <AddTourType
+                    tripsTourId={tripTourId}
+                    setTripsTourId={setTripTourId}
+                    error={errors.tripTourId || ""}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -416,20 +507,20 @@ const CreateTrekForm = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                 <div className="space-y-6">
-                  {/* overview  */}
+                  {/* overview */}
                   <OverviewInput
                     overview={overview}
                     setOverview={setOverview}
                     error={errors.overview || ""}
                   />
 
-                  {/* accommodation  */}
+                  {/* accommodation */}
                   <AccommodationInput
                     accommodations={accommodations}
                     setAccommodations={setAccommodations}
                     error={errors.accommodations || ""}
                   />
-                  {/* things to know  */}
+                  {/* things to know */}
                   <Inclusion
                     inclusion={inclusion}
                     setInclusion={setInclusion}
@@ -450,7 +541,7 @@ const CreateTrekForm = () => {
                 Services
               </div>
               <div className="space-y-6 mt-8">
-                {/* HIGHLIGHTS  */}
+                {/* HIGHLIGHTS */}
                 <HighlightsInput
                   highlights={highlights}
                   setHighlights={setHighlights}
@@ -464,13 +555,13 @@ const CreateTrekForm = () => {
                 Additional Information
               </div>
               <div className="space-y-6 mt-8">
-                {/* ITINERARIES  */}
+                {/* ITINERARIES */}
                 <ItinerariesInput
                   itineraries={itineraries}
                   setItineraries={setItineraries}
                   error={errors.itinerary || ""}
                 />
-                {/* FAQ  */}
+                {/* FAQ */}
                 <FAQInput faqs={faqs} setFaqs={setFaqs} />
               </div>
             </CardContent>
@@ -486,7 +577,7 @@ const CreateTrekForm = () => {
               </div>
 
               <div className="space-y-8 mt-8">
-                {/* MULTIPLE IMAGES  */}
+                {/* MULTIPLE IMAGES */}
                 <MultiImageInput
                   images={images}
                   setImages={setImages}
@@ -496,7 +587,7 @@ const CreateTrekForm = () => {
                   setImageError={setImageError}
                 />
 
-                {/* VIDEO  */}
+                {/* VIDEO */}
                 {/* <VideoUploadInput video={video} setVideo={setVideo} /> */}
               </div>
             </CardContent>
@@ -507,18 +598,11 @@ const CreateTrekForm = () => {
             <button
               type="submit"
               onClick={handleSubmit}
-              className="w-full flex items-center justify-center py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
-              rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
-              shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
+ rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
+ shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
             >
-              {loading ? (
-                <div className="flex gap-2">
-                  <Loader2Icon className="w-6 h-6 animate-spin" />{" "}
-                  <span>Creating...</span>{" "}
-                </div>
-              ) : (
-                <span>Create trek</span>
-              )}
+              Create Your Luxury Tour
             </button>
           </div>
         </form>
@@ -527,4 +611,4 @@ const CreateTrekForm = () => {
   )
 }
 
-export default CreateTrekForm
+export default EditTourForm

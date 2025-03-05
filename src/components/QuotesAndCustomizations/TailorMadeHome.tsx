@@ -112,8 +112,13 @@ const TailorMadeHome: React.FC = () => {
     getRequests()
   }, [page, limit, sort, activeTab])
 
-  const confirmDelete = async () => {
+  const confirmDelete = async (id: string) => {
+    const confirmation = confirm(
+      "Are you sure you want to delete this request?"
+    )
+    if (!confirmation) return
     try {
+      console.log(id)
       setDeleteLoading(true)
       if (selectedRequestToDelete) {
         const response = await axios.delete(
@@ -268,7 +273,7 @@ const TailorMadeHome: React.FC = () => {
 
                     <Button
                       variant="destructive"
-                      onClick={() => handleDeleteClick(request._id)}
+                      onClick={() => confirmDelete(request._id)}
                       className="px-4 py-2 rounded-lg "
                     >
                       <Trash2 size={18} />

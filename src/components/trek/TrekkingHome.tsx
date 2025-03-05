@@ -24,7 +24,7 @@ import axios from "axios"
 
 type TrekType = {
   _id: string
-  tourName: string
+  trekName: string
   slug: string
   location: string
   cost: number
@@ -204,12 +204,12 @@ const TrekkingHome: React.FC = () => {
                     <div className="flex items-center space-x-4">
                       <img
                         src={trek.thumbnail}
-                        alt={trek.tourName}
+                        alt={trek.trekName}
                         className="h-24 w-32 object-cover rounded-lg shadow-sm"
                       />
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {trek.tourName}
+                          {trek.trekName}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">

@@ -23,10 +23,10 @@ const CountryInput: React.FC<InputProps> = ({ country, setCountry, error }) => {
         className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
       >
         <option value="">Select a country</option>
-        <option value="nepal">Nepal</option>
-        <option value="bhutan">Bhutan</option>
-        <option value="tibet">Tibet</option>
-        <option value="multidestinations">Multi-destinations</option>
+        <option value="Nepal">Nepal</option>
+        <option value="Bhutan">Bhutan</option>
+        <option value="Tibet">Tibet</option>
+        <option value="Multidestinations">Multi-destinations</option>
       </select>
     </div>
   )

@@ -21,7 +21,7 @@ const TitleInput: React.FC<TitleInputProps> = ({ title, setTitle, error }) => {
         type="text"
         value={title}
         onChange={handleChange}
-        placeholder="Enter your name"
+        placeholder="Enter title"
         className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
       />
     </div>

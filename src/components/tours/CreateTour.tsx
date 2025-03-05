@@ -41,6 +41,7 @@ import {
   Settings,
   Image,
   Video,
+  Loader2,
 } from "lucide-react"
 
 //types
@@ -57,6 +58,8 @@ import Inclusion from "../Common/Inclusion"
 import Duration from "../Common/Duration"
 import AddTourType from "./AddTourType"
 import axios from "axios"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -151,6 +154,8 @@ const CreateTourForm = () => {
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
+
+  const router = useRouter()
 
   // Validate form data with Zod schema
   const validateForm = () => {
@@ -261,77 +266,13 @@ const CreateTourForm = () => {
     }
   }
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  // e.preventDefault()
-  // setLoading(true)
-
-  // try {
-  // // Validation checks
-  // if (!title || !country || !location || !tripTourId) {
-  // throw new Error("Please fill in all required fields")
-  // }
-
-  // const formData = new FormData()
-  // formData.append("tourName", title.trim())
-
-  // if (thumbnail) {
-  // formData.append("thumbnail", thumbnail)
-  // }
-
-  // // Validate and append multiple images
-  // if (images.length > 0) {
-  // images.forEach((image, index) => {
-  // if (image instanceof File) {
-  // formData.append("gallery", image)
-  // } else {
-  // console.warn(`Skipping invalid image at index ${index}`)
-  // }
-  // })
-  // }
-
-  // // Required fields
-  // formData.append("country", country.trim())
-  // formData.append("location", location.trim())
-  // formData.append("tourTypes", tripTourId)
-
-  // // Arrays and objects need to be stringified
-  // formData.append("idealTime", JSON.stringify(selectedSeasons))
-  // formData.append("keyHighlights", JSON.stringify(highlights))
-  // formData.append("tourInclusion", JSON.stringify(inclusion))
-  // formData.append("tourItinerary", JSON.stringify(itineraries))
-  // formData.append("faq", JSON.stringify(faqs))
-
-  // // Numbers should be converted to strings
-  // formData.append("cost", price.toString())
-  // formData.append("duration", days.toString())
-  // formData.append("tourOverview", overview.trim())
-
-  // // Corrected axios request
-  // const response = await axios.post(
-  // `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
-  // formData // Pass FormData directly
-  // )
-
-  // if (response.data.success) {
-  // alert("Tour added successfully!")
-  // } else {
-  // alert("Failed to add tour")
-  // }
-  // } catch (error) {
-  // console.error("Error submitting form:", error)
-  // alert(
-  // error instanceof Error ? error.message : "An unexpected error occurred"
-  // )
-  // } finally {
-  // setLoading(false)
-  // }
-  // }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
 
     try {
+      setLoading(true)
       // Validation checks
+
       if (
         !title ||
         !country ||
@@ -388,13 +329,6 @@ const CreateTourForm = () => {
           formData.append(`itineraryDayPhoto`, itinerary.itineraryDayPhoto)
         }
       })
-      // // Create a new array with only the titles for JSON
-      // const highlightTitles = highlights.map((highlight) => ({
-      //   highlightsTitle: highlight.highlightsTitle,
-      // }))
-
-      // // Append the JSON string with only titles
-      // formData.append("highlights", JSON.stringify(highlightTitles))
 
       const highlightTitles = highlights.map(
         (highlight) => highlight.highlightsTitle
@@ -414,13 +348,14 @@ const CreateTourForm = () => {
       )
 
       if (response.data.success) {
-        alert("Tour added successfully!")
+        toast.success(response.data.message || "Tour added successfully!")
+        router.push("/tours")
       } else {
-        alert("Failed to add tour")
+        toast.error(response.data.message || "Failed to add tour")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
-      alert(
+      toast.error(
         error instanceof Error ? error.message : "An unexpected error occurred"
       )
     } finally {
@@ -607,12 +542,20 @@ const CreateTourForm = () => {
           <div className="pt-8">
             <button
               type="submit"
+              disabled={loading}
               onClick={handleSubmit}
-              className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
+              className="w-full flex justify-center items-center py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
  rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
  shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
             >
-              Create Your Luxury Tour
+              {loading ? (
+                <div className="flex gap-2">
+                  <Loader2 className="w-6 h-6 animate-spin" />{" "}
+                  <span>Creating...</span>{" "}
+                </div>
+              ) : (
+                <span>Create tour</span>
+              )}
             </button>
           </div>
         </form>

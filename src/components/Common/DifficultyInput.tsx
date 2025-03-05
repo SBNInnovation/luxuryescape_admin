@@ -27,9 +27,9 @@ const DifficultyInput: React.FC<InputProps> = ({
         className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
       >
         <option value="">Select a difficulty</option>
-        <option value="easy">Easy</option>
-        <option value="moderate">Moderate</option>
-        <option value="difficult">Difficult</option>
+        <option value="Easy">Easy</option>
+        <option value="Moderate">Moderate</option>
+        <option value="Difficult">Difficult</option>
       </select>
     </div>
   )
