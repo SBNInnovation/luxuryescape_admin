@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
+import { toast } from "sonner"
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
@@ -52,6 +53,7 @@ const AccommodationHome: React.FC = () => {
   const [difficulty, setDifficulty] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [sortOption, setSortOption] = useState<string>("")
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const sortOptions = [
     { value: "name_asc", label: "Title (A-Z)" },
@@ -77,6 +79,35 @@ const AccommodationHome: React.FC = () => {
     }
 
     setLoading(false)
+  }
+
+  const deleteAccommodation = async (id: string) => {
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this accommodation?"
+    )
+    if (!confirmDelete) return
+    try {
+      setDeleteLoading(true)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/delete/${id}`,
+        {
+          method: "DELETE",
+        }
+      )
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success(data.message || "Accommodation deleted successfully")
+        getAccommodations()
+      } else {
+        toast.error(data.message || "Accommodation deletion failed")
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("Something went wrong")
+    } finally {
+      setDeleteLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -135,9 +166,10 @@ const AccommodationHome: React.FC = () => {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
             >
-              <option value="">All Locations</option>
-              <option value="Solukhumbu">Solukhumbu</option>
-              <option value="Annapurna">Annapurna</option>
+              <option value="">All Country</option>
+              <option value="Nepal">Nepal</option>
+              <option value="Bhutan">Bhutan</option>
+              <option value="Tibet">Tibet</option>
             </select>
           </div>
 
@@ -271,10 +303,9 @@ const AccommodationHome: React.FC = () => {
                         </Button>
                         <Button
                           variant="destructive"
+                          disabled={deleteLoading}
                           onClick={() => {
-                            setAccommodations((prev) =>
-                              prev.filter((item) => item._id !== acco._id)
-                            )
+                            deleteAccommodation(acco._id)
                           }}
                           className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                         >

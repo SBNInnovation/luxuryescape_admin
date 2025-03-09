@@ -168,7 +168,7 @@ const TripsAndToursManagement: React.FC = () => {
   const handleDeleteTrip = async (id: string) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trips-and-tours/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour-type/delete/${id}`
       )
 
       if (response.data.success) {
@@ -333,7 +333,7 @@ const TripsAndToursManagement: React.FC = () => {
                 {tripsTours.map((trip) => (
                   <div
                     key={trip._id}
-                    className="flex items-center justify-between bg-secondary/50 p-4 rounded-lg"
+                    className="flex items-center justify-between bg-blue-50 p-4 rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
                       <img

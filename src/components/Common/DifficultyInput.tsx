@@ -29,7 +29,7 @@ const DifficultyInput: React.FC<InputProps> = ({
         <option value="">Select a difficulty</option>
         <option value="Easy">Easy</option>
         <option value="Moderate">Moderate</option>
-        <option value="Difficult">Difficult</option>
+        <option value="Hard">Hard</option>
       </select>
     </div>
   )
