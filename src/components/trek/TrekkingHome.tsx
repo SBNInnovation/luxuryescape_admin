@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { act, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -21,6 +21,7 @@ import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import axios from "axios"
+import { toast } from "sonner"
 
 type TrekType = {
   _id: string
@@ -43,7 +44,7 @@ const TrekkingHome: React.FC = () => {
   const [treks, setTreks] = useState<TrekType[]>([])
   const [search, setSearch] = useState<string>("")
   const [country, setCountry] = useState<string>("")
-  const [location, setLocation] = useState<string>("")
+  const [activation, setActivation] = useState<string>("")
   const [sortOption, setSortOption] = useState<string>("")
 
   const [totalPages, setTotalPages] = useState(0)
@@ -61,7 +62,7 @@ const TrekkingHome: React.FC = () => {
     try {
       setLoading(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/get-all`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/get/selected?page=${page}&limit=&country=${country}&activation=${activation}&sort=${sortOption}&search=${search}`
       )
       const data = response.data
       if (data.success) {
@@ -78,7 +79,7 @@ const TrekkingHome: React.FC = () => {
 
   useEffect(() => {
     handleGetAllTreks()
-  }, [country, page, sortOption])
+  }, [country, page, activation, sortOption])
 
   //debounce search
   useEffect(() => {
@@ -96,18 +97,32 @@ const TrekkingHome: React.FC = () => {
     )
   }
 
-  const handleDeleteTrek = async (trekId: string) => {
-    const confirmDelete = confirm("Are you sure you want to delete this tour?")
+  const handleDeleteTrek = async (trekId: string, trekName: string) => {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete "${trekName}"?`
+    )
     if (!confirmDelete) return
+
+    const response = axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/delete/${trekId}`
+    )
+    toast.promise(response, {
+      loading: "Deleting, PLease wait...",
+      success: (response) => {
+        const data = response.data
+        if (data.success) {
+          handleGetAllTreks()
+          return data.message || "Deleted successfully"
+        } else {
+          return data.message || "Failed to delete"
+        }
+      },
+      error: "Error deleting tour",
+    })
+
     try {
       setLoading(true)
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/delete/${trekId}`
-      )
-      const data = response.data
-      if (data.success) {
-        handleGetAllTreks()
-      }
+      await response
     } catch (error) {
       console.log(error)
     } finally {
@@ -153,6 +168,18 @@ const TrekkingHome: React.FC = () => {
               <option value="Bhutan">Bhutan</option>
               <option value="Tibet">Tibet</option>
               <option value="Multidestination">Multi-destination</option>
+            </select>
+          </div>
+          <div className="relative">
+            <Filter className="absolute left-3 top-2 text-gray-400" size={20} />
+            <select
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
+              value={activation}
+              onChange={(e) => setActivation(e.target.value)}
+            >
+              <option value="">Activation</option>
+              <option value="active">Activated</option>
+              <option value="inactive">Inactivated</option>
             </select>
           </div>
 
@@ -272,7 +299,7 @@ const TrekkingHome: React.FC = () => {
                       <Button
                         variant="destructive"
                         onClick={() => {
-                          handleDeleteTrek(trek._id)
+                          handleDeleteTrek(trek._id, trek.trekName)
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                       >

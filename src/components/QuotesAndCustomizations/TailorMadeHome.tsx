@@ -99,11 +99,6 @@ const TailorMadeHome: React.FC = () => {
     }
   }
 
-  const handleDeleteClick = (requestId: string) => {
-    setSelectedRequestToDelete(requestId)
-    setDeleteModalOpen(true)
-  }
-
   //   useEffect(() => {
   //     getCounts()
   //   }, [activeTab])
@@ -112,27 +107,35 @@ const TailorMadeHome: React.FC = () => {
     getRequests()
   }, [page, limit, sort, activeTab])
 
-  const confirmDelete = async (id: string) => {
+  const confirmDelete = async (id: string, name: string) => {
     const confirmation = confirm(
-      "Are you sure you want to delete this request?"
+      `Are you sure you want to delete "${name}" request?`
     )
     if (!confirmation) return
-    try {
-      console.log(id)
-      setDeleteLoading(true)
-      if (selectedRequestToDelete) {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_API_URL_PROD}/tailor-made/delete/${selectedRequestToDelete}`
-        )
-        if (response.data.success) {
-          setDeleteLoading(false)
-          toast.success(response.data.message)
+
+    const response = axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/tailor-made/delete/${id}`
+    )
+
+    toast.promise(response, {
+      loading: "Deleting, please wait...",
+      success: (response) => {
+        const data = response.data
+        if (data.success) {
           getRequests()
+          return data.message || "Request deleted successfully"
         } else {
-          setDeleteLoading(false)
-          toast.error(response.data.message)
+          return data.message || "Failed to delete request"
         }
-      }
+      },
+      error: (error) => {
+        return error.message || "Failed to delete request"
+      },
+    })
+
+    try {
+      setDeleteLoading(true)
+      await response
     } catch (error) {
       setDeleteLoading(false)
       toast.error("Failed to delete blog")
@@ -273,7 +276,9 @@ const TailorMadeHome: React.FC = () => {
 
                     <Button
                       variant="destructive"
-                      onClick={() => confirmDelete(request._id)}
+                      onClick={() =>
+                        confirmDelete(request._id, request.firstName)
+                      }
                       className="px-4 py-2 rounded-lg "
                     >
                       <Trash2 size={18} />

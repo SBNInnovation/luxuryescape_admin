@@ -22,6 +22,7 @@ import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import axios from "axios"
 import { count } from "console"
+import { toast } from "sonner"
 
 type TourType = {
   _id: string
@@ -90,19 +91,36 @@ const TourHome: React.FC = () => {
   }, [search])
 
   // console.log("Tour Data", tours)
-  const handleDeleteTour = async (tourId: string) => {
-    const confirmDelete = confirm("Are you sure you want to delete this tour?")
+  const handleDeleteTour = async (tourId: string, tourName: string) => {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete "${tourName}"?`
+    )
     if (!confirmDelete) return
+
+    setLoading(true)
+    const response = axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/delete/${tourId}`
+    )
+
+    toast.promise(response, {
+      loading: "Deleting, Please wait...",
+      success: (response) => {
+        const data = response.data
+        if (data.success) {
+          handleGetTours()
+
+          return data.message || "Tour deleted successfully"
+        } else {
+          return data.message || "Failed to delete tour"
+        }
+      },
+      error: "Failed to delete tour",
+    })
+
     try {
-      setLoading(true)
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/delete/${tourId}`
-      )
-      const data = response.data
-      if (data.success) {
-        handleGetTours()
-      }
+      await response
     } catch (error) {
+      toast.error("Failed to delete tour")
       console.log(error)
     } finally {
       setLoading(false)
@@ -299,7 +317,7 @@ const TourHome: React.FC = () => {
                         variant="destructive"
                         disabled={loading}
                         onClick={() => {
-                          handleDeleteTour(tour?._id)
+                          handleDeleteTour(tour?._id, tour?.tourName)
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                       >

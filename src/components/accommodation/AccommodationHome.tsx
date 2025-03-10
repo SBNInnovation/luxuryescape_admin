@@ -19,6 +19,7 @@ import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import { toast } from "sonner"
+import axios from "axios"
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
@@ -84,32 +85,37 @@ const AccommodationHome: React.FC = () => {
     setLoading(false)
   }
 
-  const deleteAccommodation = async (id: string) => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete this accommodation?"
-    )
+  const deleteAccommodation = async (id: string, name: string) => {
+    const confirmDelete = confirm(`Are you sure you want to delete "${name}"?`)
     if (!confirmDelete) return
-    try {
-      setDeleteLoading(true)
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/delete/${id}`,
-        {
-          method: "DELETE",
-        }
-      )
-      const data = await response.json()
 
-      if (data.success) {
-        toast.success(data.message || "Accommodation deleted successfully")
-        getAccommodations()
-      } else {
-        toast.error(data.message || "Accommodation deletion failed")
-      }
+    setLoading(true)
+    const response = axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/delete/${id}`
+    )
+
+    toast.promise(response, {
+      loading: "Deleting, Please wait...",
+      success: (response) => {
+        const data = response.data
+        if (data.success) {
+          getAccommodations()
+
+          return data.message || "Deleted successfully"
+        } else {
+          return data.message || "Failed to delete"
+        }
+      },
+      error: "Failed to delete",
+    })
+
+    try {
+      await response
     } catch (error) {
+      toast.error("Failed to delete tour")
       console.log(error)
-      toast.error("Something went wrong")
     } finally {
-      setDeleteLoading(false)
+      setLoading(false)
     }
   }
 
@@ -318,7 +324,10 @@ const AccommodationHome: React.FC = () => {
                           variant="destructive"
                           disabled={deleteLoading}
                           onClick={() => {
-                            deleteAccommodation(acco._id)
+                            deleteAccommodation(
+                              acco._id,
+                              acco.accommodationTitle
+                            )
                           }}
                           className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                         >

@@ -97,11 +97,6 @@ const Quotes: React.FC = () => {
     }
   }
 
-  const handleDeleteClick = (requestId: string) => {
-    setSelectedRequestToDelete(requestId)
-    setDeleteModalOpen(true)
-  }
-
   //   useEffect(() => {
   //     getCounts()
   //   }, [activeTab])
@@ -110,22 +105,33 @@ const Quotes: React.FC = () => {
     getRequests()
   }, [page, limit, sort, activeTab])
 
-  const confirmDelete = async () => {
+  const handleDelete = async (id: string, name: string) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${name}" request?`
+    )
+    if (!confirmDelete) return
+
+    const response = axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/quote/delete/${id}`
+    )
+
+    toast.promise(response, {
+      loading: "Deleting, please wait...",
+      success: (response) => {
+        const data = response.data
+        if (data.success) {
+          getRequests()
+          return data.message || "Request deleted successfully"
+        } else {
+          return data.message || "Failed to delete request"
+        }
+      },
+      error: "Failed to delete request",
+    })
+
     try {
       setDeleteLoading(true)
-      if (selectedRequestToDelete) {
-        const response = await axios.delete(
-          `${process.env.NEXT_PUBLIC_API_URL_PROD}/quote/delete/${selectedRequestToDelete}`
-        )
-        if (response.data.success) {
-          setDeleteLoading(false)
-          toast.success(response.data.message)
-          getRequests()
-        } else {
-          setDeleteLoading(false)
-          toast.error(response.data.message)
-        }
-      }
+      await response
     } catch (error) {
       setDeleteLoading(false)
       toast.error("Failed to delete blog")
@@ -260,7 +266,7 @@ const Quotes: React.FC = () => {
 
                     <Button
                       variant="destructive"
-                      onClick={() => handleDeleteClick(request._id)}
+                      onClick={() => handleDelete(request._id, request.name)}
                       className="px-4 py-2 rounded-lg "
                     >
                       <Trash2 size={18} />
