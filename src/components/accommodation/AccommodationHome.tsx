@@ -32,6 +32,7 @@ interface AccommodationType {
   accommodationTitle: string
   accommodationLocation: string
   accommodationRating: number
+  country: string
   accommodationPics: string[]
   rooms: {
     roomTitle: string
@@ -48,18 +49,20 @@ const AccommodationHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState<number>(10)
   const [accommodations, setAccommodations] = useState<AccommodationType[]>([])
   const [search, setSearch] = useState<string>("")
-  const [difficulty, setDifficulty] = useState<string>("")
-  const [location, setLocation] = useState<string>("")
+  const [country, setCountry] = useState<string>("")
+  const [rating, setRating] = useState<string>("")
+
   const [sortOption, setSortOption] = useState<string>("")
   const [deleteLoading, setDeleteLoading] = useState(false)
 
   const sortOptions = [
-    { value: "name_asc", label: "Title (A-Z)" },
-    { value: "name_desc", label: "Title (Z-A)" },
-    { value: "createdAt_asc", label: "Date (Oldest First)" },
-    { value: "createdAt_desc", label: "Date (Newest First)" },
+    // { value: "asc", label: "Title (A-Z)" },
+    // { value: "desc", label: "Title (Z-A)" },
+    { value: "asc", label: "Date (Oldest First)" },
+    { value: "desc", label: "Date (Newest First)" },
   ]
 
   const totalPages = Math.ceil(accommodations?.length / 10)
@@ -67,7 +70,7 @@ const AccommodationHome: React.FC = () => {
   const getAccommodations = async () => {
     setLoading(true)
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-all-accommodation`,
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-selected-data?page=${page}&limit=${limit}&search=${search}&location=${country}&sort=${sortOption}&rating=${rating}`,
       {
         method: "GET",
       }
@@ -75,7 +78,7 @@ const AccommodationHome: React.FC = () => {
     const data = await response.json()
 
     if (data.success) {
-      setAccommodations(data.data.accommodations)
+      setAccommodations(data.data.formattedData)
     }
 
     setLoading(false)
@@ -112,7 +115,16 @@ const AccommodationHome: React.FC = () => {
 
   useEffect(() => {
     getAccommodations()
-  }, [])
+  }, [page, country, sortOption, rating])
+
+  //debouncing for search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      getAccommodations()
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [search])
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen w-full">
@@ -144,15 +156,15 @@ const AccommodationHome: React.FC = () => {
             <Filter className="absolute left-3 top-2 text-gray-400" size={20} />
             <select
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
             >
               <option value="">Ratings (All)</option>
-              <option value="one">1 star</option>
-              <option value="two">2 star</option>
-              <option value="three">3 star</option>
-              <option value="four">4 star</option>
-              <option value="five">5 star</option>
+              <option value="1">1 star</option>
+              <option value="2">2 star</option>
+              <option value="3">3 star</option>
+              <option value="4">4 star</option>
+              <option value="5">5 star</option>
             </select>
           </div>
 
@@ -163,13 +175,14 @@ const AccommodationHome: React.FC = () => {
             />
             <select
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
             >
               <option value="">All Country</option>
               <option value="Nepal">Nepal</option>
               <option value="Bhutan">Bhutan</option>
               <option value="Tibet">Tibet</option>
+              <option value="Multidestination">Multidestination</option>
             </select>
           </div>
 
@@ -246,7 +259,7 @@ const AccommodationHome: React.FC = () => {
                           <div className="flex items-center gap-2 mt-1">
                             <Badge variant="outline" className="text-xs">
                               <MapPin size={10} className="mr-1" />
-                              {acco?.accommodationLocation}
+                              {acco?.accommodationLocation}, {acco?.country}
                             </Badge>
                           </div>
                           <div className="mt-1 space-x-2">

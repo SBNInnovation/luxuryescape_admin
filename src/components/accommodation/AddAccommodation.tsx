@@ -148,6 +148,7 @@ const AddAccommodation = () => {
     // Append basic accommodation details
     formData.append("accommodationTitle", title)
     formData.append("accommodationLocation", location)
+    formData.append("country", country)
     formData.append("accommodationRating", rating.toString())
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))

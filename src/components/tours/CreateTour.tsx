@@ -266,6 +266,109 @@ const CreateTourForm = () => {
     }
   }
 
+  //autofill
+  const handleAutofill = () => {
+    // Sample title, country, location
+    setTitle("Amazing Himalayan Trek")
+    setCountry("Nepal")
+    setLocation("Kathmandu Valley")
+
+    // Sample trip type ID - this would need to match your actual trip type IDs
+    setTripTourId("67cc7c18181cc3a6cb4f4ad4")
+
+    // Sample price and duration
+    setPrice(1299)
+    setDays(7)
+
+    // Sample overview
+    setOverview(
+      "Experience the breathtaking beauty of the Himalayan mountains with our guided trek through the stunning Kathmandu Valley. This 7-day adventure combines challenging hikes with cultural immersion for an unforgettable Nepal experience."
+    )
+
+    // Sample seasons
+    setSelectedSeasons(["Spring", "Autumn"])
+
+    // Sample highlights
+    setHighlights([
+      {
+        highlightsTitle: "Summit viewpoint of Annapurna range",
+        highlightPicture: null,
+      },
+      {
+        highlightsTitle: "Local village homestay experience",
+        highlightPicture: null,
+      },
+      {
+        highlightsTitle: "Ancient temple visits",
+        highlightPicture: null,
+      },
+    ])
+
+    // Sample inclusions/exclusions
+    setInclusion([
+      "Professional English-speaking guide",
+      "All accommodations during trek",
+      "Meals (breakfast, lunch, dinner)",
+      "Airport transfers",
+      "Permits and entry fees",
+    ])
+
+    // Sample itineraries
+    setItineraries([
+      {
+        day: "1",
+        title: "Arrival in Kathmandu",
+        description:
+          "Arrive at Tribhuvan International Airport where our representative will meet you. Transfer to your hotel in Kathmandu for an orientation and welcome dinner.",
+        itineraryDayPhoto: null,
+        accommodation: ["67cc3f619567261f94ae5e3c"],
+        links: [],
+      },
+      {
+        day: "2",
+        title: "Kathmandu to Pokhara",
+        description:
+          "After breakfast, we'll drive to Pokhara (approximately 6 hours) through beautiful Nepalese countryside. Evening free to explore Lakeside Pokhara.",
+        itineraryDayPhoto: null,
+        accommodation: ["67cc40139567261f94ae5e42"],
+        links: [],
+      },
+      {
+        day: "3",
+        title: "Trek to Dhampus",
+        description:
+          "Begin your trek through rhododendron forests to reach the traditional village of Dhampus with spectacular mountain views.",
+        itineraryDayPhoto: null,
+        accommodation: ["67cc416b9567261f94ae5e5a"],
+        links: [],
+      },
+    ])
+
+    // Sample FAQs
+    setFaqs([
+      {
+        question: "What is the difficulty level of this trek?",
+        answer:
+          "This trek is rated as moderate. Participants should be in good physical condition and able to hike 5-6 hours daily over varied terrain with elevation gains.",
+      },
+      {
+        question: "What type of accommodation can I expect?",
+        answer:
+          "Accommodations include 3-star hotels in Kathmandu and Pokhara, and comfortable teahouses during the trek. All rooms are based on twin-sharing.",
+      },
+      {
+        question: "Do I need a visa for Nepal?",
+        answer:
+          "Yes, most nationalities require a visa for Nepal. You can obtain this on arrival at Kathmandu airport or apply in advance through your nearest Nepalese embassy.",
+      },
+    ])
+
+    // Note: We can't set File objects directly in this function
+    // You would need to handle file inputs manually or mock them
+
+    toast.success("Form autofilled with sample data!")
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -377,7 +480,7 @@ const CreateTourForm = () => {
           <p className="text-lg text-blue-400">
             Transform Dreams into Extraordinary Journeys
           </p>
-          {/* <Button onClick={handleAutofill}>Autofill Form</Button> */}
+          <Button onClick={handleAutofill}>Autofill Form</Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">

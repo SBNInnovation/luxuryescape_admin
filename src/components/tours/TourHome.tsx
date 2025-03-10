@@ -21,6 +21,7 @@ import { Card } from "@/components/ui/card"
 import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import axios from "axios"
+import { count } from "console"
 
 type TourType = {
   _id: string
@@ -43,14 +44,14 @@ const TourHome: React.FC = () => {
   const [tours, setTours] = useState<TourType[]>([])
   const [search, setSearch] = useState<string>("")
   const [country, setCountry] = useState<string>("")
-  const [location, setLocation] = useState<string>("")
-  const [sortOption, setSortOption] = useState<string>("")
+  const [activated, setActivated] = useState<string>("")
+  const [sort, setSort] = useState<string>("")
 
   const [totalPages, setTotalPages] = useState(0)
 
   const sortOptions = [
-    { value: "name_asc", label: "Title (A-Z)" },
-    { value: "name_desc", label: "Title (Z-A)" },
+    // { value: "name_asc", label: "Title (A-Z)" },
+    // { value: "name_desc", label: "Title (Z-A)" },
     { value: "createdAt_asc", label: "Date (Oldest First)" },
     { value: "createdAt_desc", label: "Date (Newest First)" },
     { value: "price_asc", label: "Price (Low to High)" },
@@ -61,12 +62,12 @@ const TourHome: React.FC = () => {
     try {
       setLoading(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get-all`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get/selected?page=${page}&country=${country}&sort=${sort}&search=${search}&activated=${activated}`
       )
       const data = response.data
       if (data.success) {
         setTours(data.data.tours)
-        console.log(data.data.tours)
+
         setTotalPages(data.data.pagination.totalPages)
       }
     } catch (error) {
@@ -76,15 +77,37 @@ const TourHome: React.FC = () => {
     }
   }
 
-  // useEffect(() => {
-  //   filterTrekking()
-  // }, [search, difficulty, location, sortOption])
-
   useEffect(() => {
     handleGetTours()
-  }, [])
+  }, [country, sort, activated, page])
 
-  console.log("Tour Data", tours)
+  //debounce search
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      handleGetTours()
+    }, 500)
+    return () => clearTimeout(timeOutId)
+  }, [search])
+
+  // console.log("Tour Data", tours)
+  const handleDeleteTour = async (tourId: string) => {
+    const confirmDelete = confirm("Are you sure you want to delete this tour?")
+    if (!confirmDelete) return
+    try {
+      setLoading(true)
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/delete/${tourId}`
+      )
+      const data = response.data
+      if (data.success) {
+        handleGetTours()
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleToggle = (trekId: string, field: "isActivated") => {
     setTours((prev) =>
@@ -143,21 +166,23 @@ const TourHome: React.FC = () => {
           </div>
 
           <div className="relative">
-            <MapIcon
+            <SortAsc
               className="absolute left-3 top-2 text-gray-400"
               size={20}
             />
             <select
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
             >
-              <option value="">All Locations</option>
-              <option value="Solukhumbu">Solukhumbu</option>
-              <option value="Annapurna">Annapurna</option>
+              <option value="">Sort By</option>
+              <option value="createdAtasc">Date (Oldest First)</option>
+              <option value="createdAtdesc">Date (Newest First)</option>
+              <option value="asc">Price (Low to High)</option>
+              <option value="desc">Price (High to Low)</option>
             </select>
           </div>
-
+          {/* for active and inactive  */}
           <div className="relative">
             <SortAsc
               className="absolute left-3 top-2 text-gray-400"
@@ -165,15 +190,12 @@ const TourHome: React.FC = () => {
             />
             <select
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
+              value={activated}
+              onChange={(e) => setActivated(e.target.value)}
             >
-              <option value="">Sort By</option>
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              <option value="">Activate(all)</option>
+              <option value="active">Active</option>
+              <option value="inactive">In Active</option>
             </select>
           </div>
 
@@ -217,18 +239,18 @@ const TourHome: React.FC = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-4">
                       <img
-                        src={tour.thumbnail}
-                        alt={tour.tourName}
+                        src={tour?.thumbnail}
+                        alt={tour?.tourName}
                         className="h-24 w-32 object-cover rounded-lg shadow-sm"
                       />
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {tour.tourName}
+                          {tour?.tourName}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="outline" className="text-xs">
                             <MapPin size={10} className="mr-1" />
-                            {tour.location}, {tour.country}
+                            {tour?.location}, {tour?.country}
                           </Badge>
                         </div>
                       </div>
@@ -240,23 +262,25 @@ const TourHome: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-sm font-medium ${
-                            tour.isActivated ? "text-green-600" : "text-red-600"
+                            tour?.isActivated
+                              ? "text-green-600"
+                              : "text-red-600"
                           }`}
                         >
-                          {tour.isActivated ? "Active" : "Inactive"}
+                          {tour?.isActivated ? "Active" : "Inactive"}
                         </span>
                         <Switch
-                          checked={tour.isActivated}
+                          checked={tour?.isActivated}
                           onCheckedChange={() =>
-                            handleToggle(tour._id, "isActivated")
+                            handleToggle(tour?._id, "isActivated")
                           }
                         />
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600">
-                          {new Date(tour.createdAt).toLocaleDateString()}
+                          {new Date(tour?.createdAt).toLocaleDateString()}
                         </p>
-                        <p className="text-sm font-semibold">${tour.cost}</p>
+                        <p className="text-sm font-semibold">${tour?.cost}</p>
                       </div>
                     </div>
                   </td>
@@ -265,7 +289,7 @@ const TourHome: React.FC = () => {
                     <div className="flex items-center justify-center space-x-3">
                       <Button
                         onClick={() =>
-                          router.push(`/tours/edit-tour/${tour.slug}`)
+                          router.push(`/tours/edit-tour/${tour?.slug}`)
                         }
                         className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
                       >
@@ -273,10 +297,9 @@ const TourHome: React.FC = () => {
                       </Button>
                       <Button
                         variant="destructive"
+                        disabled={loading}
                         onClick={() => {
-                          setTours((prev) =>
-                            prev.filter((item) => item._id !== tour._id)
-                          )
+                          handleDeleteTour(tour?._id)
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                       >

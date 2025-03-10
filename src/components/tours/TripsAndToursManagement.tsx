@@ -166,6 +166,10 @@ const TripsAndToursManagement: React.FC = () => {
   }
 
   const handleDeleteTrip = async (id: string) => {
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this trip/tour?"
+    )
+    if (!confirmDelete) return
     try {
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour-type/delete/${id}`

@@ -49,8 +49,8 @@ const TrekkingHome: React.FC = () => {
   const [totalPages, setTotalPages] = useState(0)
 
   const sortOptions = [
-    { value: "name_asc", label: "Title (A-Z)" },
-    { value: "name_desc", label: "Title (Z-A)" },
+    // { value: "name_asc", label: "Title (A-Z)" },
+    // { value: "name_desc", label: "Title (Z-A)" },
     { value: "createdAt_asc", label: "Date (Oldest First)" },
     { value: "createdAt_desc", label: "Date (Newest First)" },
     { value: "price_asc", label: "Price (Low to High)" },
@@ -78,7 +78,15 @@ const TrekkingHome: React.FC = () => {
 
   useEffect(() => {
     handleGetAllTreks()
-  }, [])
+  }, [country, page, sortOption])
+
+  //debounce search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      handleGetAllTreks()
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [search])
 
   const handleToggle = (trekId: string, field: "isActivated") => {
     setTreks((prev) =>
@@ -86,6 +94,25 @@ const TrekkingHome: React.FC = () => {
         trek._id === trekId ? { ...trek, [field]: !trek[field] } : trek
       )
     )
+  }
+
+  const handleDeleteTrek = async (trekId: string) => {
+    const confirmDelete = confirm("Are you sure you want to delete this tour?")
+    if (!confirmDelete) return
+    try {
+      setLoading(true)
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/delete/${trekId}`
+      )
+      const data = response.data
+      if (data.success) {
+        handleGetAllTreks()
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -126,22 +153,6 @@ const TrekkingHome: React.FC = () => {
               <option value="Bhutan">Bhutan</option>
               <option value="Tibet">Tibet</option>
               <option value="Multidestination">Multi-destination</option>
-            </select>
-          </div>
-
-          <div className="relative">
-            <MapIcon
-              className="absolute left-3 top-2 text-gray-400"
-              size={20}
-            />
-            <select
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            >
-              <option value="">All Locations</option>
-              <option value="Solukhumbu">Solukhumbu</option>
-              <option value="Annapurna">Annapurna</option>
             </select>
           </div>
 
@@ -261,9 +272,7 @@ const TrekkingHome: React.FC = () => {
                       <Button
                         variant="destructive"
                         onClick={() => {
-                          setTreks((prev) =>
-                            prev.filter((item) => item._id !== trek._id)
-                          )
+                          handleDeleteTrek(trek._id)
                         }}
                         className="px-4 py-2 rounded-lg hover:bg-red-600/90"
                       >

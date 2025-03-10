@@ -22,6 +22,7 @@ import {
   PlusIcon,
   Trash2Icon,
 } from "lucide-react"
+import CountryInput from "../Common/CountryInput"
 
 interface Room {
   _id: string
@@ -37,6 +38,7 @@ interface Room {
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   location: z.string().min(1, "Location is required"),
+  country: z.string().min(1, "Country is required"),
   rating: z.number().min(1, "Rating is required"),
   overview: z.string().min(10, "Overview is required"), //description
   features: z.array(z.string()).min(1, "Feature is required"),
@@ -61,6 +63,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [id, setId] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [location, setLocation] = useState<string>("")
+  const [country, setCountry] = useState<string>("")
   const [rating, setRating] = useState<number>(1)
   const [overview, setOverview] = useState<string>("")
   const [features, setFeatures] = useState<string[]>([""])
@@ -93,6 +96,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
       formSchema.parse({
         title,
         location,
+        country,
         rating,
         overview,
         features,
@@ -105,6 +109,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         const newErrors: {
           title?: string
           location?: string
+          country?: string
           rating?: string
           overview?: string
           features?: string
@@ -121,6 +126,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
           if (err.path[0] === "amenities") newErrors.amenities = err.message
           if (err.path[0] === "images") newErrors.images = err.message
           if (err.path[0] === "rooms") newErrors.rooms = err.message
+          if (err.path[0] === "country") newErrors.country = err.message
         })
         setErrors(newErrors)
         return false
@@ -141,6 +147,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         setId(data.data._id)
         setTitle(data.data.accommodationTitle)
         setLocation(data.data.accommodationLocation)
+        setCountry(data.data.country)
         setRating(data.data.accommodationRating)
         setOverview(data.data.accommodationDescription)
         setFeatures(data.data.accommodationFeatures)
@@ -160,6 +167,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
 
     formData.append("accommodationTitle", title)
     formData.append("accommodationLocation", location)
+    formData.append("country", country)
     formData.append("accommodationRating", rating.toString())
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))
@@ -193,6 +201,39 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   }
 
   // delete room
+  // const handleRoomDelete = async ({
+  //   roomId,
+  //   roomName,
+  // }: {
+  //   roomId: string
+  //   roomName: string
+  // }) => {
+  //   setDeleteLoading(true)
+  //   const confirmDelete = window.confirm(
+  //     `Are you sure you want to delete "${roomName}"?`
+  //   )
+  //   if (!confirmDelete) return
+  //   const response = await axios.delete(
+  //     `${process.env.NEXT_PUBLIC_API_URL_PROD}/room/delete/${roomId}`
+  //   )
+  //   const data = response.data
+  //   if (data.success) {
+  //     // toast.success(data.message || "Room deleted successfully")
+  //     setRooms((prev) => prev.filter((room) => room._id !== roomId))
+  //   } else {
+  //     toast.error(data.message || "Failed to delete room")
+  //   }
+  //   toast.promise(
+  //     response,
+  //     {
+  //       loading: "Deleting room...",
+  //       success: data.message || "Room deleted successfully",
+  //       error: data.message || "Failed to delete room",
+  //     }
+
+  //   )
+  // }
+
   const handleRoomDelete = async ({
     roomId,
     roomName,
@@ -204,11 +245,39 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${roomName}"?`
     )
-    if (!confirmDelete) return
-    alert(`Deleted temporarily for now : ${roomId}`)
-    setTimeout(() => {
+    if (!confirmDelete) {
       setDeleteLoading(false)
-    }, 3000)
+      return
+    }
+
+    // Create the delete promise but don't await it yet
+    const deletePromise = axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/room/delete/${roomId}`
+    )
+
+    // Use toast.promise with the promise
+    toast.promise(deletePromise, {
+      loading: "Deleting room...",
+      success: (response) => {
+        const data = response.data
+        if (data.success) {
+          setRooms((prev) => prev.filter((room) => room._id !== roomId))
+          return data.message || "Room deleted successfully"
+        } else {
+          return data.message || "Room deleted but something went wrong"
+        }
+      },
+      error: "Failed to delete room",
+    })
+
+    // Make sure to handle any errors and always reset loading state
+    try {
+      await deletePromise
+    } catch (error) {
+      console.error("Error deleting room:", error)
+    } finally {
+      setDeleteLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -277,6 +346,11 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
                   <LocationInput
                     location={location}
                     setLocation={setLocation}
+                    error={errors.location || ""}
+                  />
+                  <CountryInput
+                    country={country}
+                    setCountry={setCountry}
                     error={errors.location || ""}
                   />
                 </div>
