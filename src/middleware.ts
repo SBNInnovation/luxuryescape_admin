@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-// import { verifyToken } from "./lib/verifyToken"
+import { verifyToken } from "./lib/VerifyToken"
 
 // Authentication configuration
 const AUTH_CONFIG = {
@@ -23,6 +23,8 @@ export async function middleware(request: NextRequest) {
   // Get token from cookies
   const token = request.cookies.get("token")?.value
   const pathname = new URL(request.url).pathname
+  console.log("Pathname:", pathname)
+  console.log("Token:", token)
 
   // Helper function to check path matching
   const matchesPath = (paths: string[]) =>
@@ -36,33 +38,33 @@ export async function middleware(request: NextRequest) {
   }
 
   // Scenario 2: Token exists - validate token
-  //   try {
-  //     const isValidToken = await verifyToken(token)
+  try {
+    const isValidToken = await verifyToken(token)
 
-  //     // If token is invalid
-  //     if (!isValidToken) {
-  //       const response = NextResponse.redirect(
-  //         new URL(AUTH_CONFIG.loginPath, request.url)
-  //       )
-  //       response.cookies.delete("token")
-  //       return response
-  //     }
+    // If token is invalid
+    if (!isValidToken) {
+      const response = NextResponse.redirect(
+        new URL(AUTH_CONFIG.loginPath, request.url)
+      )
+      response.cookies.delete("token")
+      return response
+    }
 
-  //     // Scenario 3: Valid token - prevent access to public paths
-  //     if (matchesPath(AUTH_CONFIG.publicPaths)) {
-  //       return NextResponse.redirect(new URL(AUTH_CONFIG.homePath, request.url))
-  //     }
+    // Scenario 3: Valid token - prevent access to public paths
+    if (matchesPath(AUTH_CONFIG.publicPaths)) {
+      return NextResponse.redirect(new URL(AUTH_CONFIG.homePath, request.url))
+    }
 
-  //     // Allow access to protected routes
-  //     return NextResponse.next()
-  //   } catch (error) {
-  //     // Catch any unexpected errors during token validation
-  //     const response = NextResponse.redirect(
-  //       new URL(AUTH_CONFIG.loginPath, request.url)
-  //     )
-  //     response.cookies.delete("token")
-  //     return response
-  //   }
+    // Allow access to protected routes
+    return NextResponse.next()
+  } catch (error) {
+    // Catch any unexpected errors during token validation
+    const response = NextResponse.redirect(
+      new URL(AUTH_CONFIG.loginPath, request.url)
+    )
+    response.cookies.delete("token")
+    return response
+  }
 }
 
 // Matcher configuration
