@@ -22,11 +22,15 @@ import {
   CheckCircle,
   Clock,
   X,
+  UserRound,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import axios from "axios"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/utils/AuthValidation"
+import { useAdminDetails } from "@/utils/AuthContext"
 
 interface DashboardData {
   tourCount: number
@@ -65,6 +69,28 @@ export default function Dashboard() {
   const [dashboardContent, setDashboardContent] = useState<DashboardData | {}>(
     {}
   )
+  const router = useRouter()
+
+  const handleValidateAuth = async () => {
+    const token = localStorage.getItem("authToken")
+    if (!token) {
+      router.push("/login")
+    }
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/auth/validate`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
+    )
+    const data = response.data
+    if (!data.success) {
+      router.push("/login")
+    }
+  }
+
+  const { adminInfo } = useAdminDetails()
 
   const handleGetDashboardContent = async () => {
     const response = await axios.get(
@@ -79,6 +105,7 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    handleValidateAuth()
     handleGetDashboardContent()
   }, [])
 
@@ -111,7 +138,7 @@ export default function Dashboard() {
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                Welcome, Admin
+                Welcome, {adminInfo.fullName}
               </h1>
               <p className="text-gray-500 mt-1">
                 Here's what's happening with your travel business today
@@ -123,7 +150,7 @@ export default function Dashboard() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-lg font-medium">
                   Active Tours
                 </CardTitle>
                 <div className="bg-blue-50 p-2 rounded-full">
@@ -141,7 +168,7 @@ export default function Dashboard() {
 
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-lg font-medium">
                   Active Treks
                 </CardTitle>
                 <div className="bg-green-50 p-2 rounded-full">
@@ -159,7 +186,7 @@ export default function Dashboard() {
 
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-lg font-medium">
                   Accommodations
                 </CardTitle>
                 <div className="bg-purple-50 p-2 rounded-full">
@@ -177,7 +204,7 @@ export default function Dashboard() {
 
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-lg font-medium">
                   Blog Posts
                 </CardTitle>
                 <div className="bg-orange-50 p-2 rounded-full">
@@ -199,11 +226,6 @@ export default function Dashboard() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Recent Tailormade Requests</CardTitle>
-                {isDashboardData(dashboardContent) && (
-                  <Badge className="bg-blue-500 hover:bg-blue-600">
-                    {dashboardContent.recentTailormade.length} new requests
-                  </Badge>
-                )}
               </div>
               <CardDescription>
                 Custom travel packages requested by clients
@@ -286,10 +308,10 @@ export default function Dashboard() {
           {/* Treks & Tours Tabs */}
           <Tabs defaultValue="treks" className="space-y-4 mb-8">
             <TabsList className="grid w-full grid-cols-2 mb-2">
-              <TabsTrigger value="tours" className="text-sm">
+              <TabsTrigger value="tours" className="text-lg">
                 Tour Inquiries
               </TabsTrigger>
-              <TabsTrigger value="treks" className="text-sm">
+              <TabsTrigger value="treks" className="text-lg">
                 Trek Inquiries
               </TabsTrigger>
             </TabsList>

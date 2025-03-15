@@ -34,9 +34,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { usePathname, useRouter } from "next/navigation"
+import { useAuth } from "./AuthValidation"
+import { useEffect } from "react"
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const resource = pathname.split("/")[1]
 
   const isActive = (url: string) => {
@@ -54,6 +57,13 @@ export function AppSidebar() {
     { title: "Quotes", url: "/quotes", icon: Mails },
     { title: "Clients Info", url: "/clients", icon: Users2Icon },
   ]
+
+  const logoutHandler = () => {
+    const logoutConfirmation = confirm("Are you sure you want to logout?")
+    if (!logoutConfirmation) return
+    localStorage.removeItem("authToken")
+    router.push("/login")
+  }
 
   return (
     <>
@@ -107,7 +117,7 @@ export function AppSidebar() {
                       My Account
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={logoutHandler}>
                     <span className="text-lg text-red-800">Sign out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

@@ -67,7 +67,7 @@ const TrekkingHome: React.FC = () => {
       const data = response.data
       if (data.success) {
         setTreks(data.data.treks)
-        console.log(data.data.treks)
+        // console.log(data.data.treks)
         setTotalPages(data.data.pagination.totalPages)
       }
     } catch (error) {

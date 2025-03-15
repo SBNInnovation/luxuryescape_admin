@@ -7,6 +7,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useAuth } from "@/utils/AuthValidation"
+import { useAdminDetails } from "@/utils/AuthContext"
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState("")
@@ -14,12 +16,37 @@ const LoginForm: React.FC = () => {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const { setAdminInfo } = useAdminDetails()
+
   const router = useRouter()
+
+  const handleValidateAuth = async () => {
+    const token = localStorage.getItem("authToken")
+    if (!token) return
+
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/auth/validate`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
+    )
+    const data = response.data
+
+    if (data.success) {
+      router.push("/")
+    } else {
+      localStorage.removeItem("authToken")
+    }
+    return
+  }
 
   useEffect(() => {
     setEmail("")
     setPassword("")
     setError("")
+    handleValidateAuth()
   }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,11 +68,16 @@ const LoginForm: React.FC = () => {
         }
       )
 
-      console.log(response)
-
       if (response.data.success) {
         toast.success(response.data.message)
         Cookies.set("token", response.data.accessToken)
+        localStorage.setItem("authToken", response.data.accessToken)
+
+        setAdminInfo({
+          _id: response.data.data._id,
+          fullName: response.data.data.name,
+          email: response.data.data.email,
+        })
         // Cookies.set("refreshToken", response.data.refreshToken)
         setTimeout(() => {
           router.push("/")

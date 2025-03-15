@@ -7,6 +7,8 @@ import { AppSidebar } from "@/utils/Sidebar"
 
 import { Providers } from "./providers"
 import { usePathname } from "next/navigation"
+import { AdminDetailsProvider } from "@/utils/AuthContext"
+import { AuthProvider } from "@/utils/AuthValidation"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,20 +42,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers />
-        <SidebarProvider>
-          {!isLoginPage &&
-            !isForgotPasswordPage &&
-            !isVerifyPage &&
-            !isChangePasswordPage && (
-              <>
-                <AppSidebar />
-                <SidebarTrigger />
-              </>
-            )}
+        <AuthProvider>
+          <AdminDetailsProvider>
+            <Providers />
+            <SidebarProvider>
+              {!isLoginPage &&
+                !isForgotPasswordPage &&
+                !isVerifyPage &&
+                !isChangePasswordPage && (
+                  <>
+                    <AppSidebar />
+                    <SidebarTrigger />
+                  </>
+                )}
 
-          {children}
-        </SidebarProvider>
+              {children}
+            </SidebarProvider>
+          </AdminDetailsProvider>
+        </AuthProvider>
       </body>
     </html>
   )
