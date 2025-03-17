@@ -157,7 +157,7 @@ const Quotes: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-800">
             Quotes Management
           </h2>
-          <Link href="/requests-mails/bulk-mailing">
+          <Link href="/quotes/bulk-mailing">
             <Button className="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-lg flex items-center gap-2">
               <Mail size={20} />
               Send Bulk Mail

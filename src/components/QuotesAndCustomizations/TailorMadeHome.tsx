@@ -161,12 +161,12 @@ const TailorMadeHome: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-800">
             Tailor Made Management
           </h2>
-          <Link href="/requests-mails/bulk-mailing">
+          {/* <Link href="/requests-mails/bulk-mailing">
             <Button className="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-lg flex items-center gap-2">
               <Mail size={20} />
               Send Bulk Mail
             </Button>
-          </Link>
+          </Link> */}
         </div>
         <p className="text-gray-600">
           Manage and track incoming requests from users
