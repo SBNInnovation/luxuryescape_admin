@@ -71,25 +71,6 @@ export default function Dashboard() {
   )
   const router = useRouter()
 
-  const handleValidateAuth = async () => {
-    const token = localStorage.getItem("authToken")
-    if (!token) {
-      router.push("/login")
-    }
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/auth/validate`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      }
-    )
-    const data = response.data
-    if (!data.success) {
-      router.push("/login")
-    }
-  }
-
   const { adminInfo } = useAdminDetails()
 
   const handleGetDashboardContent = async () => {
@@ -105,7 +86,6 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    handleValidateAuth()
     handleGetDashboardContent()
   }, [])
 

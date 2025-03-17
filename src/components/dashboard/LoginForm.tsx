@@ -20,33 +20,33 @@ const LoginForm: React.FC = () => {
 
   const router = useRouter()
 
-  const handleValidateAuth = async () => {
-    const token = localStorage.getItem("authToken")
-    if (!token) return
+  // const handleValidateAuth = async () => {
+  //   const token = localStorage.getItem("authToken")
+  //   if (!token) return
 
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/auth/validate`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        },
-      }
-    )
-    const data = response.data
+  //   const response = await axios.get(
+  //     `${process.env.NEXT_PUBLIC_API_URL_PROD}/auth/validate`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+  //       },
+  //     }
+  //   )
+  //   const data = response.data
 
-    if (data.success) {
-      router.push("/")
-    } else {
-      localStorage.removeItem("authToken")
-    }
-    return
-  }
+  //   if (data.success) {
+  //     router.push("/")
+  //   } else {
+  //     localStorage.removeItem("authToken")
+  //   }
+  //   return
+  // }
 
   useEffect(() => {
     setEmail("")
     setPassword("")
     setError("")
-    handleValidateAuth()
+    // handleValidateAuth()
   }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -70,8 +70,8 @@ const LoginForm: React.FC = () => {
 
       if (response.data.success) {
         toast.success(response.data.message)
-        Cookies.set("token", response.data.accessToken)
-        localStorage.setItem("authToken", response.data.accessToken)
+        Cookies.set("luxtoken", response.data.accessToken)
+        // localStorage.setItem("authToken", response.data.accessToken)
 
         setAdminInfo({
           _id: response.data.data._id,
