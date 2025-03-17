@@ -16,7 +16,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     const validateFunction = () => {
       if (loading) return // Avoid running check while still loading
 
-      const token = localStorage.getItem("authToken")
+      const token = localStorage.getItem("luxtoken")
 
       if (!token) {
         setIsLoggedIn(false)

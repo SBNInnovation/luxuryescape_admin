@@ -70,8 +70,8 @@ const LoginForm: React.FC = () => {
 
       if (response.data.success) {
         toast.success(response.data.message)
-        Cookies.set("luxtoken", response.data.accessToken)
-        // localStorage.setItem("authToken", response.data.accessToken)
+        Cookies.set("luxtoken", response.data.token)
+        localStorage.setItem("luxtoken", response.data.token)
 
         setAdminInfo({
           _id: response.data.data._id,

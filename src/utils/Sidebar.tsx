@@ -61,7 +61,7 @@ export function AppSidebar() {
   const logoutHandler = () => {
     const logoutConfirmation = confirm("Are you sure you want to logout?")
     if (!logoutConfirmation) return
-    localStorage.removeItem("authToken")
+    localStorage.removeItem("luxtoken")
     router.push("/login")
   }
 
