@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
   // Helper function to check path matching
   const matchesPath = (paths: string[]) =>
     paths.some((path) => pathname.startsWith(path))
-  // Scenario 1: No token - redirect to login for protected routes
+  // Scenario 1: No token - redirect to login for protected routesss
   if (!token) {
     if (matchesPath(AUTH_CONFIG.protectedPaths)) {
       return NextResponse.redirect(new URL(AUTH_CONFIG.loginPath, request.url))
