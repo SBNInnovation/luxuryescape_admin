@@ -208,7 +208,7 @@ const BulkMailing = () => {
       })
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/quote/send-bulk-mail`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/send-bulk-mail`,
         formData,
         {
           headers: {
@@ -274,24 +274,49 @@ const BulkMailing = () => {
         {/* User Selection */}
 
         <div className="space-y-4">
-          <div className="flex gap-4 mb-4">
-            {/* Search Input */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search users by name, email, or address"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 ml-2 text-2xl"
-              />
+          <div className="flex flex-col gap-4 mb-4">
+            <div className="flex-1 text-gray-700 flex items-center gap-4">
+              {/* Search Input */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Search users by name, email, or address"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 ml-2 text-2xl"
+                />
+              </div>
+
+              <div className="text-gray-500">
+                Total selected user{" "}
+                <span className="font-semibold text-primary">
+                  ({selectedUsers.length > 0 ? selectedUsers.length : 0})
+                </span>
+              </div>
             </div>
 
-            <div className="text-gray-500">
-              Total selected user{" "}
-              <span className="font-semibold text-primary">
-                ({selectedUsers.length > 0 ? selectedUsers.length : 0})
-              </span>
-            </div>
+            {/* For showing selected user name or email */}
+            {selectedUsers.length > 0 && (
+              <div className="flex-1 flex items-center gap-2">
+                {selectedUsers.map((userId) => {
+                  const user = users.find((user) => user._id === userId)
+                  if (!user) return null
+                  return (
+                    <div
+                      key={userId}
+                      className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full 
+                        flex items-center gap-2"
+                    >
+                      <span>{user.name}</span>
+                      <X
+                        className="w-4 h-4 cursor-pointer hover:text-red-600"
+                        onClick={() => removeSelectedUser(userId)}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
 
             {/* Country Filter */}
             <Select
@@ -454,7 +479,8 @@ const BulkMailing = () => {
           >
             {isEmailSending ? (
               <>
-                <Loader2 className="mr-2 animate-spin" /> Sending...
+                <Loader2 className="mr-2 animate-spin" /> Sending, Please
+                Wait...
               </>
             ) : (
               <>

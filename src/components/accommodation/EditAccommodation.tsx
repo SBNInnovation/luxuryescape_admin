@@ -23,6 +23,7 @@ import {
   Trash2Icon,
 } from "lucide-react"
 import CountryInput from "../Common/CountryInput"
+import { useRouter } from "next/navigation"
 
 interface Room {
   _id: string
@@ -77,6 +78,8 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [loading, setLoading] = useState<boolean>(false)
 
   const [showAddRoomForm, setShowAddRoomForm] = useState<boolean>(false)
+
+  const router = useRouter()
 
   //error type
   const [errors, setErrors] = useState<{
@@ -180,17 +183,18 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     try {
       setLoading(true)
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/add-accommodation`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/edit/${id}`,
         {
-          method: "POST",
+          method: "PUT",
           body: formData,
         }
       )
       const data = await response.json()
       if (data.success) {
-        toast.success("Accommodation added successfully")
+        toast.success("Accommodation updated successfully")
+        router.back()
       } else {
-        toast.error("Failed to add accommodation")
+        toast.error("Failed to update accommodation")
       }
     } catch (error) {
       console.error(error)
@@ -442,6 +446,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
             >
               {loading ? (
                 <div className="flex justify-center items-center">
+                  Updating...{" "}
                   <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
                 </div>
               ) : (

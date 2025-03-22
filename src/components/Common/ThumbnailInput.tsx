@@ -5,12 +5,14 @@ import { Input } from "../ui/input"
 interface ThumbnailInputProps {
   thumbnail: File | null
   setThumbnail: React.Dispatch<React.SetStateAction<File | null>>
+  thumbnailPreview: string | null
   error: string
 }
 
 const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
   thumbnail,
   setThumbnail,
+  thumbnailPreview,
   error,
 }) => {
   const [preview, setPreview] = useState<string | null>(
@@ -41,8 +43,23 @@ const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
       />
       {preview && (
         <div className="mt-2">
+          <label className="block text-lg font-medium text-gray-700">
+            New:
+          </label>
           <img
             src={preview}
+            alt="Thumbnail Preview"
+            className="h-56 w-96 object-cover rounded-md border border-gray-300"
+          />
+        </div>
+      )}
+      {thumbnailPreview && (
+        <div className="mt-2">
+          <label className="block text-lg font-medium text-gray-700">
+            Current:
+          </label>
+          <img
+            src={thumbnailPreview}
             alt="Thumbnail Preview"
             className="h-56 w-96 object-cover rounded-md border border-gray-300"
           />

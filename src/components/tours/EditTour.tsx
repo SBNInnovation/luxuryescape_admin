@@ -41,6 +41,8 @@ import {
   Settings,
   Image,
   Video,
+  Loader2Icon,
+  ArrowLeftIcon,
 } from "lucide-react"
 
 //types
@@ -57,6 +59,9 @@ import Inclusion from "../Common/Inclusion"
 import Duration from "../Common/Duration"
 import AddTourType from "./AddTourType"
 import axios from "axios"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import Exclusions from "../Common/Exclusions"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -84,6 +89,7 @@ const formSchema = z.object({
   accommodations: z.string().min(1, "Accommodations is required"),
   thingsToKnow: z.string().min(1, "Things to Know is required"),
   inclusion: z.array(z.string()).min(1, "Inclusion is required"),
+  exclusion: z.array(z.string()).min(1, "Exclusion is required"),
   highlights: z.array(z.string()).min(1, "Highlights is required"),
   itinerary: z.array(z.string()).min(1, "Itinerary is required"),
   services: z.object({
@@ -118,6 +124,7 @@ type ErrorsType = {
   accommodations?: string
   thingsToKnow?: string
   inclusion?: string
+  exclusion?: string
   highlights?: string
   itinerary?: string
   services?: string
@@ -126,18 +133,24 @@ type ErrorsType = {
 }
 
 const EditTourForm = ({ slug }: { slug: string }) => {
+  const [id, setId] = useState<string>("")
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState<number>(0)
   const [country, setCountry] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
   const [tripTourId, setTripTourId] = useState<string>("")
   const [selectedSeasons, setSelectedSeasons] = useState<string[]>([])
   const [overview, setOverview] = useState<string>("")
   const [accommodations, setAccommodations] = useState<string[]>([])
   const [inclusion, setInclusion] = useState<string[]>([])
+  const [exclusion, setExclusion] = useState<string[]>([])
   const [highlights, setHighlights] = useState<HighlightType[]>([])
+  const [highlightPicturesPreview, setHighlightPicturesPreview] = useState<
+    string[]
+  >([])
   const [itineraries, setItineraries] = useState<ItineraryType[]>([])
   const [faqs, setFaqs] = useState<FAQType[]>([])
   const [images, setImages] = useState<(string | File)[]>([])
@@ -145,6 +158,8 @@ const EditTourForm = ({ slug }: { slug: string }) => {
   const [imageError, setImageError] = useState("")
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
+
+  const router = useRouter()
 
   // Validate form data with Zod schema
   const validateForm = () => {
@@ -260,7 +275,9 @@ const EditTourForm = ({ slug }: { slug: string }) => {
       const response = await axios.get<{
         success: boolean
         data: {
+          _id: string
           tourName: string
+
           country: string
           location: string
           tourTypes: string
@@ -270,7 +287,9 @@ const EditTourForm = ({ slug }: { slug: string }) => {
           idealTime: string[]
           accommodation: string[]
           tourInclusion: string[]
-          tourHighlights: HighlightType[]
+          tourExclusion: string[]
+          tourHighlights: string[]
+
           tourItinerary: ItineraryType[]
           faq: FAQType[]
           gallery?: (string | File)[]
@@ -286,9 +305,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         const tourData = data.data
 
         // Set primary tour details
+        setId(tourData._id)
         setTitle(tourData.tourName)
         setCountry(tourData.country)
         setLocation(tourData.location)
+        setThumbnailPreview(tourData.thumbnail as string)
         setTripTourId(tourData.tourTypes)
         setPrice(tourData.cost)
         setDays(tourData.duration)
@@ -298,17 +319,25 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         // Set optional array data with null checks
         setAccommodations(tourData.accommodation ?? [])
         setInclusion(tourData.tourInclusion ?? [])
-        setHighlights(tourData.tourHighlights ?? [])
+        setExclusion(tourData.tourExclusion ?? [])
         setItineraries(tourData.tourItinerary ?? [])
         setFaqs(tourData.faq ?? [])
+        if (tourData.gallery) {
+          setPreviews(tourData.gallery as string[])
+        }
 
-        // Uncomment and update image handling as needed
-        // if (tourData.gallery) {
-        //   setImages(tourData.gallery);
-        // }
-        // if (tourData.thumbnail) {
-        //   setThumbnail(tourData.thumbnail);
-        // }
+        const hTitle = tourData.tourHighlights || []
+        const hPicture = tourData.highlightPicture || []
+
+        // Combine highlights and their pictures matching the exact interface
+        const combinedHighlights = hTitle.map((title, index) => ({
+          highlightsTitle: title,
+          highlightPicture: null,
+        }))
+
+        // Set the combined highlights
+        setHighlights(combinedHighlights)
+        setHighlightPicturesPreview(hPicture)
       } else {
         console.warn("Tour data fetch was not successful")
       }
@@ -372,6 +401,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
       formData.append("idealTime", JSON.stringify(selectedSeasons))
       // formData.append("keyHighlights", JSON.stringify(highlights))
       formData.append("tourInclusion", JSON.stringify(inclusion))
+      formData.append("tourExclusion", JSON.stringify(exclusion))
       formData.append("tourItinerary", JSON.stringify(itinerariesJSON))
       formData.append("faq", JSON.stringify(faqs))
 
@@ -395,18 +425,19 @@ const EditTourForm = ({ slug }: { slug: string }) => {
 
       // Send the request to the backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/add-tour`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/edit/${id}`,
         formData
       )
 
       if (response.data.success) {
-        alert("Tour added successfully!")
+        toast.success(response.data.message || "Tour added successfully!")
+        router.push("/tours")
       } else {
-        alert("Failed to add tour")
+        toast.error(response.data.message || "Failed to add tour")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
-      alert(
+      toast.error(
         error instanceof Error ? error.message : "An unexpected error occurred"
       )
     } finally {
@@ -426,7 +457,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
+          <h1 className="flex gap-4 justify-center items-center text-5xl font-serif text-primary mb-4">
+            <ArrowLeftIcon
+              onClick={() => router.back()}
+              className="w-8 h-8 text-black"
+            />
             Create Your Luxury Experience
           </h1>
           <p className="text-lg text-blue-400">
@@ -477,6 +512,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                   <ThumbnailInput
                     thumbnail={thumbnail}
                     setThumbnail={setThumbnail}
+                    thumbnailPreview={thumbnailPreview}
                     error={errors.thumbnail || ""}
                   />
                 </div>
@@ -526,6 +562,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                     setInclusion={setInclusion}
                     error={errors.inclusion || ""}
                   />
+                  <Exclusions
+                    exclusion={exclusion}
+                    setExclusion={setExclusion}
+                    error={errors.exclusion || ""}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -545,6 +586,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                 <HighlightsInput
                   highlights={highlights}
                   setHighlights={setHighlights}
+                  highlightPicturePreviews={highlightPicturesPreview}
                   error={errors.highlights || ""}
                 />
               </div>
@@ -598,11 +640,19 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             <button
               type="submit"
               onClick={handleSubmit}
+              disabled={loading}
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
  rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
  shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
             >
-              Create Your Luxury Tour
+              {loading ? (
+                <div className="flex justify-center items-center">
+                  Updating...{" "}
+                  <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
+                </div>
+              ) : (
+                "Update Tour"
+              )}
             </button>
           </div>
         </form>

@@ -30,12 +30,6 @@ import FAQInput from "../Common/FAQInput"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   ScrollText,
-  MapPin,
-  Globe,
-  Calendar,
-  Users,
-  Sun,
-  Hotel,
   Sparkles,
   Route,
   Settings,
@@ -61,6 +55,7 @@ import axios from "axios"
 import DifficultyInput from "../Common/DifficultyInput"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import Exclusions from "../Common/Exclusions"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -81,6 +76,7 @@ const formSchema = z.object({
   accommodations: z.string().min(1, "Accommodations is required"),
   thingsToKnow: z.string().min(1, "Things to Know is required"),
   inclusion: z.array(z.string()).min(1, "Inclusion is required"),
+  exclusion: z.array(z.string()).min(1, "Exclusion is required"),
   highlights: z.array(z.string()).min(1, "Highlights is required"),
   itinerary: z.array(z.string()).min(1, "Itinerary is required"),
   services: z.object({
@@ -115,6 +111,7 @@ type ErrorsType = {
   accommodations?: string
   thingsToKnow?: string
   inclusion?: string
+  exclusion?: string
   highlights?: string
   itinerary?: string
   services?: string
@@ -138,6 +135,7 @@ const CreateTrekForm = () => {
   const [accommodations, setAccommodations] = useState<string[]>([])
 
   const [inclusion, setInclusion] = useState<string[]>([])
+  const [exclusion, setExclusion] = useState<string[]>([])
 
   const [highlights, setHighlights] = useState<HighlightType[]>([])
   const [itineraries, setItineraries] = useState<ItineraryType[]>([])
@@ -395,6 +393,7 @@ const CreateTrekForm = () => {
       formData.append("idealTime", JSON.stringify(selectedSeasons))
       // formData.append("keyHighlights", JSON.stringify(highlights))
       formData.append("trekInclusion", JSON.stringify(inclusion))
+      formData.append("trekExclusion", JSON.stringify(exclusion))
       formData.append("trekItinerary", JSON.stringify(itinerariesJSON))
       formData.append("faq", JSON.stringify(faqs))
 
@@ -499,6 +498,7 @@ const CreateTrekForm = () => {
                   <ThumbnailInput
                     thumbnail={thumbnail}
                     setThumbnail={setThumbnail}
+                    thumbnailPreview={null}
                     error={errors.thumbnail || ""}
                   />
                 </div>
@@ -540,6 +540,11 @@ const CreateTrekForm = () => {
                     inclusion={inclusion}
                     setInclusion={setInclusion}
                     error={errors.inclusion || ""}
+                  />
+                  <Exclusions
+                    exclusion={exclusion}
+                    setExclusion={setExclusion}
+                    error={errors.exclusion || ""}
                   />
                 </div>
               </div>

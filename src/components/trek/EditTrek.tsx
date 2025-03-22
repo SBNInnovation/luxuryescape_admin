@@ -55,6 +55,7 @@ import axios from "axios"
 import DifficultyInput from "../Common/DifficultyInput"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import Exclusions from "../Common/Exclusions"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -75,6 +76,7 @@ const formSchema = z.object({
   accommodations: z.string().min(1, "Accommodations is required"),
   thingsToKnow: z.string().min(1, "Things to Know is required"),
   inclusion: z.array(z.string()).min(1, "Inclusion is required"),
+  exclusion: z.array(z.string()).min(1, "Exclusion is required"),
   highlights: z.array(z.string()).min(1, "Highlights is required"),
   itinerary: z.array(z.string()).min(1, "Itinerary is required"),
   services: z.object({
@@ -109,6 +111,7 @@ type ErrorsType = {
   accommodations?: string
   thingsToKnow?: string
   inclusion?: string
+  exclusion?: string
   highlights?: string
   itinerary?: string
   services?: string
@@ -117,12 +120,14 @@ type ErrorsType = {
 }
 
 const EditTrekForm = ({ slug }: { slug: string }) => {
+  const [id, setId] = useState<string>("")
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState<number>(0)
   const [country, setCountry] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
 
   const [difficulty, setDifficulty] = useState("")
 
@@ -132,6 +137,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
   const [accommodations, setAccommodations] = useState<string[]>([])
 
   const [inclusion, setInclusion] = useState<string[]>([])
+  const [exclusion, setExclusion] = useState<string[]>([])
 
   const [highlights, setHighlights] = useState<HighlightType[]>([])
   const [itineraries, setItineraries] = useState<ItineraryType[]>([])
@@ -140,6 +146,9 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
   const [images, setImages] = useState<(string | File)[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
+  const [highlightPicturesPreview, setHighlightPicturesPreview] = useState<
+    string[]
+  >([])
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
@@ -244,18 +253,22 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         success: boolean
         message?: string
         data: {
+          _id: string
           trekName: string
           cost: number
           country: string
           location: string
           duration: number
-          thumbnail: File | null
+          thumbnail: File | string
           difficultyLevel: string
           idealTime: string[]
           trekOverview: string
           accommodation: string[]
           trekInclusion: string[]
-          trekHighlights: HighlightType[]
+          trekExclusion: string[]
+          exclude: string[]
+          highlightPicture: string[]
+          trekHighlights: string[]
           trekItinerary: ItineraryType[]
           faq: FAQType[]
           gallery: (string | File)[]
@@ -268,12 +281,13 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         const trekData = data.data
 
         // Update state with fetched trek data
+        setId(trekData._id)
         setTitle(trekData.trekName)
         setPrice(trekData.cost)
         setCountry(trekData.country)
         setLocation(trekData.location)
         setDays(trekData.duration)
-        // setThumbnail(trekData.thumbnail)
+        setThumbnailPreview(trekData.thumbnail as string)
         setDifficulty(trekData.difficultyLevel)
         setSelectedSeasons(trekData.idealTime)
         setOverview(trekData.trekOverview)
@@ -281,10 +295,24 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         // Use null coalescing to provide fallback empty arrays
         setAccommodations(trekData.accommodation ?? [])
         setInclusion(trekData.trekInclusion ?? [])
-        // setHighlights(trekData.trekHighlights ?? [])
-        // setItineraries(trekData.trekItinerary ?? [])
+        setExclusion(trekData.trekExclusion ?? [])
+
+        setItineraries(trekData.trekItinerary ?? [])
         setFaqs(trekData.faq ?? [])
-        // setImages(trekData.gallery ?? [])
+        setPreviews(trekData.gallery as string[])
+
+        const hTitle = trekData.trekHighlights || []
+        const hPicture = trekData.highlightPicture || []
+
+        // Combine highlights and their pictures matching the exact interface
+        const combinedHighlights = hTitle.map((title, index) => ({
+          highlightsTitle: title,
+          highlightPicture: null,
+        }))
+
+        // Set the combined highlights
+        setHighlights(combinedHighlights)
+        setHighlightPicturesPreview(hPicture)
       } else {
         // Handle unsuccessful response
         toast.error(data.message || "Failed to fetch trek details")
@@ -356,6 +384,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
       formData.append("idealTime", JSON.stringify(selectedSeasons))
       // formData.append("keyHighlights", JSON.stringify(highlights))
       formData.append("trekInclusion", JSON.stringify(inclusion))
+      formData.append("trekExclusion", JSON.stringify(exclusion))
       formData.append("trekItinerary", JSON.stringify(itinerariesJSON))
       formData.append("faq", JSON.stringify(faqs))
 
@@ -379,15 +408,15 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
 
       // Send the request to the backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/edit-trek`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/edit/${id}`,
         formData
       )
 
       if (response.data.success) {
-        toast.success(response.data.message || "Trek added successfully!")
+        toast.success(response.data.message || "Trek updated successfully!")
         router.push("/trekkings")
       } else {
-        toast.error(response.data.message || "Failed to add trek")
+        toast.error(response.data.message || "Failed to update trek")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -464,6 +493,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                   <ThumbnailInput
                     thumbnail={thumbnail}
                     setThumbnail={setThumbnail}
+                    thumbnailPreview={thumbnailPreview}
                     error={errors.thumbnail || ""}
                   />
                 </div>
@@ -505,6 +535,11 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                     inclusion={inclusion}
                     setInclusion={setInclusion}
                     error={errors.inclusion || ""}
+                  />
+                  <Exclusions
+                    exclusion={exclusion}
+                    setExclusion={setExclusion}
+                    error={errors.exclusion || ""}
                   />
                 </div>
               </div>
