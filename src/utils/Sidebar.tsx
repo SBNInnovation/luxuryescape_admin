@@ -13,6 +13,8 @@ import {
   Mails,
 } from "lucide-react"
 
+import { signOut, useSession } from "next-auth/react"
+
 import {
   Sidebar,
   SidebarContent,
@@ -46,6 +48,8 @@ export function AppSidebar() {
     return pathname === url || pathname.startsWith(url + "/")
   }
 
+  const { data: session } = useSession()
+
   // Menu items
   const items = [
     { title: "Home", url: "/", icon: Home },
@@ -61,8 +65,7 @@ export function AppSidebar() {
   const logoutHandler = () => {
     const logoutConfirmation = confirm("Are you sure you want to logout?")
     if (!logoutConfirmation) return
-    localStorage.removeItem("luxtoken")
-    router.push("/login")
+    signOut()
   }
 
   return (
@@ -104,7 +107,7 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton className="text-lg font-semibold h-16 mb-6">
-                    <User2 /> Admin
+                    <User2 /> {session?.user?.name}
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>

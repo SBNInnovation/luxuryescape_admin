@@ -8,6 +8,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useSession } from "next-auth/react"
 import {
   Calendar,
   Map,
@@ -70,8 +71,7 @@ export default function Dashboard() {
     {}
   )
   const router = useRouter()
-
-  const { adminInfo } = useAdminDetails()
+  const { data: session } = useSession()
 
   const handleGetDashboardContent = async () => {
     const response = await axios.get(
@@ -118,7 +118,7 @@ export default function Dashboard() {
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                Welcome, {adminInfo.fullName}
+                Welcome, {session?.user?.name}!
               </h1>
               <p className="text-gray-500 mt-1">
                 Here's what's happening with your travel business today

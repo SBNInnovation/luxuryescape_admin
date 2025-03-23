@@ -9,6 +9,7 @@ import { Providers } from "./providers"
 import { usePathname } from "next/navigation"
 import { AdminDetailsProvider } from "@/utils/AuthContext"
 import { AuthProvider } from "@/utils/AuthValidation"
+import { Provider } from "@/providers/Providers"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,24 +44,26 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <AdminDetailsProvider>
-            <Providers />
-            <SidebarProvider>
-              {!isLoginPage &&
-                !isForgotPasswordPage &&
-                !isVerifyPage &&
-                !isChangePasswordPage && (
-                  <>
-                    <AppSidebar />
-                    <SidebarTrigger />
-                  </>
-                )}
+        <Provider>
+          <AuthProvider>
+            <AdminDetailsProvider>
+              <Providers />
+              <SidebarProvider>
+                {!isLoginPage &&
+                  !isForgotPasswordPage &&
+                  !isVerifyPage &&
+                  !isChangePasswordPage && (
+                    <>
+                      <AppSidebar />
+                      <SidebarTrigger />
+                    </>
+                  )}
 
-              {children}
-            </SidebarProvider>
-          </AdminDetailsProvider>
-        </AuthProvider>
+                {children}
+              </SidebarProvider>
+            </AdminDetailsProvider>
+          </AuthProvider>
+        </Provider>
       </body>
     </html>
   )

@@ -10,6 +10,9 @@ import { toast } from "sonner"
 import { useAuth } from "@/utils/AuthValidation"
 import { useAdminDetails } from "@/utils/AuthContext"
 
+//next auth
+import { signIn } from "next-auth/react"
+
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -19,28 +22,6 @@ const LoginForm: React.FC = () => {
   const { setAdminInfo } = useAdminDetails()
 
   const router = useRouter()
-
-  // const handleValidateAuth = async () => {
-  //   const token = localStorage.getItem("authToken")
-  //   if (!token) return
-
-  //   const response = await axios.get(
-  //     `${process.env.NEXT_PUBLIC_API_URL_PROD}/auth/validate`,
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-  //       },
-  //     }
-  //   )
-  //   const data = response.data
-
-  //   if (data.success) {
-  //     router.push("/")
-  //   } else {
-  //     localStorage.removeItem("authToken")
-  //   }
-  //   return
-  // }
 
   useEffect(() => {
     setEmail("")
@@ -60,31 +41,19 @@ const LoginForm: React.FC = () => {
 
     try {
       setLoading(true)
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/login`,
-        { email, password },
-        {
-          withCredentials: true,
-        }
-      )
 
-      if (response.data.success) {
-        toast.success(response.data.message)
-        Cookies.set("luxtoken", response.data.token)
-        localStorage.setItem("luxtoken", response.data.token)
+      const result = await signIn("credentials", {
+        identifier: email,
+        password: password,
+        redirect: false,
+        callbackUrl: "/",
+      })
 
-        setAdminInfo({
-          _id: response.data.data._id,
-          fullName: response.data.data.name,
-          email: response.data.data.email,
-        })
-        // Cookies.set("refreshToken", response.data.refreshToken)
-        setTimeout(() => {
-          router.push("/")
-        }, 500)
-      } else {
-        // Handle failed login attempt
-        toast.error(response.data.message || "Invalid email or password.")
+      if (result?.error) {
+        setError(result.error)
+        return
+      } else if (result?.url) {
+        router.push(result?.url)
       }
     } catch (error: any) {
       // Network or server errors
