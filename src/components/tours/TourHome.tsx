@@ -34,9 +34,10 @@ type TourType = {
   // country: string
   tourType: string
   thumbnail: string
-  isActivated: boolean
+  isActivate: boolean
   createdAt: string
 }
+type ActivationStatus = "active" | "inactive"
 
 const TourHome: React.FC = () => {
   const router = useRouter()
@@ -75,6 +76,24 @@ const TourHome: React.FC = () => {
       console.log(error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleVisibility = async (tourId: string, status: ActivationStatus) => {
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/activate-tour?tourId=${tourId}`,
+        {
+          activation: status,
+        }
+      )
+      const data = response.data
+      if (data.success) {
+        handleGetTours()
+      }
+    } catch (error) {
+      console.error("Error updating tour visibility:", error)
+      toast.error("Failed to update tour visibility")
     }
   }
 
@@ -125,14 +144,6 @@ const TourHome: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleToggle = (trekId: string, field: "isActivated") => {
-    setTours((prev) =>
-      prev.map((tour) =>
-        tour._id === trekId ? { ...tour, [field]: !tour[field] } : tour
-      )
-    )
   }
 
   return (
@@ -280,17 +291,18 @@ const TourHome: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-sm font-medium ${
-                            tour?.isActivated
-                              ? "text-green-600"
-                              : "text-red-600"
+                            tour?.isActivate ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {tour?.isActivated ? "Active" : "Inactive"}
+                          {tour?.isActivate ? "Active" : "Inactive"}
                         </span>
                         <Switch
-                          checked={tour?.isActivated}
-                          onCheckedChange={() =>
-                            handleToggle(tour?._id, "isActivated")
+                          checked={tour?.isActivate}
+                          onClick={() =>
+                            handleVisibility(
+                              tour?._id,
+                              tour?.isActivate ? "inactive" : "active"
+                            )
                           }
                         />
                       </div>

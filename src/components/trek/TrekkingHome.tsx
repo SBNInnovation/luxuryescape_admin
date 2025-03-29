@@ -33,9 +33,11 @@ type TrekType = {
   // country: string
   tourType: string
   thumbnail: string
-  isActivated: boolean
+  isActivate: boolean
   createdAt: string
 }
+
+type ActivationStatus = "active" | "inactive"
 
 const TrekkingHome: React.FC = () => {
   const router = useRouter()
@@ -77,6 +79,25 @@ const TrekkingHome: React.FC = () => {
     }
   }
 
+  // Updated handleVisibility with correct type
+  const handleVisibility = async (trekId: string, status: ActivationStatus) => {
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/activate-trek?trekId=${trekId}`,
+        {
+          activation: status,
+        }
+      )
+      const data = response.data
+      if (data.success) {
+        handleGetAllTreks()
+      }
+    } catch (error) {
+      console.error("Error updating trek visibility:", error)
+      toast.error("Failed to update trek visibility")
+    }
+  }
+
   useEffect(() => {
     handleGetAllTreks()
   }, [country, page, activation, sortOption])
@@ -88,14 +109,6 @@ const TrekkingHome: React.FC = () => {
     }, 500)
     return () => clearTimeout(delayDebounceFn)
   }, [search])
-
-  const handleToggle = (trekId: string, field: "isActivated") => {
-    setTreks((prev) =>
-      prev.map((trek) =>
-        trek._id === trekId ? { ...trek, [field]: !trek[field] } : trek
-      )
-    )
-  }
 
   const handleDeleteTrek = async (trekId: string, trekName: string) => {
     const confirmDelete = confirm(
@@ -265,16 +278,20 @@ const TrekkingHome: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-sm font-medium ${
-                            trek.isActivated ? "text-green-600" : "text-red-600"
+                            trek.isActivate ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {trek.isActivated ? "Active" : "Inactive"}
+                          {trek.isActivate ? "Active" : "Inactive"}
                         </span>
                         <Switch
-                          checked={trek.isActivated}
-                          onCheckedChange={() =>
-                            handleToggle(trek._id, "isActivated")
+                          checked={trek.isActivate}
+                          onClick={() =>
+                            handleVisibility(
+                              trek._id,
+                              trek.isActivate ? "inactive" : "active"
+                            )
                           }
+                          aria-label="Toggle visibility"
                         />
                       </div>
                       <div className="text-right">

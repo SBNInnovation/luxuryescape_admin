@@ -115,11 +115,11 @@ export function AppSidebar() {
                   side="top"
                   className="w-[--radix-popper-anchor-width]"
                 >
-                  <Link href="/my-account">
+                  {/* <Link href="/my-account">
                     <DropdownMenuItem className="text-lg">
                       My Account
                     </DropdownMenuItem>
-                  </Link>
+                  </Link> */}
                   <DropdownMenuItem onClick={logoutHandler}>
                     <span className="text-lg text-red-800">Sign out</span>
                   </DropdownMenuItem>

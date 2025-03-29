@@ -36,6 +36,8 @@ import {
   Image,
   Video,
   Loader2Icon,
+  PenBoxIcon,
+  Trash2Icon,
 } from "lucide-react"
 
 //types
@@ -56,6 +58,9 @@ import DifficultyInput from "../Common/DifficultyInput"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Exclusions from "../Common/Exclusions"
+import { BookingPriceInterface } from "../Types/Types"
+import AddBookingPrice from "../Common/AddBookingPrice"
+import UpdateBookingPrice from "../Common/EditBookingPrice"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -149,6 +154,26 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
   const [highlightPicturesPreview, setHighlightPicturesPreview] = useState<
     string[]
   >([])
+
+  const [addBookingPriceOpen, setAddBookingPriceOpen] = useState<boolean>(false)
+  const [editBookingPriceOpen, setEditBookingPriceOpen] =
+    useState<boolean>(false)
+  const [bookingPriceData, setBookingPriceData] =
+    useState<BookingPriceInterface>({
+      _id: "",
+      adventureId: "",
+      adventureType: "",
+      pricePerPerson: "",
+      discount: "",
+      soloFourStar: "",
+      soloFiveStar: "",
+      singleSupplementaryFourStar: "",
+      singleSupplementaryFiveStar: "",
+      standardFourStar: "",
+      standardFiveStar: "",
+    })
+  const [availableBookingPrice, setAvailableBookingPrice] =
+    useState<boolean>(false)
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
@@ -428,12 +453,47 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
     }
   }
 
+  const handleAddBookingPrice = () => {
+    setAddBookingPriceOpen(!addBookingPriceOpen)
+  }
+  const handleEditBookingPrice = () => {
+    setEditBookingPriceOpen(!editBookingPriceOpen)
+  }
+  const handleDeleteBookingPrice = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the booking price?"
+    )
+    if (!confirmDelete) return
+    try {
+      setLoading(true)
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/delete-booking-price/${bookingPriceData?._id}`
+      )
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Booking Price Removed")
+        setLoading(false)
+        setAvailableBookingPrice(false)
+      } else {
+        toast.error(
+          response.data.message ||
+            "Unable to Delete Booking Price, Please Try Again!"
+        )
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error("Error:", error)
+      toast.error("Error occurred while deleting the booking price.")
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     handleSingleTrek()
   }, [])
 
   return (
-    <div className="min-h-screen ">
+    <div className="relative min-h-screen ">
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-16">
@@ -444,6 +504,36 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
             Transform Dreams into Extraordinary Journeys
           </p>
           {/* <Button onClick={handleAutofill}>Autofill Form</Button> */}
+          <div className="flex items-center space-x-2 ml-4">
+            {availableBookingPrice ? (
+              <>
+                <Button
+                  type="button"
+                  onClick={handleEditBookingPrice}
+                  className="bg-blue-700 hover:bg-blue-800"
+                >
+                  <PenBoxIcon className="w-6 h-6" />
+                  Edit Booking Price
+                </Button>
+                {/* delete  */}
+                <Button
+                  type="button"
+                  onClick={() => handleDeleteBookingPrice()}
+                  className="bg-red-700 hover:bg-red-800"
+                >
+                  <Trash2Icon className="w-6 h-6" /> Delete Price
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleAddBookingPrice}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Add Booking Price
+              </Button>
+            )}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">

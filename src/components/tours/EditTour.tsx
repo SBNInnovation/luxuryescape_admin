@@ -43,6 +43,8 @@ import {
   Video,
   Loader2Icon,
   ArrowLeftIcon,
+  Trash2Icon,
+  PenBoxIcon,
 } from "lucide-react"
 
 //types
@@ -62,6 +64,9 @@ import axios from "axios"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Exclusions from "../Common/Exclusions"
+import { BookingPriceInterface } from "../Types/Types"
+import AddBookingPrice from "../Common/AddBookingPrice"
+import UpdateBookingPrice from "../Common/EditBookingPrice"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -158,6 +163,26 @@ const EditTourForm = ({ slug }: { slug: string }) => {
   const [imageError, setImageError] = useState("")
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
+
+  const [addBookingPriceOpen, setAddBookingPriceOpen] = useState<boolean>(false)
+  const [editBookingPriceOpen, setEditBookingPriceOpen] =
+    useState<boolean>(false)
+  const [bookingPriceData, setBookingPriceData] =
+    useState<BookingPriceInterface>({
+      _id: "",
+      adventureId: "",
+      adventureType: "",
+      pricePerPerson: "",
+      discount: "",
+      soloFourStar: "",
+      soloFiveStar: "",
+      singleSupplementaryFourStar: "",
+      singleSupplementaryFiveStar: "",
+      standardFourStar: "",
+      standardFiveStar: "",
+    })
+  const [availableBookingPrice, setAvailableBookingPrice] =
+    useState<boolean>(false)
 
   const router = useRouter()
 
@@ -275,34 +300,37 @@ const EditTourForm = ({ slug }: { slug: string }) => {
       const response = await axios.get<{
         success: boolean
         data: {
-          _id: string
-          tourName: string
+          specificTour: {
+            _id: string
+            tourName: string
 
-          country: string
-          location: string
-          tourTypes: string
-          cost: number
-          duration: number
-          tourOverview: string
-          idealTime: string[]
-          accommodation: string[]
-          tourInclusion: string[]
-          tourExclusion: string[]
-          tourHighlights: string[]
+            country: string
+            location: string
+            tourTypes: string
+            cost: number
+            duration: number
+            tourOverview: string
+            idealTime: string[]
+            accommodation: string[]
+            tourInclusion: string[]
+            tourExclusion: string[]
+            tourHighlights: string[]
 
-          tourItinerary: ItineraryType[]
-          faq: FAQType[]
-          gallery?: (string | File)[]
-          thumbnail?: string | File
-          itineraryDayPhoto?: string[]
-          highlightPicture?: string[]
+            tourItinerary: ItineraryType[]
+            faq: FAQType[]
+            gallery?: (string | File)[]
+            thumbnail?: string | File
+            itineraryDayPhoto?: string[]
+            highlightPicture?: string[]
+          }
+          bookingDetails: BookingPriceInterface | null
         }
       }>(`${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/specific/${slug}`)
 
       const { data } = response
 
       if (data.success) {
-        const tourData = data.data
+        const tourData = data.data.specificTour
 
         // Set primary tour details
         setId(tourData._id)
@@ -338,6 +366,14 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         // Set the combined highlights
         setHighlights(combinedHighlights)
         setHighlightPicturesPreview(hPicture)
+
+        //  for booking price details
+        if (response.data.data.bookingDetails !== null) {
+          setBookingPriceData(response.data.data.bookingDetails)
+          setAvailableBookingPrice(true)
+        } else {
+          setAvailableBookingPrice(false)
+        }
       } else {
         console.warn("Tour data fetch was not successful")
       }
@@ -445,6 +481,41 @@ const EditTourForm = ({ slug }: { slug: string }) => {
     }
   }
 
+  const handleAddBookingPrice = () => {
+    setAddBookingPriceOpen(!addBookingPriceOpen)
+  }
+  const handleEditBookingPrice = () => {
+    setEditBookingPriceOpen(!editBookingPriceOpen)
+  }
+  const handleDeleteBookingPrice = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete the booking price?"
+    )
+    if (!confirmDelete) return
+    try {
+      setLoading(true)
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/delete-booking-price/${bookingPriceData?._id}`
+      )
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Booking Price Removed")
+        setLoading(false)
+        setAvailableBookingPrice(false)
+      } else {
+        toast.error(
+          response.data.message ||
+            "Unable to Delete Booking Price, Please Try Again!"
+        )
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error("Error:", error)
+      toast.error("Error occurred while deleting the booking price.")
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     getTourData()
   }, [])
@@ -468,11 +539,58 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             Transform Dreams into Extraordinary Journeys
           </p>
           {/* <Button onClick={handleAutofill}>Autofill Form</Button> */}
+          <div className="flex items-center space-x-2 ml-4">
+            {availableBookingPrice ? (
+              <>
+                <Button
+                  type="button"
+                  onClick={handleEditBookingPrice}
+                  className="bg-blue-700 hover:bg-blue-800"
+                >
+                  <PenBoxIcon className="w-6 h-6" />
+                  Edit Booking Price
+                </Button>
+                {/* delete  */}
+                <Button
+                  type="button"
+                  onClick={() => handleDeleteBookingPrice()}
+                  className="bg-red-700 hover:bg-red-800"
+                >
+                  <Trash2Icon className="w-6 h-6" /> Delete Price
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleAddBookingPrice}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Add Booking Price
+              </Button>
+            )}
+          </div>
         </div>
 
+        {/* for add booking price component */}
+        {!availableBookingPrice && addBookingPriceOpen && (
+          <div className="absolute top-40 left-2/3 z-100 ">
+            <AddBookingPrice adventureType="Tour" adventureId={id} />
+          </div>
+        )}
+        {/* for edit booking price component */}
+        {availableBookingPrice && editBookingPriceOpen && (
+          <div className="absolute top-40 left-2/3 z-100 ">
+            <UpdateBookingPrice
+              adventureType="Tour"
+              adventureId={id}
+              bookingPriceDetails={bookingPriceData}
+            />
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information Section */}
-          <Card className=" backdrop-blur-md border border-white/20">
+
+          <Card className=" backdrop-blur-md border border-white/20 ">
             <CardContent className="p-8">
               {/* <SectionHeader icon={ScrollText} title="Basic Information" /> */}
               <div className="flex gap-2 text-2xl font-semibold">
