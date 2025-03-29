@@ -265,14 +265,11 @@ const TailorMadeHome: React.FC = () => {
 
                 <td className="px-6 py-4 text-center">
                   <div className="flex items-center justify-center space-x-3">
-                    <Button
-                      onClick={() =>
-                        router.push(`/tailor-made/view/${request._id}`)
-                      }
-                      className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg"
-                    >
-                      View Details
-                    </Button>
+                    <Link href={`/tailor-made/view/${request._id}`}>
+                      <Button className="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg">
+                        View Details
+                      </Button>
+                    </Link>
 
                     <Button
                       variant="destructive"
@@ -291,7 +288,7 @@ const TailorMadeHome: React.FC = () => {
         </table>
       </div>
       {/* Loading and Empty States */}
-      {/* Loading and Empty States */}
+
       {loading && (
         <div className="flex justify-center mt-40">
           <MainSpinner />

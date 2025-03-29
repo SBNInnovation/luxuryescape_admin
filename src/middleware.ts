@@ -15,6 +15,7 @@ export async function middleware(request: NextRequest) {
     "/accommodations",
     "/blogs",
     "/tailor-made",
+    "/bookings",
     "/quotes",
     "/clients",
   ]
@@ -40,6 +41,7 @@ export const config = {
     "/blogs/:path*",
     "/tailor-made/:path*",
     "/quotes/:path*",
+    "/bookings/:path*",
     "/clients/:path*",
   ],
 }

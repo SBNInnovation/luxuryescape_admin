@@ -26,14 +26,17 @@ import MailSendForm from "../Common/MailSend"
 
 interface RequestDetail {
   _id: string
-  requestType: string
-  itemType: string
+
   name: string
   email: string
   number: string
   message: string
-  itemSlug: string
-  itemName: string
+  tourName: string
+  trekname: string
+  type: string
+  tourId: string
+  trekId: string
+
   status: string
   createdAt: string
 }
@@ -75,9 +78,9 @@ const SingleQuoteRequest: React.FC<SingleRequestProps> = ({ requestId }) => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
-      <div className="container flex p-10">
+      <div className="container flex gap-10 p-10">
         {/*  Header Section */}
-        <div className="bg-white shadow-lg rounded-xl overflow-hidden mb-8">
+        <div className="bg-white shadow-lg rounded-xl overflow-hidden mb-8 w-3/5">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -87,18 +90,11 @@ const SingleQuoteRequest: React.FC<SingleRequestProps> = ({ requestId }) => {
                 >
                   <ArrowLeft size={28} />
                 </button>
-                {/* <div>
-                  <h1 className="text-3xl font-bold flex items-center gap-3">
-                    <MapPin className="text-white" size={32} />
-                    {requestDetail.itemName}{" "}
-                    {requestDetail.requestType.charAt(0).toUpperCase() +
-                      requestDetail.requestType.slice(1)}
-                  </h1>
-                  <p className="text-blue-100 mt-1">
-                    Submitted on{" "}
-                    {new Date(requestDetail.createdAt).toLocaleDateString()}
-                  </p>
-                </div> */}
+                {requestDetail.type === "tour" ? (
+                  <span className="text-2xl">{requestDetail.tourName}</span>
+                ) : (
+                  <span className="text-2xl">{requestDetail.trekname}</span>
+                )}
               </div>
 
               <div className="flex items-center gap-4">
@@ -128,28 +124,31 @@ const SingleQuoteRequest: React.FC<SingleRequestProps> = ({ requestId }) => {
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
-                    <Users className="text-blue-600" />
-                    <span>
-                      <strong>Request Type:</strong> {requestDetail.requestType}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
                     <Mountain className="text-blue-600" />
                     <span>
-                      <strong>Item Type:</strong> {requestDetail.itemType}
+                      <strong>Item Type:</strong>{" "}
+                      <span className="font-semibold">
+                        {" "}
+                        {requestDetail.type}
+                      </span>
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
                     <Landmark className="text-blue-600" />
                     <span>
                       <strong>Item Name: </strong>
-                      <Link
+                      {/* <Link
                         className="text-blue-600 underline"
                         target="_blank"
                         href={`${process.env.NEXT_PUBLIC_CLIENT_URL_PROD}/${requestDetail.itemType}/${requestDetail.itemSlug}`}
-                      >
-                        {requestDetail.itemName}
-                      </Link>
+                      > */}
+                      {requestDetail.type === "tour" ? (
+                        <span>{requestDetail.tourName}</span>
+                      ) : (
+                        <span>{requestDetail.trekname}</span>
+                      )}
+
+                      {/* </Link> */}
                     </span>
                   </div>
                 </div>

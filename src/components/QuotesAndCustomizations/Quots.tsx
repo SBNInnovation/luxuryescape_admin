@@ -4,7 +4,15 @@ import { useRouter } from "next/navigation"
 import axios from "axios"
 
 import { Button } from "../ui/button"
-import { Trash2, Plus, SortAsc, MapPin, Calendar, Mail } from "lucide-react"
+import {
+  Trash2,
+  Plus,
+  SortAsc,
+  MapPin,
+  Calendar,
+  Mail,
+  SearchIcon,
+} from "lucide-react"
 
 // import { CustomPagination } from "../utils/Pagination"
 import { toast } from "sonner"
@@ -39,6 +47,7 @@ const Quotes: React.FC = () => {
   const [requests, setRequests] = useState<RequestMail[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [page, setPage] = useState<number>(1)
+  const [search, setSearch] = useState<string>("")
   const [limit, setLimit] = useState<number>(8)
   const [totalPages, setTotalPages] = useState<number>(1)
   const [sort, setSort] = useState<string>("-createdAt")
@@ -54,21 +63,6 @@ const Quotes: React.FC = () => {
     customizePending: 0,
   })
 
-  //   // Fetch counts
-  //   const getCounts = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${process.env.NEXT_PUBLIC_API_URL_DEV}/quote/get`
-  //       )
-
-  //       if (response.data.success) {
-  //         setCounts(response.data.data)
-  //       }
-  //     } catch (error) {
-  //       console.log("Failed to fetch counts")
-  //     }
-  //   }
-
   // Fetch requests data with filters
   const getRequests = async () => {
     try {
@@ -82,6 +76,7 @@ const Quotes: React.FC = () => {
             limit,
             requestType: activeTab,
             sort,
+            search,
           },
         }
       )
@@ -149,6 +144,17 @@ const Quotes: React.FC = () => {
     return diffDays === 0 ? "Today" : `${diffDays} days ago`
   }
 
+  //debounce function for search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      getRequests()
+    }, 500)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [search])
+
   return (
     <div className="p-8 bg-gray-50 min-h-screen w-full">
       {/* Header Section */}
@@ -171,21 +177,17 @@ const Quotes: React.FC = () => {
       {/* Filters Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="relative">
-          <SortAsc className="absolute left-3 top-2 text-gray-400" size={20} />
-          <select
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-            value={sort}
-            onChange={(e) => {
-              setSort(e.target.value)
-              setPage(1)
-            }}
-          >
-            <option value="">Sort by...</option>
-            <option value="-createdAt">Newest First</option>
-            <option value="createdAt">Oldest First</option>
-            <option value="fullName">Name A-Z</option>
-            <option value="-fullName">Name Z-A</option>
-          </select>
+          <SearchIcon
+            className="absolute left-3 top-2 text-gray-400"
+            size={20}
+          />
+          <input
+            type="text"
+            placeholder="Search for requests..."
+            className="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
       </div>
       {/* Requests List */}

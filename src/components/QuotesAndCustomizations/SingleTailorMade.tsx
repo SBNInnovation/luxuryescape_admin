@@ -30,6 +30,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import MailSendForm from "../Common/MailSend"
+import MailSendTailorMade from "./SendSingleMailTailorMade"
 
 interface TailorMadeRequest {
   _id: string
@@ -125,7 +126,6 @@ const SingleTailorMade: React.FC<SingleTailorMadeProps> = ({ requestId }) => {
                 </button>
                 <div>
                   <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-                    <Heart className="text-white" size={28} />
                     Tailor-Made Trip Request
                   </h1>
                   <p className="text-blue-100 mt-1">
@@ -310,8 +310,8 @@ const SingleTailorMade: React.FC<SingleTailorMadeProps> = ({ requestId }) => {
         </div>
 
         {/* Form for mail */}
-        <div className="md:w-1/3">
-          <MailSendForm
+        <div className="md:w-2/4">
+          <MailSendTailorMade
             id={requestDetail._id}
             email={requestDetail.email}
             name={`${requestDetail.firstName} ${requestDetail.lastName}`}
