@@ -233,11 +233,7 @@ const AccommodationHome: React.FC = () => {
                   Tour Details
                   {/* Tour Details ({accommodations.length}/{dummyTrekking.length}) */}
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  <div className="flex items-center justify-between">
-                    <span>Visibility</span>
-                  </div>
-                </th>
+
                 <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
@@ -282,28 +278,6 @@ const AccommodationHome: React.FC = () => {
                               {acco?.rooms?.length} Rooms
                             </Badge>
                           </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`text-sm font-medium ${
-                              acco.isActivated
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {acco.isActivated ? "Active" : "Inactive"}
-                          </span>
-                          <Switch
-                            checked={acco.isActivated}
-                            // onCheckedChange={() =>
-                            //   handleToggle(trek._id, "isActivated")
-                            // }
-                          />
                         </div>
                       </div>
                     </td>

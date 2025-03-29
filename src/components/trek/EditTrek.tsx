@@ -278,32 +278,35 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         success: boolean
         message?: string
         data: {
-          _id: string
-          trekName: string
-          cost: number
-          country: string
-          location: string
-          duration: number
-          thumbnail: File | string
-          difficultyLevel: string
-          idealTime: string[]
-          trekOverview: string
-          accommodation: string[]
-          trekInclusion: string[]
-          trekExclusion: string[]
-          exclude: string[]
-          highlightPicture: string[]
-          trekHighlights: string[]
-          trekItinerary: ItineraryType[]
-          faq: FAQType[]
-          gallery: (string | File)[]
+          specificTrek: {
+            _id: string
+            trekName: string
+            cost: number
+            country: string
+            location: string
+            duration: number
+            thumbnail: File | string
+            difficultyLevel: string
+            idealTime: string[]
+            trekOverview: string
+            accommodation: string[]
+            trekInclusion: string[]
+            trekExclusion: string[]
+            exclude: string[]
+            highlightPicture: string[]
+            trekHighlights: string[]
+            trekItinerary: ItineraryType[]
+            faq: FAQType[]
+            gallery: (string | File)[]
+          }
+          bookingDetails: BookingPriceInterface | null
         }
       }>(`${process.env.NEXT_PUBLIC_API_URL_PROD}/trek/specific/${slug}`)
 
       const { data } = response
 
       if (data.success) {
-        const trekData = data.data
+        const trekData = data.data.specificTrek
 
         // Update state with fetched trek data
         setId(trekData._id)
