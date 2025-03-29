@@ -48,6 +48,7 @@ const LoginForm: React.FC = () => {
         redirect: false,
         callbackUrl: "/",
       })
+      console.log("login :", result)
 
       if (result?.error) {
         setError(result.error)
