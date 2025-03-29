@@ -30,12 +30,6 @@ import FAQInput from "../Common/FAQInput"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   ScrollText,
-  MapPin,
-  Globe,
-  Calendar,
-  Users,
-  Sun,
-  Hotel,
   Sparkles,
   Route,
   Settings,
@@ -45,6 +39,7 @@ import {
   ArrowLeftIcon,
   Trash2Icon,
   PenBoxIcon,
+  PlusIcon,
 } from "lucide-react"
 
 //types
@@ -55,7 +50,6 @@ import {
   FAQType,
 } from "../Types/Types"
 import MultiImageInput from "../Common/MultiImageInput"
-import VideoUploadInput from "../Common/VideoInput"
 import { Button } from "../ui/button"
 import Inclusion from "../Common/Inclusion"
 import Duration from "../Common/Duration"
@@ -167,13 +161,13 @@ const EditTourForm = ({ slug }: { slug: string }) => {
   const [addBookingPriceOpen, setAddBookingPriceOpen] = useState<boolean>(false)
   const [editBookingPriceOpen, setEditBookingPriceOpen] =
     useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [bookingPriceData, setBookingPriceData] =
     useState<BookingPriceInterface>({
       _id: "",
       adventureId: "",
       adventureType: "",
-      pricePerPerson: "",
-      discount: "",
+      solo: "",
       soloFourStar: "",
       soloFiveStar: "",
       singleSupplementaryFourStar: "",
@@ -483,9 +477,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
 
   const handleAddBookingPrice = () => {
     setAddBookingPriceOpen(!addBookingPriceOpen)
+    setIsOpen(!isOpen)
   }
   const handleEditBookingPrice = () => {
     setEditBookingPriceOpen(!editBookingPriceOpen)
+    setIsOpen(!isOpen)
   }
   const handleDeleteBookingPrice = async () => {
     const confirmDelete = window.confirm(
@@ -539,22 +535,29 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             Transform Dreams into Extraordinary Journeys
           </p>
           {/* <Button onClick={handleAutofill}>Autofill Form</Button> */}
-          <div className="flex items-center space-x-2 ml-4">
+          <div className="flex items-center space-x-2 ml-4 mt-6">
             {availableBookingPrice ? (
               <>
                 <Button
                   type="button"
                   onClick={handleEditBookingPrice}
-                  className="bg-blue-700 hover:bg-blue-800"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <PenBoxIcon className="w-6 h-6" />
-                  Edit Booking Price
+                  {editBookingPriceOpen ? (
+                    <>
+                      <ArrowLeftIcon className="w-6 h-6" /> Back to form
+                    </>
+                  ) : (
+                    <>
+                      <PenBoxIcon className="w-6 h-6" /> Edit Price
+                    </>
+                  )}
                 </Button>
                 {/* delete  */}
                 <Button
                   type="button"
                   onClick={() => handleDeleteBookingPrice()}
-                  className="bg-red-700 hover:bg-red-800"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                 >
                   <Trash2Icon className="w-6 h-6" /> Delete Price
                 </Button>
@@ -565,7 +568,15 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                 onClick={handleAddBookingPrice}
                 className="bg-primary hover:bg-primary/90"
               >
-                Add Booking Price
+                {addBookingPriceOpen ? (
+                  <>
+                    <ArrowLeftIcon className="w-6 h-6" /> Back to form
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon className="w-6 h-6" /> Add Booking Price
+                  </>
+                )}
               </Button>
             )}
           </div>
@@ -573,13 +584,13 @@ const EditTourForm = ({ slug }: { slug: string }) => {
 
         {/* for add booking price component */}
         {!availableBookingPrice && addBookingPriceOpen && (
-          <div className="absolute top-40 left-2/3 z-100 ">
+          <div className="absolute top-52 left-1/3 z-100 mt-6">
             <AddBookingPrice adventureType="Tour" adventureId={id} />
           </div>
         )}
         {/* for edit booking price component */}
         {availableBookingPrice && editBookingPriceOpen && (
-          <div className="absolute top-40 left-2/3 z-100 ">
+          <div className="absolute top-52 left-1/3 z-100 mt-6 ">
             <UpdateBookingPrice
               adventureType="Tour"
               adventureId={id}
@@ -587,193 +598,194 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             />
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information Section */}
-
-          <Card className=" backdrop-blur-md border border-white/20 ">
-            <CardContent className="p-8">
-              {/* <SectionHeader icon={ScrollText} title="Basic Information" /> */}
-              <div className="flex gap-2 text-2xl font-semibold">
-                <ScrollText className="w-8 h-8 text-blue-400" /> Basic
-                Information
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                <div className="space-y-6">
-                  {/* Left column inputs */}
-                  <TitleInput
-                    title={title}
-                    setTitle={setTitle}
-                    error={errors.title || ""}
-                  />
-                  <PriceInput
-                    price={price}
-                    setPrice={setPrice}
-                    error={errors.price || ""}
-                  />
-                  <CountryInput
-                    country={country}
-                    setCountry={setCountry}
-                    error={errors.country || ""}
-                  />
-                  <Duration
-                    days={days}
-                    setDays={setDays}
-                    error={errors.days || ""}
-                  />
-                  <LocationInput
-                    location={location}
-                    setLocation={setLocation}
-                    error={errors.location || ""}
-                  />
+        {isOpen && (
+          <form onSubmit={handleSubmit} className=" space-y-8 z-10">
+            {/* Basic Information Section */}
+            <Card className=" backdrop-blur-md border border-white/20 ">
+              <CardContent className="p-8">
+                {/* <SectionHeader icon={ScrollText} title="Basic Information" /> */}
+                <div className="flex gap-2 text-2xl font-semibold">
+                  <ScrollText className="w-8 h-8 text-blue-400" /> Basic
+                  Information
                 </div>
-                <div className="space-y-6">
-                  <ThumbnailInput
-                    thumbnail={thumbnail}
-                    setThumbnail={setThumbnail}
-                    thumbnailPreview={thumbnailPreview}
-                    error={errors.thumbnail || ""}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                  <div className="space-y-6">
+                    {/* Left column inputs */}
+                    <TitleInput
+                      title={title}
+                      setTitle={setTitle}
+                      error={errors.title || ""}
+                    />
+                    <PriceInput
+                      price={price}
+                      setPrice={setPrice}
+                      error={errors.price || ""}
+                    />
+                    <CountryInput
+                      country={country}
+                      setCountry={setCountry}
+                      error={errors.country || ""}
+                    />
+                    <Duration
+                      days={days}
+                      setDays={setDays}
+                      error={errors.days || ""}
+                    />
+                    <LocationInput
+                      location={location}
+                      setLocation={setLocation}
+                      error={errors.location || ""}
+                    />
+                  </div>
+                  <div className="space-y-6">
+                    <ThumbnailInput
+                      thumbnail={thumbnail}
+                      setThumbnail={setThumbnail}
+                      thumbnailPreview={thumbnailPreview}
+                      error={errors.thumbnail || ""}
+                    />
+                  </div>
+                  <div className="space-y-6 mt-8">
+                    <BestSeasonInput
+                      selectedSeasons={selectedSeasons}
+                      setSelectedSeasons={setSelectedSeasons}
+                      error={errors.selectedSeasons || ""}
+                    />
+                  </div>
+                  <div className="space-y-6 mt-8">
+                    <AddTourType
+                      tripsTourId={tripTourId}
+                      setTripsTourId={setTripTourId}
+                      error={errors.tripTourId || ""}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Descriptions Section */}
+            <Card className=" backdrop-blur-md border border-white/20">
+              <CardContent className="p-8">
+                {/* <SectionHeader icon={ScrollText} title="Descriptions" /> */}
+                <div className="flex gap-2 text-2xl font-semibold">
+                  <ScrollText className="w-8 h-8 text-blue-400" /> Descriptions
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                  <div className="space-y-6">
+                    {/* overview */}
+                    <OverviewInput
+                      overview={overview}
+                      setOverview={setOverview}
+                      error={errors.overview || ""}
+                    />
+
+                    {/* accommodation */}
+                    <AccommodationInput
+                      accommodations={accommodations}
+                      setAccommodations={setAccommodations}
+                      error={errors.accommodations || ""}
+                    />
+                    {/* things to know */}
+                    <Inclusion
+                      inclusion={inclusion}
+                      setInclusion={setInclusion}
+                      error={errors.inclusion || ""}
+                    />
+                    <Exclusions
+                      exclusion={exclusion}
+                      setExclusion={setExclusion}
+                      error={errors.exclusion || ""}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Features Section */}
+            {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> */}
+            <Card className=" backdrop-blur-md border border-white/20">
+              <CardContent className="p-8">
+                {/* <SectionHeader icon={Sparkles} title="Highlights & Services" /> */}
+                <div className="flex gap-2 text-2xl font-semibold">
+                  <Sparkles className="w-8 h-8 text-blue-400" /> Highlights &
+                  Services
                 </div>
                 <div className="space-y-6 mt-8">
-                  <BestSeasonInput
-                    selectedSeasons={selectedSeasons}
-                    setSelectedSeasons={setSelectedSeasons}
-                    error={errors.selectedSeasons || ""}
+                  {/* HIGHLIGHTS */}
+                  <HighlightsInput
+                    highlights={highlights}
+                    setHighlights={setHighlights}
+                    highlightPicturePreviews={highlightPicturesPreview}
+                    error={errors.highlights || ""}
                   />
+                </div>
+
+                {/* <SectionHeader icon={Settings} title="Additional Information" /> */}
+                <div className="flex gap-2 mt-6 text-2xl font-semibold">
+                  <Settings className="w-8 h-8 text-blue-400" />
+                  Additional Information
                 </div>
                 <div className="space-y-6 mt-8">
-                  <AddTourType
-                    tripsTourId={tripTourId}
-                    setTripsTourId={setTripTourId}
-                    error={errors.tripTourId || ""}
+                  {/* ITINERARIES */}
+                  <ItinerariesInput
+                    itineraries={itineraries}
+                    setItineraries={setItineraries}
+                    error={errors.itinerary || ""}
                   />
+                  {/* FAQ */}
+                  <FAQInput faqs={faqs} setFaqs={setFaqs} />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+            {/* </div> */}
 
-          {/* Descriptions Section */}
-          <Card className=" backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              {/* <SectionHeader icon={ScrollText} title="Descriptions" /> */}
-              <div className="flex gap-2 text-2xl font-semibold">
-                <ScrollText className="w-8 h-8 text-blue-400" /> Descriptions
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                <div className="space-y-6">
-                  {/* overview */}
-                  <OverviewInput
-                    overview={overview}
-                    setOverview={setOverview}
-                    error={errors.overview || ""}
-                  />
-
-                  {/* accommodation */}
-                  <AccommodationInput
-                    accommodations={accommodations}
-                    setAccommodations={setAccommodations}
-                    error={errors.accommodations || ""}
-                  />
-                  {/* things to know */}
-                  <Inclusion
-                    inclusion={inclusion}
-                    setInclusion={setInclusion}
-                    error={errors.inclusion || ""}
-                  />
-                  <Exclusions
-                    exclusion={exclusion}
-                    setExclusion={setExclusion}
-                    error={errors.exclusion || ""}
-                  />
+            {/* Media Section */}
+            <Card className=" backdrop-blur-md border border-white/20">
+              <CardContent className="p-8">
+                {/* <SectionHeader icon={Image} title="Media Gallery" /> */}
+                <div className="flex gap-2 text-2xl font-semibold">
+                  <Image className="w-8 h-8 text-blue-400" /> Media Gallery
                 </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Features Section */}
-          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> */}
-          <Card className=" backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              {/* <SectionHeader icon={Sparkles} title="Highlights & Services" /> */}
-              <div className="flex gap-2 text-2xl font-semibold">
-                <Sparkles className="w-8 h-8 text-blue-400" /> Highlights &
-                Services
-              </div>
-              <div className="space-y-6 mt-8">
-                {/* HIGHLIGHTS */}
-                <HighlightsInput
-                  highlights={highlights}
-                  setHighlights={setHighlights}
-                  highlightPicturePreviews={highlightPicturesPreview}
-                  error={errors.highlights || ""}
-                />
-              </div>
+                <div className="space-y-8 mt-8">
+                  {/* MULTIPLE IMAGES */}
+                  <MultiImageInput
+                    images={images}
+                    setImages={setImages}
+                    previews={previews}
+                    setPreviews={setPreviews}
+                    imageError={imageError}
+                    setImageError={setImageError}
+                  />
 
-              {/* <SectionHeader icon={Settings} title="Additional Information" /> */}
-              <div className="flex gap-2 mt-6 text-2xl font-semibold">
-                <Settings className="w-8 h-8 text-blue-400" />
-                Additional Information
-              </div>
-              <div className="space-y-6 mt-8">
-                {/* ITINERARIES */}
-                <ItinerariesInput
-                  itineraries={itineraries}
-                  setItineraries={setItineraries}
-                  error={errors.itinerary || ""}
-                />
-                {/* FAQ */}
-                <FAQInput faqs={faqs} setFaqs={setFaqs} />
-              </div>
-            </CardContent>
-          </Card>
-          {/* </div> */}
+                  {/* VIDEO */}
+                  {/* <VideoUploadInput video={video} setVideo={setVideo} /> */}
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Media Section */}
-          <Card className=" backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              {/* <SectionHeader icon={Image} title="Media Gallery" /> */}
-              <div className="flex gap-2 text-2xl font-semibold">
-                <Image className="w-8 h-8 text-blue-400" /> Media Gallery
-              </div>
-
-              <div className="space-y-8 mt-8">
-                {/* MULTIPLE IMAGES */}
-                <MultiImageInput
-                  images={images}
-                  setImages={setImages}
-                  previews={previews}
-                  setPreviews={setPreviews}
-                  imageError={imageError}
-                  setImageError={setImageError}
-                />
-
-                {/* VIDEO */}
-                {/* <VideoUploadInput video={video} setVideo={setVideo} /> */}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Submit Button */}
-          <div className="pt-8">
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
+            {/* Submit Button */}
+            <div className="pt-8">
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
  rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
  shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
-            >
-              {loading ? (
-                <div className="flex justify-center items-center">
-                  Updating...{" "}
-                  <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
-                </div>
-              ) : (
-                "Update Tour"
-              )}
-            </button>
-          </div>
-        </form>
+              >
+                {loading ? (
+                  <div className="flex justify-center items-center">
+                    Updating...{" "}
+                    <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
+                  </div>
+                ) : (
+                  "Update Tour"
+                )}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   )

@@ -59,6 +59,7 @@ export function AppSidebar() {
     { title: "Blogs", url: "/blogs", icon: BookOpen },
     { title: "Tailor Made", url: "/tailor-made", icon: Bus },
     { title: "Quotes", url: "/quotes", icon: Mails },
+    { title: "Bookings", url: "/bookings", icon: TicketsPlane },
     { title: "Clients Info", url: "/clients", icon: Users2Icon },
   ]
 

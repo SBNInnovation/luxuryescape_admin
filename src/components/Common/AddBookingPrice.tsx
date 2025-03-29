@@ -1,7 +1,6 @@
 import axios from "axios"
 import React, { useState, FC } from "react"
 import { toast } from "sonner"
-import { BookingPriceInterface } from "../Types/Types"
 
 interface AddBookingPriceProps {
   adventureType: string
@@ -11,8 +10,7 @@ interface AddBookingPriceProps {
 interface FormData {
   adventureType: string
   adventureId: string
-  pricePerPerson: string
-  discount: string
+  solo: string
   soloFourStar: string
   soloFiveStar: string
   singleSupplementaryFourStar: string
@@ -34,8 +32,7 @@ const AddBookingPrice: FC<AddBookingPriceProps> = ({
   const [formData, setFormData] = useState<FormData>({
     adventureType,
     adventureId,
-    pricePerPerson: "",
-    discount: "0", // Default value
+    solo: "",
     soloFourStar: "",
     soloFiveStar: "",
     singleSupplementaryFourStar: "",
@@ -65,7 +62,7 @@ const AddBookingPrice: FC<AddBookingPriceProps> = ({
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/booking/add-booking-price`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/add-booking-price`,
         formData
       )
       const data = response.data
@@ -80,8 +77,7 @@ const AddBookingPrice: FC<AddBookingPriceProps> = ({
       setFormData({
         adventureType,
         adventureId,
-        pricePerPerson: "",
-        discount: "0",
+        solo: "",
         soloFourStar: "",
         soloFiveStar: "",
         singleSupplementaryFourStar: "",
@@ -116,45 +112,25 @@ const AddBookingPrice: FC<AddBookingPriceProps> = ({
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 mb-2"
-              htmlFor="pricePerPerson"
-            >
-              Price Per Person ($) *
-            </label>
-            <input
-              type="number"
-              id="pricePerPerson"
-              name="pricePerPerson"
-              value={formData.pricePerPerson}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="discount">
-              Discount (%)
-            </label>
-            <input
-              type="number"
-              id="discount"
-              name="discount"
-              value={formData.discount}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-
         {/* Solo Accommodation Section */}
         <div className="mt-2 mb-2 border-t pt-4">
           <h3 className="text-xl font-semibold mb-4">
             Solo Accommodation Prices
           </h3>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="solo">
+              Solo ($) *
+            </label>
+            <input
+              type="number"
+              id="solo"
+              name="solo"
+              value={formData.solo}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="mb-4">

@@ -5,8 +5,7 @@ import { toast } from "sonner"
 interface BookingPriceDetails {
   adventureType: string
   adventureId: string
-  pricePerPerson: string
-  discount: string
+  solo: string
   soloFourStar: string
   soloFiveStar: string
   singleSupplementaryFourStar: string
@@ -24,8 +23,7 @@ interface UpdateBookingPriceProps {
 interface FormData {
   adventureType: string
   adventureId: string
-  pricePerPerson: string
-  discount: string
+  solo: string
   soloFourStar: string
   soloFiveStar: string
   singleSupplementaryFourStar: string
@@ -48,8 +46,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
   const [formData, setFormData] = useState<FormData>({
     adventureType,
     adventureId,
-    pricePerPerson: "",
-    discount: "0", // Default value
+    solo: "",
     soloFourStar: "",
     soloFiveStar: "",
     singleSupplementaryFourStar: "",
@@ -70,8 +67,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
       setFormData({
         adventureType,
         adventureId,
-        pricePerPerson: bookingPriceDetails.pricePerPerson || "",
-        discount: bookingPriceDetails.discount || "0",
+        solo: bookingPriceDetails.solo || "",
         soloFourStar: bookingPriceDetails.soloFourStar || "",
         soloFiveStar: bookingPriceDetails.soloFiveStar || "",
         singleSupplementaryFourStar:
@@ -102,8 +98,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
         setFormData({
           adventureType,
           adventureId,
-          pricePerPerson: details.pricePerPerson || "",
-          discount: details.discount || "0",
+          solo: details.solo || "",
           soloFourStar: details.soloFourStar || "",
           soloFiveStar: details.soloFiveStar || "",
           singleSupplementaryFourStar:
@@ -142,8 +137,8 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
     setStatus({ loading: true, success: false, error: null })
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/booking/update-booking-price`,
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/update-booking-price`,
         formData
       )
       const data = response.data
@@ -190,45 +185,25 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="mb-4">
-              <label
-                className="block text-gray-700 mb-2"
-                htmlFor="pricePerPerson"
-              >
-                Price Per Person ($) *
-              </label>
-              <input
-                type="number"
-                id="pricePerPerson"
-                name="pricePerPerson"
-                value={formData.pricePerPerson}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="discount">
-                Discount (%)
-              </label>
-              <input
-                type="number"
-                id="discount"
-                name="discount"
-                value={formData.discount}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
           {/* Solo Accommodation Section */}
           <div className="mt-2 mb-2 border-t pt-4">
             <h3 className="text-xl font-semibold mb-4">
               Solo Accommodation Prices
             </h3>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="solo">
+                Solo ($) *
+              </label>
+              <input
+                type="number"
+                id="solo"
+                name="solo"
+                value={formData.solo}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="mb-4">
