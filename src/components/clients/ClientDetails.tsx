@@ -39,7 +39,7 @@ const ClientDetails = () => {
     setLoading(true)
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/agent/get?page=${page}&limit=&search=${search}&country=`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/agent/get?page=${page}&limit=&search=${search}&country=${country}`
       )
       const data = response.data
       if (data.success) {
@@ -116,24 +116,6 @@ const ClientDetails = () => {
 
       {/* Filters Section  */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="relative">
-          <SortAsc className="absolute left-3 top-2 text-gray-400" size={20} />
-          <select
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-            value={sort}
-            onChange={(e) => {
-              setSort(e.target.value)
-              setPage(1)
-            }}
-          >
-            <option value="">Sort by...</option>
-            <option value="-createdAt">Newest First</option>
-            <option value="createdAt">Oldest First</option>
-            <option value="name">Name: A - Z</option>
-            <option value="-name">Name: Z - A</option>
-          </select>
-        </div>
-
         {/* country  */}
         <div className="relative">
           <Globe2Icon
