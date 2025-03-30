@@ -66,7 +66,8 @@ export function AppSidebar() {
   const logoutHandler = () => {
     const logoutConfirmation = confirm("Are you sure you want to logout?")
     if (!logoutConfirmation) return
-    signOut()
+    // signOut()
+    router.push("/login")
   }
 
   return (
@@ -108,7 +109,8 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton className="text-lg font-semibold h-16 mb-6">
-                    <User2 /> {session?.user?.name}
+                    <User2 />{" "}
+                    {session?.user?.name ? session.user.name : "Admin"}
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
