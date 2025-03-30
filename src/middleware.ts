@@ -10,14 +10,15 @@ export async function middleware(request: NextRequest) {
 
   const protectedRoutes = [
     // "/",
-    "/trekkings",
-    "/tours",
-    "/accommodations",
-    "/blogs",
-    "/tailor-made",
-    "/bookings",
-    "/quotes",
-    "/clients",
+    // "/trekkings",
+    // "/tours",
+    // "/accommodations",
+    // "/blogs",
+    // "/tailor-made",
+    // "/bookings",
+    // "/quotes",
+    // "/clients",
+    "/test",
   ]
 
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -35,13 +36,14 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // "/",
-    "/trekkings/:path*",
-    "/tours/:path*",
-    "/accommodations/:path*",
-    "/blogs/:path*",
-    "/tailor-made/:path*",
-    "/quotes/:path*",
-    "/bookings/:path*",
-    "/clients/:path*",
+    // "/trekkings/:path*",
+    // "/tours/:path*",
+    // "/accommodations/:path*",
+    // "/blogs/:path*",
+    // "/tailor-made/:path*",
+    // "/quotes/:path*",
+    // "/bookings/:path*",
+    // "/clients/:path*",
+    "/test/:path*",
   ],
 }
