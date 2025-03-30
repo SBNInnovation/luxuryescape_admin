@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   })
 
   const protectedRoutes = [
-    "/",
+    // "/",
     "/trekkings",
     "/tours",
     "/accommodations",
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/",
+    // "/",
     "/trekkings/:path*",
     "/tours/:path*",
     "/accommodations/:path*",

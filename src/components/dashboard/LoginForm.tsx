@@ -52,12 +52,15 @@ const LoginForm: React.FC = () => {
 
       if (result?.error) {
         setError(result.error)
+        router.push("/")
         return
       } else if (result?.url) {
-        router.push(result?.url)
+        // router.push(result?.url)
+        router.push("/")
       }
     } catch (error: any) {
       // Network or server errors
+      router.push("/")
       console.error(error)
       toast.error(
         error.response?.data?.message || "An error occurred. Please try again."
