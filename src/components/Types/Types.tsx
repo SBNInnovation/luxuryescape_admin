@@ -54,10 +54,14 @@ export interface BookingPriceInterface {
   adventureId: string
   adventureType: string
   solo: string
+  soloThreeStar: string
   soloFourStar: string
   soloFiveStar: string
+  singleSupplementary: string
+  singleSupplementaryThreeStar: string
   singleSupplementaryFourStar: string
   singleSupplementaryFiveStar: string
+  standardThreeStar: string
   standardFourStar: string
   standardFiveStar: string
 }

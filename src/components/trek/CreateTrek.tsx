@@ -5,7 +5,7 @@ import { set, z } from "zod"
 
 import TitleInput from "../Common/TitleInput"
 import PriceInput from "../Common/PriceInput"
-import { count } from "console"
+
 import CountryInput from "../Common/CountryInput"
 import LocationInput from "../Common/LocationInput"
 import LanguageInput from "../Common/LanguageInput"
@@ -36,6 +36,8 @@ import {
   Image,
   Video,
   Loader2Icon,
+  ChevronLeft,
+  ArrowLeft,
 } from "lucide-react"
 
 //types
@@ -241,112 +243,6 @@ const CreateTrekForm = () => {
     }
   }
 
-  // Updated autofill function based on the new types
-  const handleAutofill = () => {
-    // Basic Information
-    setTitle("Everest Base Camp Luxury Trek")
-    setPrice(2500)
-    setCountry("Nepal")
-    setLocation("Khumbu Region")
-    setDays(14)
-    setDifficulty("Moderate")
-    setSelectedSeasons(["Spring", "Autumn"])
-
-    // Descriptions
-    setOverview(
-      "Experience the majestic beauty of the Himalayas on our luxury Everest Base Camp trek. This carefully crafted journey takes you through picturesque Sherpa villages, ancient monasteries, and breathtaking mountain landscapes, culminating at the legendary Everest Base Camp. Enjoy premium accommodations where available, gourmet meals, and personalized service from our experienced guides and porters."
-    )
-
-    setAccommodations([
-      "Luxury lodges in lower elevations",
-      "Premium tea houses in higher elevations",
-      "Private rooms where available",
-      "Comfortable beds with quality linens",
-      "Hot showers in most accommodations",
-    ])
-
-    setInclusion([
-      "All accommodations during the trek",
-      "Three meals per day during the trek",
-      "Experienced English-speaking guides",
-      "Porters to carry luggage (limit 15kg per person)",
-      "All necessary permits and fees",
-      "Welcome and farewell dinners in Kathmandu",
-      "Airport transfers",
-      "Emergency medical kit",
-      "Oxygen support for emergencies",
-    ])
-
-    // Highlights & Services
-    const sampleHighlights: HighlightType[] = [
-      {
-        highlightsTitle: "Everest Base Camp",
-
-        highlightPicture: null,
-      },
-      {
-        highlightsTitle: "Kala Patthar Sunrise",
-        highlightPicture: null,
-      },
-      {
-        highlightsTitle: "Tengboche Monastery",
-
-        highlightPicture: null,
-      },
-    ]
-    setHighlights(sampleHighlights)
-
-    // Updated Itineraries based on new ItineraryType
-    const sampleItineraries: ItineraryType[] = [
-      {
-        day: "1",
-        title: "Arrival in Kathmandu",
-        description:
-          "Welcome to Nepal! Upon arrival at Tribhuvan International Airport, you'll be greeted by our representative and transferred to your luxury hotel in Kathmandu. Enjoy a welcome dinner featuring authentic Nepali cuisine.",
-        itineraryDayPhoto: null,
-        itineraryDayPhotoPreview: "",
-        accommodation: ["67c7ef8d836127e1756b8827"],
-        links: [],
-      },
-      {
-        day: "2",
-        title: "Fly to Lukla, Trek to Phakding",
-        description:
-          "Early morning flight to Lukla (2,800m). Begin your trek with an easy downhill walk to Phakding (2,652m). Enjoy the scenic beauty of the Dudh Koshi River and surrounding mountains.",
-        itineraryDayPhoto: null,
-        itineraryDayPhotoPreview: "",
-        accommodation: ["67bdf2f42826ba7affa7523e"],
-        links: [],
-      },
-    ]
-    setItineraries(sampleItineraries)
-
-    // Updated FAQs with new FAQType
-    const sampleFAQs: FAQType[] = [
-      {
-        question: "What is the best time to trek to Everest Base Camp?",
-        answer:
-          "The best seasons for the Everest Base Camp trek are pre-monsoon (March to May) and post-monsoon (September to November). These periods offer stable weather conditions, clear skies, and comfortable temperatures for trekking.",
-      },
-      {
-        question: "How difficult is the Everest Base Camp trek?",
-        answer:
-          "The Everest Base Camp trek is rated as moderate to challenging. While no technical climbing skills are required, good physical fitness is essential as you'll be walking 4-8 hours daily for about two weeks at high altitude.",
-      },
-      {
-        question: "Do I need travel insurance for this trek?",
-        answer:
-          "Yes, comprehensive travel insurance that covers emergency helicopter evacuation, medical expenses, trip cancellation, and high-altitude trekking up to 5,600m is mandatory for all participants.",
-      },
-      {
-        question: "What kind of accommodations can I expect?",
-        answer:
-          "Our luxury trek provides the best available accommodations throughout the journey. In Kathmandu, you'll stay in a 5-star hotel. During the trek, we use premium tea houses and lodges with private rooms where available, comfortable bedding, and en-suite facilities in lower elevations.",
-      },
-    ]
-    setFaqs(sampleFAQs)
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -441,14 +337,17 @@ const CreateTrekForm = () => {
     <div className="min-h-screen ">
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
-            Create Your Luxury Trek
-          </h1>
-          <p className="text-lg text-blue-400">
-            Transform Dreams into Extraordinary Journeys
-          </p>
-          <Button onClick={handleAutofill}>Autofill Form</Button>
+        <div className="flex items-center gap-10 text-center mb-4">
+          <ArrowLeft onClick={() => router.back()} className="w-10 h-10 " />
+
+          <div>
+            <h1 className="text-5xl font-serif text-primary mb-4">
+              Create Your Luxury Trek
+            </h1>
+            <p className="text-lg text-blue-400">
+              Transform Dreams into Extraordinary Journeys
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">

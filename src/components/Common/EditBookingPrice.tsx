@@ -5,11 +5,16 @@ import { toast } from "sonner"
 interface BookingPriceDetails {
   adventureType: string
   adventureId: string
+
   solo: string
+  soloThreeStar: string
   soloFourStar: string
   soloFiveStar: string
+  singleSupplementary: string
+  singleSupplementaryThreeStar: string
   singleSupplementaryFourStar: string
   singleSupplementaryFiveStar: string
+  standardThreeStar: string
   standardFourStar: string
   standardFiveStar: string
 }
@@ -23,11 +28,16 @@ interface UpdateBookingPriceProps {
 interface FormData {
   adventureType: string
   adventureId: string
+
   solo: string
+  soloThreeStar: string
   soloFourStar: string
   soloFiveStar: string
+  singleSupplementary: string
+  singleSupplementaryThreeStar: string
   singleSupplementaryFourStar: string
   singleSupplementaryFiveStar: string
+  standardThreeStar: string
   standardFourStar: string
   standardFiveStar: string
 }
@@ -46,11 +56,16 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
   const [formData, setFormData] = useState<FormData>({
     adventureType,
     adventureId,
+
     solo: "",
+    soloThreeStar: "",
     soloFourStar: "",
     soloFiveStar: "",
+    singleSupplementary: "",
+    singleSupplementaryThreeStar: "",
     singleSupplementaryFourStar: "",
     singleSupplementaryFiveStar: "",
+    standardThreeStar: "",
     standardFourStar: "",
     standardFiveStar: "",
   })
@@ -68,12 +83,17 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
         adventureType,
         adventureId,
         solo: bookingPriceDetails.solo || "",
+        soloThreeStar: bookingPriceDetails.soloThreeStar || "",
         soloFourStar: bookingPriceDetails.soloFourStar || "",
         soloFiveStar: bookingPriceDetails.soloFiveStar || "",
+        singleSupplementary: bookingPriceDetails.singleSupplementary || "",
+        singleSupplementaryThreeStar:
+          bookingPriceDetails.singleSupplementaryThreeStar || "",
         singleSupplementaryFourStar:
           bookingPriceDetails.singleSupplementaryFourStar || "",
         singleSupplementaryFiveStar:
           bookingPriceDetails.singleSupplementaryFiveStar || "",
+        standardThreeStar: bookingPriceDetails.standardThreeStar || "",
         standardFourStar: bookingPriceDetails.standardFourStar || "",
         standardFiveStar: bookingPriceDetails.standardFiveStar || "",
       })
@@ -99,12 +119,17 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
           adventureType,
           adventureId,
           solo: details.solo || "",
+          soloThreeStar: details.soloThreeStar || "",
           soloFourStar: details.soloFourStar || "",
           soloFiveStar: details.soloFiveStar || "",
+          singleSupplementary: details.singleSupplementary || "",
+          singleSupplementaryThreeStar:
+            details.singleSupplementaryThreeStar || "",
           singleSupplementaryFourStar:
             details.singleSupplementaryFourStar || "",
           singleSupplementaryFiveStar:
             details.singleSupplementaryFiveStar || "",
+          standardThreeStar: details.standardThreeStar || "",
           standardFourStar: details.standardFourStar || "",
           standardFiveStar: details.standardFiveStar || "",
         })
@@ -138,7 +163,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
 
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/update-booking-price`,
+        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/update-booking-price`,
         formData
       )
       const data = response.data
@@ -181,18 +206,17 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
 
       {status.loading && !status.error ? (
         <div className="mb-4 p-3 bg-blue-100 text-blue-700 rounded">
-          Loading, Please Wait...
+          Loading...
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          {/* Solo Accommodation Section */}
-          <div className="mt-2 mb-2 border-t pt-4">
-            <h3 className="text-xl font-semibold mb-4">
-              Solo Accommodation Prices
-            </h3>
+          {/* Solo n Section */}
+          <div className="mt-6 mb-6 border-t pt-4">
+            <h3 className="text-xl font-semibold mb-4">Solo Prices</h3>
+
             <div className="mb-4">
               <label className="block text-gray-700 mb-2" htmlFor="solo">
-                Solo ($) *
+                Solo Price ($) *
               </label>
               <input
                 type="number"
@@ -204,8 +228,24 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                 required
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 mb-2"
+                  htmlFor="soloThreeStar"
+                >
+                  Solo 3★ ($) *
+                </label>
+                <input
+                  type="number"
+                  id="soloThreeStar"
+                  name="soloThreeStar"
+                  value={formData.soloThreeStar}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
               <div className="mb-4">
                 <label
                   className="block text-gray-700 mb-2"
@@ -244,24 +284,41 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
             </div>
           </div>
           {/* Single supplimentary Accommodation Section */}
-          <div className="mt-2 mb-2 border-t pt-4">
+          <div className="mt-6 mb-6 border-t pt-4">
             <h3 className="text-xl font-semibold mb-4">
               Single Supplimentary Prices
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 mb-2"
+                  htmlFor="singleSupplementaryThreeStar"
+                >
+                  Single Supplementary 3★ ($) *
+                </label>
+                <input
+                  type="number"
+                  id="singleSupplementaryThreeStar"
+                  name="singleSupplementaryThreeStar"
+                  value={formData.singleSupplementaryThreeStar}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
               <div className="mb-4">
                 <label
                   className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryFourStar"
                 >
-                  Solo 4★ ($) *
+                  Single Supplementary 4★ ($) *
                 </label>
                 <input
                   type="number"
                   id="singleSupplementaryFourStar"
                   name="singleSupplementaryFourStar"
-                  value={formData.singleSupplementaryFiveStar}
+                  value={formData.singleSupplementaryFourStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -273,7 +330,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryFiveStar"
                 >
-                  Solo 5★ ($) *
+                  Single Supplementary 5★ ($) *
                 </label>
                 <input
                   type="number"
@@ -289,12 +346,29 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
           </div>
 
           {/* Standard Accommodation Section */}
-          <div className="mt-2 mb-2 border-t pt-4">
+          <div className="mt-6 mb-6 border-t pt-4">
             <h3 className="text-xl font-semibold mb-4">
               Standard Accommodation Prices
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 mb-2"
+                  htmlFor="standardThreeStar"
+                >
+                  Standard 4★ ($) *
+                </label>
+                <input
+                  type="number"
+                  id="standardThreeStar"
+                  name="standardThreeStar"
+                  value={formData.standardThreeStar}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
               <div className="mb-4">
                 <label
                   className="block text-gray-700 mb-2"
@@ -333,7 +407,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
             </div>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-6">
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-blue-300"

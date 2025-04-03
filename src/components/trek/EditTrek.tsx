@@ -34,6 +34,7 @@ import {
   Trash2Icon,
   ArrowLeftIcon,
   PlusIcon,
+  ArrowLeft,
 } from "lucide-react"
 
 //types
@@ -160,10 +161,14 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
       adventureId: "",
       adventureType: "",
       solo: "",
+      soloThreeStar: "",
       soloFourStar: "",
       soloFiveStar: "",
+      singleSupplementary: "",
+      singleSupplementaryThreeStar: "",
       singleSupplementaryFourStar: "",
       singleSupplementaryFiveStar: "",
+      standardThreeStar: "",
       standardFourStar: "",
       standardFiveStar: "",
     })
@@ -504,14 +509,17 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
-            Create Your Luxury Trek
-          </h1>
-          <p className="text-lg text-blue-400">
-            Transform Dreams into Extraordinary Journeys
-          </p>
-          {/* <Button onClick={handleAutofill}>Autofill Form</Button> */}
-          <div className="flex items-center space-x-2 ml-4 mt-6">
+          <div className="flex items-center gap-10 text-center mb-4">
+            <ArrowLeft onClick={() => router.back()} className="w-10 h-10 " />
+
+            <div>
+              <h1 className="text-5xl font-serif text-primary mb-4">
+                Edit Your Luxury Trek
+              </h1>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 ml-4 mt-2">
             {availableBookingPrice ? (
               <>
                 <Button
@@ -560,13 +568,13 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
 
         {/* for add booking price component */}
         {!availableBookingPrice && addBookingPriceOpen && (
-          <div className="absolute top-52 left-1/3 z-100 mt-6">
+          <div className="absolute top-36 left-1/3 z-100 mt-6">
             <AddBookingPrice adventureType="Trekking" adventureId={id} />
           </div>
         )}
         {/* for edit booking price component */}
         {availableBookingPrice && editBookingPriceOpen && (
-          <div className="absolute top-52 left-1/3 z-100 mt-6 ">
+          <div className="absolute top-36 left-1/3 z-100 mt-6 ">
             <UpdateBookingPrice
               adventureType="Trekking"
               adventureId={id}
