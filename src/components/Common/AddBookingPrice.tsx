@@ -71,7 +71,7 @@ const AddBookingPrice: FC<AddBookingPriceProps> = ({
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/add-booking-price`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/add-booking-price`,
         formData
       )
       const data = response.data

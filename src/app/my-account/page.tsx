@@ -24,6 +24,13 @@ interface ProfileData {
   email: string
   number: string | null
 }
+
+interface PasswordData {
+  oldPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
 // import { sessionData } from "../utils/types"
 import { toast } from "sonner"
 
@@ -31,6 +38,7 @@ const page: React.FC = () => {
   const router = useRouter()
 
   const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false)
 
   // Initial state with more robust default values
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -38,6 +46,16 @@ const page: React.FC = () => {
     email: "N/A",
     number: null,
   })
+
+  // State for password fields
+  const [passwordData, setPasswordData] = useState<PasswordData>({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  })
+
+  // Password validation state
+  const [passwordError, setPasswordError] = useState<string | null>(null)
 
   const { data: sessionData } = useSession()
 
@@ -78,6 +96,31 @@ const page: React.FC = () => {
     }))
   }
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setPasswordData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+
+    // Clear error when user types
+    setPasswordError(null)
+  }
+
+  const validatePasswords = (): boolean => {
+    if (!passwordData.oldPassword) {
+      setPasswordError("Current password is required")
+      return false
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("Passwords do not match")
+      return false
+    }
+
+    return true
+  }
+
   const handleSaveChanges = async () => {
     setIsSaving(true)
     try {
@@ -85,7 +128,7 @@ const page: React.FC = () => {
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/profile/edit/${userId}`,
         {
           name: profileData.name,
-          number: profileData.number,
+          phone: profileData.number,
         },
         {
           headers: {
@@ -106,6 +149,45 @@ const page: React.FC = () => {
       toast.error("An error occurred while updating your profile")
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    if (!validatePasswords()) {
+      return
+    }
+
+    setIsChangingPassword(true)
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/profile/edit/${userId}`,
+        {
+          oldPassword: passwordData.oldPassword,
+          password: passwordData.newPassword,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+
+      if (response.data.success) {
+        toast.success("Password changed successfully")
+        // Clear password fields
+        setPasswordData({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        })
+      } else {
+        toast.error(response.data.message || "Failed to change password")
+      }
+    } catch (error) {
+      console.error("Error changing password:", error)
+      toast.error("An error occurred while changing your password")
+    } finally {
+      setIsChangingPassword(false)
     }
   }
 
@@ -187,7 +269,7 @@ const page: React.FC = () => {
                   <button
                     onClick={handleSaveChanges}
                     disabled={isSaving}
-                    className=" text-white bg-green-600 font-semibold px-4 py-2 rounded-full shadow-md flex mt-10 items-center"
+                    className="text-white bg-green-600 font-semibold px-4 py-2 rounded-full shadow-md flex mt-10 items-center"
                   >
                     {isSaving ? (
                       <>
@@ -198,6 +280,89 @@ const page: React.FC = () => {
                       <>
                         <Save className="mr-2 w-4 h-4" />
                         Save Changes
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Password Section */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4 border-b pb-2 flex items-center">
+                <Lock className="mr-2 text-gray-600" />
+                Change Password
+              </h2>
+              <div className="space-y-4">
+                {/* Old Password */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    name="oldPassword"
+                    value={passwordData.oldPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter current password"
+                    className="w-full px-3 py-2 border rounded-md bg-white text-gray-800"
+                  />
+                </div>
+                {/* New Password */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter new password"
+                    className="w-full px-3 py-2 border rounded-md bg-white text-gray-800"
+                  />
+                </div>
+                {/* Confirm Password */}
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Confirm new password"
+                    className="w-full px-3 py-2 border rounded-md bg-white text-gray-800"
+                  />
+                </div>
+
+                {/* Password error message */}
+                {passwordError && (
+                  <div className="text-red-500 text-sm">{passwordError}</div>
+                )}
+
+                {/* Change Password button */}
+                <div>
+                  <button
+                    onClick={handleChangePassword}
+                    disabled={
+                      isChangingPassword ||
+                      !passwordData.oldPassword ||
+                      !passwordData.newPassword ||
+                      !passwordData.confirmPassword
+                    }
+                    className="text-white bg-blue-600 font-semibold px-4 py-2 rounded-full shadow-md flex mt-10 items-center"
+                  >
+                    {isChangingPassword ? (
+                      <>
+                        <RefreshCw className="mr-2 w-4 h-4 animate-spin" />
+                        Changing...
+                      </>
+                    ) : (
+                      <>
+                        <Key className="mr-2 w-4 h-4" />
+                        Change Password
                       </>
                     )}
                   </button>

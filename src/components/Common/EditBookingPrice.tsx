@@ -108,7 +108,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
       setStatus({ loading: true, success: false, error: null })
 
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/get-single-booking-price/${adventureId}/${adventureType}`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/get-single-booking-price/${adventureId}/${adventureType}`
       )
 
       const data = response.data
@@ -163,7 +163,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
 
     try {
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/update-booking-price`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/update-booking-price`,
         formData
       )
       const data = response.data
