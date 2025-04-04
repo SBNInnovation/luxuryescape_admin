@@ -30,46 +30,6 @@ const LoginForm: React.FC = () => {
     // handleValidateAuth()
   }, [])
 
-  // const handleLogin = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-
-  //   // Basic validation for email and password
-  //   if (!email || !password) {
-  //     setError("Please enter both email and password.")
-  //     return
-  //   }
-
-  //   try {
-  //     setLoading(true)
-
-  //     const result = await signIn("credentials", {
-  //       identifier: email,
-  //       password: password,
-  //       redirect: false,
-  //       callbackUrl: "/",
-  //     })
-  //     console.log("login :", result)
-
-  //     if (result?.error) {
-  //       setError(result.error)
-  //       router.push("/")
-  //       return
-  //     } else if (result?.url) {
-  //       // router.push(result?.url)
-  //       router.push("/")
-  //     }
-  //   } catch (error: any) {
-  //     // Network or server errors
-  //     router.push("/")
-  //     console.error(error)
-  //     toast.error(
-  //       error.response?.data?.message || "An error occurred. Please try again."
-  //     )
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -82,23 +42,23 @@ const LoginForm: React.FC = () => {
     try {
       setLoading(true)
 
-      const result = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/login`,
-        {
-          email: email,
-          password: password,
-        }
-      )
-      const data = result.data
-      if (data.success) {
-        toast.success(data.message || "Login successful")
-        router.push("/")
-      } else {
-        toast.error(data.message)
+      const result = await signIn("credentials", {
+        identifier: email,
+        password: password,
+        redirect: false,
+        callbackUrl: "/",
+      })
+
+      if (result?.error) {
+        setError(result.error)
+        return
+      } else if (result?.url) {
+        router.push(result?.url)
       }
     } catch (error: any) {
       // Network or server errors
-      console.error(error)
+
+      // console.error(error)
       toast.error(
         error.response?.data?.message || "An error occurred. Please try again."
       )
@@ -106,6 +66,43 @@ const LoginForm: React.FC = () => {
       setLoading(false)
     }
   }
+
+  // const handleLogin = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+
+  //   // Basic validation for email and password
+  //   if (!email || !password) {
+  //     setError("Please enter both email and password.")
+  //     return
+  //   }
+
+  //   try {
+  //     setLoading(true)
+
+  //     const result = await axios.post(
+  //       `${process.env.NEXT_PUBLIC_API_URL_PROD}/login`,
+  //       {
+  //         email: email,
+  //         password: password,
+  //       }
+  //     )
+  //     const data = result.data
+  //     if (data.success) {
+  //       toast.success(data.message || "Login successful")
+  //       router.push("/")
+  //     } else {
+  //       toast.error(data.message)
+  //     }
+  //   } catch (error: any) {
+  //     // Network or server errors
+  //     console.error(error)
+  //     toast.error(
+  //       error.response?.data?.message || "An error occurred. Please try again."
+  //     )
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   return (
     <div className=" flex items-center justify-center min-h-screen bg-gray-100 ">

@@ -7,12 +7,11 @@ import { JWT } from "next-auth/jwt"
 interface AuthResponse {
   success: boolean
   message: string
-  token: string
+  jwt: string
   data: {
     _id: string
     email: string
     name: string
-    phone: string
   }
 }
 
@@ -39,15 +38,14 @@ const handler = NextAuth({
           )
 
           // Extract data from the updated response structure
-          const { token, data } = res.data
+          const { jwt, data } = res.data
 
           if (data) {
             return {
-              jwt: token, // Now using 'token' instead of 'jwt'
+              jwt: jwt,
               id: data._id,
               email: data.email,
               name: data.name,
-              phone: data.phone, // Added phone field
             }
           }
           return null
@@ -71,7 +69,6 @@ const handler = NextAuth({
         token.id = user.id
         token.email = user.email
         token.name = user.name
-        token.phone = (user as any).phone // Added phone field
         token.jwt = (user as any).jwt
       }
       return token
@@ -81,7 +78,6 @@ const handler = NextAuth({
         id: token.id,
         email: token.email,
         name: token.name,
-        phone: token.phone, // Added phone field
       }
       session.jwt = token.jwt
       return session
