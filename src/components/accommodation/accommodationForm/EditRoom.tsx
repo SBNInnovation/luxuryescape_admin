@@ -1,4 +1,5 @@
 import axios from "axios"
+import { on } from "events"
 import { Loader2Icon } from "lucide-react"
 import React, { useState, useEffect } from "react"
 import { toast } from "sonner"
@@ -302,21 +303,32 @@ const EditRoom: React.FC<EditRoomProps> = ({
           </div>
         </div>
 
-        {/* Update Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex justify-center items-center mt-16 px-4 py-2 w-full text bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          {loading ? (
-            <p className="flex gap-4">
-              <Loader2Icon className="h-6 w-6 animate-spin" />
-              Updating...
-            </p>
-          ) : (
-            <p>Update Room</p>
-          )}
-        </button>
+        <div className="flex gap-4 mt-4">
+          {/* cancel Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            onClick={onUpdateSuccess}
+            className="flex justify-center items-center mt-16 px-4 py-2 w-full  border border-red-700 bg-red-50 text-red-700 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            Cancel
+          </button>
+          {/* update room  */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex justify-center items-center mt-16 px-4 py-2 w-full text bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            {loading ? (
+              <p className="flex gap-4">
+                <Loader2Icon className="h-6 w-6 animate-spin" />
+                Updating...
+              </p>
+            ) : (
+              <p>Update Room</p>
+            )}
+          </button>
+        </div>
       </form>
     </div>
   )

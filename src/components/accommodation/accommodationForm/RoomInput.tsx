@@ -146,81 +146,87 @@ const RoomInput: React.FC<RoomInputProps> = ({ accommodationId }) => {
           </div>
         </div>
 
-        {/* Room Title */}
-        <div>
-          <label className="block text-lg font-medium text-gray-700">
-            Room Title <span className="text-red-700">*</span>
-          </label>
-          <input
-            type="text"
-            value={room.roomTitle}
-            onChange={(e) => handleChange("roomTitle", e.target.value)}
-            className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-            required
-          />
-        </div>
-
-        {/* Room Standard */}
-        <div>
-          <label className="block text-lg font-medium text-gray-700">
-            Room Standard <span className="text-red-700">*</span>
-          </label>
-          <input
-            type="text"
-            value={room.roomStandard}
-            onChange={(e) => handleChange("roomStandard", e.target.value)}
-            className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-            required
-          />
-        </div>
-
-        {/* Room Description */}
-        <div>
-          <label className="block text-lg font-medium text-gray-700">
-            Room Description <span className="text-red-700">*</span>
-          </label>
-          <textarea
-            value={room.roomDescription}
-            onChange={(e) => handleChange("roomDescription", e.target.value)}
-            className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-            required
-            minLength={10}
-          />
-        </div>
-
-        {/* Room Facilities */}
-        <div>
-          <label className="block text-lg font-medium text-gray-700">
-            Room Facilities <span className="text-red-700">*</span>
-          </label>
-          {room.roomFacilities.map((facility, index) => (
-            <div key={index} className="flex gap-2 mt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            {/* Room Title */}
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Room Title <span className="text-red-700">*</span>
+              </label>
               <input
                 type="text"
-                value={facility}
-                onChange={(e) => {
-                  const newFacilities = [...room.roomFacilities]
-                  newFacilities[index] = e.target.value
-                  handleChange("roomFacilities", newFacilities)
-                }}
+                value={room.roomTitle}
+                onChange={(e) => handleChange("roomTitle", e.target.value)}
                 className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                required
               />
-              <button
-                type="button"
-                onClick={() => removeFacility(index)}
-                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                Remove
-              </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={addFacility}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Add Facility
-          </button>
+
+            {/* Room Standard */}
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Room Standard <span className="text-red-700">*</span>
+              </label>
+              <input
+                type="text"
+                value={room.roomStandard}
+                onChange={(e) => handleChange("roomStandard", e.target.value)}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                required
+              />
+            </div>
+
+            {/* Room Description */}
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Room Description <span className="text-red-700">*</span>
+              </label>
+              <textarea
+                value={room.roomDescription}
+                onChange={(e) =>
+                  handleChange("roomDescription", e.target.value)
+                }
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                required
+                minLength={10}
+              />
+            </div>
+          </div>
+
+          {/* Room Facilities */}
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Room Facilities <span className="text-red-700">*</span>
+            </label>
+            {room.roomFacilities.map((facility, index) => (
+              <div key={index} className="flex gap-2 mt-2">
+                <input
+                  type="text"
+                  value={facility}
+                  onChange={(e) => {
+                    const newFacilities = [...room.roomFacilities]
+                    newFacilities[index] = e.target.value
+                    handleChange("roomFacilities", newFacilities)
+                  }}
+                  className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeFacility(index)}
+                  className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addFacility}
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Add Facility
+            </button>
+          </div>
         </div>
 
         {/* Submit Button */}

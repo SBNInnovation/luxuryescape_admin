@@ -272,12 +272,12 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     setShowAddRoomForm(false)
     // Update only the edited room in the list
     getSingleAccommodation()
-    toast.success("Room updated successfully")
   }
 
   //for edit room handle change
   const handleEditRoomChange = (roomDetails: Room) => {
     setIsEditMode(true)
+    setShowAddRoomForm(false)
     setEditRoomDetails({ ...roomDetails, accommodationId: id })
   }
 
