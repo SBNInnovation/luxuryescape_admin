@@ -39,9 +39,9 @@ interface SecurityQuestion {
 }
 
 interface ProfileData {
-  fullName: string
+  name: string
   email: string
-  phoneNumber: string | null
+  phone: string | null
   role: "Admin" | "Moderator"
   isActive: boolean
   isSuspended: boolean
@@ -92,9 +92,9 @@ const MyProfile: React.FC = () => {
 
   // Initial state with more robust default values
   const [profileData, setProfileData] = useState<ProfileData>({
-    fullName: "N/A",
+    name: "N/A",
     email: "N/A",
-    phoneNumber: null,
+    phone: null,
     role: "Admin",
     isActive: false,
     isSuspended: false,
@@ -217,11 +217,12 @@ const MyProfile: React.FC = () => {
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/profile/edit/${userId}`,
         {
-          name: profileData.fullName,
-          email: profileData.contactEmails,
-          phone: profileData.phoneNumber,
+          name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
           location: profileData.location,
           contactNumbers: profileData.contactNumbers,
+          contactEmails: profileData.contactEmails,
           facebookLink: profileData.facebookLink,
           twitterLink: profileData.twitterLink,
           instagramLink: profileData.instagramLink,
@@ -328,7 +329,7 @@ const MyProfile: React.FC = () => {
               </div>
             </div>
             <div className="">
-              <h1 className="text-2xl font-bold">{profileData.fullName}</h1>
+              <h1 className="text-2xl font-bold">{profileData.name}</h1>
               <p className="text-blue-200">{profileData.role}</p>
             </div>
           </div>
@@ -370,7 +371,7 @@ const MyProfile: React.FC = () => {
                   <input
                     type="text"
                     name="fullName"
-                    value={profileData.fullName}
+                    value={profileData.name}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border rounded-md bg-white text-gray-800"
                   />
@@ -393,7 +394,7 @@ const MyProfile: React.FC = () => {
                   <input
                     type="tel"
                     name="phoneNumber"
-                    value={profileData.phoneNumber || ""}
+                    value={profileData.phone || ""}
                     onChange={handleInputChange}
                     placeholder="Enter your phone number"
                     className="w-full px-3 py-2 border rounded-md bg-white text-gray-800"
