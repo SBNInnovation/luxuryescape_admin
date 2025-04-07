@@ -13,11 +13,13 @@ import FeatureInput from "./accommodationForm/FeaturesInput"
 import AmenitiesInput from "./accommodationForm/AmenitiesInput"
 import AccoImages from "./accommodationForm/AccoImages"
 import RoomInput from "./accommodationForm/RoomInput"
+import EditRoom from "./accommodationForm/EditRoom"
 import { toast } from "sonner"
 import {
   DeleteIcon,
   Loader,
   Loader2Icon,
+  PenBox,
   PlusCircle,
   PlusIcon,
   Trash2Icon,
@@ -33,6 +35,7 @@ interface Room {
   roomStandard: string
   roomDescription: string
   roomFacilities: string[]
+  accommodationId: string
 }
 
 //validation
@@ -71,6 +74,19 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [amenities, setAmenities] = useState<string[]>([""])
   const [images, setImages] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
+
+  //for edit room
+  const [editRoomDetails, setEditRoomDetails] = useState<Room>({
+    _id: "",
+    slug: "",
+    roomTitle: "",
+    roomPhotos: [],
+    roomStandard: "",
+    roomDescription: "",
+    roomFacilities: [],
+    accommodationId: "",
+  })
+  const [isEditMode, setIsEditMode] = useState<boolean>(false)
 
   const [rooms, setRooms] = useState<Room[]>([])
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -204,40 +220,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     }
   }
 
-  // delete room
-  // const handleRoomDelete = async ({
-  //   roomId,
-  //   roomName,
-  // }: {
-  //   roomId: string
-  //   roomName: string
-  // }) => {
-  //   setDeleteLoading(true)
-  //   const confirmDelete = window.confirm(
-  //     `Are you sure you want to delete "${roomName}"?`
-  //   )
-  //   if (!confirmDelete) return
-  //   const response = await axios.delete(
-  //     `${process.env.NEXT_PUBLIC_API_URL_PROD}/room/delete/${roomId}`
-  //   )
-  //   const data = response.data
-  //   if (data.success) {
-  //     // toast.success(data.message || "Room deleted successfully")
-  //     setRooms((prev) => prev.filter((room) => room._id !== roomId))
-  //   } else {
-  //     toast.error(data.message || "Failed to delete room")
-  //   }
-  //   toast.promise(
-  //     response,
-  //     {
-  //       loading: "Deleting room...",
-  //       success: data.message || "Room deleted successfully",
-  //       error: data.message || "Failed to delete room",
-  //     }
-
-  //   )
-  // }
-
   const handleRoomDelete = async ({
     roomId,
     roomName,
@@ -284,6 +266,21 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     }
   }
 
+  // In EditRoom success callback
+  const onUpdateSuccess = () => {
+    setIsEditMode(false)
+    setShowAddRoomForm(false)
+    // Update only the edited room in the list
+    getSingleAccommodation()
+    toast.success("Room updated successfully")
+  }
+
+  //for edit room handle change
+  const handleEditRoomChange = (roomDetails: Room) => {
+    setIsEditMode(true)
+    setEditRoomDetails({ ...roomDetails, accommodationId: id })
+  }
+
   useEffect(() => {
     getSingleAccommodation()
   }, [])
@@ -326,6 +323,22 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
               </div>
               <div className="mt-8">
                 <RoomInput accommodationId={id} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        {/* Edit Room Form */}
+        {isEditMode && (
+          <Card className="backdrop-blur-md border border-white/20 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-11/12 max-w-2xl">
+            <CardContent className="p-8">
+              <div className="flex gap-2 text-2xl font-semibold">
+                <span className="text-blue-400">🛏️</span> Edit Room
+              </div>
+              <div className="mt-8">
+                <EditRoom
+                  roomDetails={editRoomDetails}
+                  onUpdateSuccess={onUpdateSuccess}
+                />
               </div>
             </CardContent>
           </Card>
@@ -535,19 +548,30 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
                             </div>
                           </div>
                         </div>
-                        <button
-                          disabled={deleteLoading}
-                          onClick={() =>
-                            handleRoomDelete({
-                              roomId: room._id,
-                              roomName: room.roomTitle,
-                            })
-                          }
-                          className="flex w-full items-center justify-center bg-red-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-red-600 transition-all duration-200"
-                        >
-                          <Trash2Icon className="w-6 h-6" />
-                          <span className="ml-2">Delete</span>
-                        </button>
+                        <div className="flex gap-4 justify-between items-center bg-gray-100 p-4">
+                          <button
+                            disabled={deleteLoading}
+                            onClick={() => handleEditRoomChange(room)}
+                            className="flex w-full items-center justify-center bg-blue-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-blue-600 transition-all duration-200"
+                          >
+                            <PenBox className="w-6 h-6" />
+                            <span className="ml-2">Edit</span>
+                          </button>
+                          {/* delete  */}
+                          <button
+                            disabled={deleteLoading}
+                            onClick={() =>
+                              handleRoomDelete({
+                                roomId: room._id,
+                                roomName: room.roomTitle,
+                              })
+                            }
+                            className="flex w-full items-center justify-center bg-red-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-red-600 transition-all duration-200"
+                          >
+                            <Trash2Icon className="w-6 h-6" />
+                            <span className="ml-2">Delete</span>
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

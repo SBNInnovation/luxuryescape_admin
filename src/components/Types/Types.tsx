@@ -65,3 +65,13 @@ export interface BookingPriceInterface {
   standardFourStar: string
   standardFiveStar: string
 }
+
+export interface sessionData {
+  expires: string
+  user: {
+    name: string
+    email: string
+    id: string
+  }
+  jwt: string
+}
