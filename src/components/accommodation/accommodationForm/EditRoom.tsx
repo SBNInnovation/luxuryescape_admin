@@ -1,6 +1,6 @@
 import axios from "axios"
 import { on } from "events"
-import { Loader2Icon } from "lucide-react"
+import { Loader2Icon, Trash2Icon } from "lucide-react"
 import React, { useState, useEffect } from "react"
 import { toast } from "sonner"
 
@@ -160,67 +160,75 @@ const EditRoom: React.FC<EditRoomProps> = ({
           <label className="block text-lg font-medium text-gray-700">
             Room Images (max 5)<span className="text-red-700">*</span>
           </label>
+          <div className="grid grid-cols-2 gap-4 mt-2">
+            {/* new photo preview */}
 
-          {/* Existing Photos */}
-          {existingPhotos.length > 0 && (
-            <>
-              <h3 className="mt-2 font-medium">Current Images:</h3>
-              <div className="grid grid-cols-3 gap-4 mt-2">
-                {existingPhotos.map((photoUrl, index) => (
-                  <div key={`existing-${index}`} className="relative">
-                    <img
-                      src={photoUrl}
-                      alt={`Room Image ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeExistingPhoto(photoUrl)}
-                      className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
+            <div>
+              {/* New Photos Upload */}
+              <div className="mt-4">
+                <input
+                  type="file"
+                  onChange={handleRoomImages}
+                  accept="image/*"
+                  multiple
+                  className="mt-2"
+                />
               </div>
-            </>
-          )}
-
-          {/* New Photos Upload */}
-          <div className="mt-4">
-            <input
-              type="file"
-              onChange={handleRoomImages}
-              accept="image/*"
-              multiple
-              className="mt-2"
-            />
+              <div>
+                {/* Newly Uploaded Images Preview */}
+                {newPhotos.length > 0 && (
+                  <>
+                    <h3 className="mt-4 font-medium">New Images:</h3>
+                    <div className="grid grid-cols-3 gap-4 mt-2">
+                      {newPhotos.map((photo, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={URL.createObjectURL(photo)}
+                            alt={`New Room Image ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeNewPhoto(index)}
+                            className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+            {/* old photo  */}
+            <div>
+              {/* Existing Photos */}
+              {existingPhotos.length > 0 && (
+                <>
+                  <h3 className="mt-2 font-medium">Current Images:</h3>
+                  <div className="grid grid-cols-3 gap-4 mt-2">
+                    {existingPhotos.map((photoUrl, index) => (
+                      <div key={`existing-${index}`} className="relative">
+                        <img
+                          src={photoUrl}
+                          alt={`Room Image ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingPhoto(photoUrl)}
+                          className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        >
+                          <Trash2Icon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-
-          {/* Newly Uploaded Images Preview */}
-          {newPhotos.length > 0 && (
-            <>
-              <h3 className="mt-4 font-medium">New Images:</h3>
-              <div className="grid grid-cols-3 gap-4 mt-2">
-                {newPhotos.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`New Room Image ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeNewPhoto(index)}
-                      className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">

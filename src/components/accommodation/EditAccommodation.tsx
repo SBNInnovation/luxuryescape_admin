@@ -329,7 +329,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         )}
         {/* Edit Room Form */}
         {isEditMode && (
-          <Card className="backdrop-blur-md border border-white/20 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-11/12 max-w-2xl">
+          <Card className="backdrop-blur-md border bg-gray-200 border-white/20 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-11/12 max-w-2xl">
             <CardContent className="p-8">
               <div className="flex gap-2 text-2xl font-semibold">
                 <span className="text-blue-400">🛏️</span> Edit Room
