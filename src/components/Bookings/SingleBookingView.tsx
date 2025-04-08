@@ -47,6 +47,10 @@ interface Booking {
   soloStandard?: string
   totalPrice: number
   updatedAt?: string
+  tourId?: {
+    _id: string
+    country: string
+  }
 }
 
 interface SingleBookingViewProps {
@@ -301,21 +305,43 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-500">Name</span>
-                      <span className="font-medium text-lg">
-                        {booking.adventureName}{" "}
-                        <Link
-                          href={`${
-                            process.env.NEXT_PUBLIC_USER_URL_PROD
-                          }/${handleClientPageRoute(booking.adventureType)}/${
-                            booking.adventureSlug
-                          }`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline ml-4"
-                        >
-                          View Details
-                        </Link>
-                      </span>
+                      {booking.adventureType === "Tour" ? (
+                        <>
+                          <span className="font-medium text-lg">
+                            {booking.adventureName}{" "}
+                            <Link
+                              href={`${
+                                process.env.NEXT_PUBLIC_USER_URL_PROD
+                              }/destinations/${booking.tourId?.country.toLowerCase()}/${
+                                booking.adventureSlug
+                              }`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline ml-4"
+                            >
+                              View Details
+                            </Link>
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-medium text-lg">
+                            {booking.adventureName}{" "}
+                            <Link
+                              href={`${
+                                process.env.NEXT_PUBLIC_USER_URL_PROD
+                              }/${handleClientPageRoute(
+                                booking.adventureType
+                              )}/${booking.adventureSlug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline ml-4"
+                            >
+                              View Details
+                            </Link>
+                          </span>
+                        </>
+                      )}
                     </div>
                     <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-200">
                       <Calendar className="h-5 w-5 text-gray-500" />

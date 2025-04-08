@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trash2, Camera, HotelIcon, MapPin, Search } from "lucide-react"
 import { ItineraryType } from "../Types/Types"
+import Image from "next/image"
 
 interface AccommodationResponseType {
   _id: string
@@ -19,8 +20,9 @@ interface ItineraryWithAccommodationObjectsType {
   day: string
   title: string
   description: string
-  itineraryDayPhoto?: File | string[] | null
+  itineraryDayPhoto?: File | string | null
   itineraryDayPhotoPreview?: string
+
   accommodation: {
     _id: string
     accommodationPics: string[]
@@ -33,12 +35,14 @@ interface ItineraryWithAccommodationObjectsType {
 interface ItinerariesInputProps {
   itineraries: ItineraryType[] | ItineraryWithAccommodationObjectsType[]
   setItineraries: React.Dispatch<React.SetStateAction<ItineraryType[]>>
+  previewPhotosCurrentDays?: string[]
   error: string
 }
 
 const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   itineraries: initialItineraries,
   setItineraries,
+  previewPhotosCurrentDays,
   error,
 }) => {
   const [accommodations, setAccommodations] = useState<
@@ -67,6 +71,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
           description: item.description || "",
           itineraryDayPhoto: item.itineraryDayPhoto || null,
           itineraryDayPhotoPreview: item.itineraryDayPhotoPreview || "",
+
           accommodation: accommodationIds,
           links: item.links || [],
         }
@@ -230,9 +235,6 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     }
   }
 
-  console.log("itineraries", initialItineraries)
-  console.log("it dy phot", formattedItineraries)
-
   useEffect(() => {
     getAccommodations()
   }, [])
@@ -286,13 +288,39 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
               onChange={(e) => handleFileChange(index, e)}
               className="mt-1"
             />
-            {itinerary.itineraryDayPhotoPreview && (
-              <img
-                src={itinerary.itineraryDayPhotoPreview}
-                alt="Day Photo"
-                className="mt-2 w-20 h-20 object-cover rounded-md"
-              />
-            )}
+            {/* image preview  */}
+            <div className="flex items-center gap-4 mt-2">
+              <div>
+                {itinerary.itineraryDayPhotoPreview && (
+                  <div className="flex flex-col items-center">
+                    <label className="text-sm italic text-gray-400 ">
+                      Preview:
+                    </label>
+                    <Image
+                      src={itinerary.itineraryDayPhotoPreview}
+                      alt="Day Photo"
+                      width={100}
+                      height={100}
+                      className="mt-2 w-20 h-20 object-cover rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
+              {previewPhotosCurrentDays && (
+                <div>
+                  <label className="text-sm italic text-gray-400 ">
+                    Current:
+                  </label>
+                  <Image
+                    src={previewPhotosCurrentDays[index]}
+                    alt="Day Photo"
+                    width={100}
+                    height={100}
+                    className="mt-2 w-20 h-20 object-cover rounded-md"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="mb-4">

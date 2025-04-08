@@ -118,7 +118,9 @@ const EditRoom: React.FC<EditRoomProps> = ({
       formData.append("existingPhotos", JSON.stringify(existingPhotos))
 
       // Add photos to delete
-      formData.append("photosToDelete", JSON.stringify(photosToDelete))
+      if (photosToDelete.length > 0) {
+        formData.append("imagesToDelete", JSON.stringify(photosToDelete))
+      }
 
       const response = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/room/edit/${roomDetails._id}`,

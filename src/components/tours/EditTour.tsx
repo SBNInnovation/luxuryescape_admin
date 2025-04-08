@@ -151,8 +151,12 @@ const EditTourForm = ({ slug }: { slug: string }) => {
     string[]
   >([])
   const [itineraries, setItineraries] = useState<ItineraryType[]>([])
+  const [itineraryDayPhotoPreview, setItineraryDayPhotoPreview] = useState<
+    string[]
+  >([])
   const [faqs, setFaqs] = useState<FAQType[]>([])
   const [images, setImages] = useState<(string | File)[]>([])
+  const [imageToDelete, setImageToDelete] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -347,6 +351,9 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         setInclusion(tourData.tourInclusion ?? [])
         setExclusion(tourData.tourExclusion ?? [])
         setItineraries(tourData.tourItinerary ?? [])
+        if (tourData.itineraryDayPhoto) {
+          setItineraryDayPhotoPreview(tourData.itineraryDayPhoto as string[])
+        }
         setFaqs(tourData.faq ?? [])
         if (tourData.gallery) {
           setPreviews(tourData.gallery as string[])
@@ -456,6 +463,10 @@ const EditTourForm = ({ slug }: { slug: string }) => {
           formData.append("highlightPicture", highlight.highlightPicture)
         }
       })
+
+      if (imageToDelete.length > 0) {
+        formData.append("galleryToDelete", JSON.stringify(imageToDelete))
+      }
 
       // Send the request to the backend
       const response = await axios.post(
@@ -732,6 +743,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                   <ItinerariesInput
                     itineraries={itineraries}
                     setItineraries={setItineraries}
+                    previewPhotosCurrentDays={itineraryDayPhotoPreview}
                     error={errors.itinerary || ""}
                   />
                   {/* FAQ */}
@@ -758,6 +770,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                     setPreviews={setPreviews}
                     imageError={imageError}
                     setImageError={setImageError}
+                    setImageToDelete={setImageToDelete}
                   />
 
                   {/* VIDEO */}

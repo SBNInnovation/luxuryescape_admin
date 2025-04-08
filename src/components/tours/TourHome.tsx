@@ -64,7 +64,7 @@ const TourHome: React.FC = () => {
     try {
       setLoading(true)
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get/selected?page=${page}&country=${country}&sort=${sort}&search=${search}&activated=${activated}`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/get/selected?page=${page}&country=${country}&sort=${sort}&search=${search}&activation=${activated}`
       )
       const data = response.data
       if (data.success) {
@@ -224,7 +224,7 @@ const TourHome: React.FC = () => {
             >
               <option value="">Activate(all)</option>
               <option value="active">Active</option>
-              <option value="inactive">In Active</option>
+              <option value="inactive">Inactive</option>
             </select>
           </div>
 

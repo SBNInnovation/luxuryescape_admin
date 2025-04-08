@@ -142,10 +142,15 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
   const [exclusion, setExclusion] = useState<string[]>([])
 
   const [highlights, setHighlights] = useState<HighlightType[]>([])
+
   const [itineraries, setItineraries] = useState<ItineraryType[]>([])
+  const [itineraryDayPhotoPreview, setItineraryDayPhotoPreview] = useState<
+    string[]
+  >([])
 
   const [faqs, setFaqs] = useState<FAQType[]>([])
   const [images, setImages] = useState<(string | File)[]>([])
+  const [imageToDelete, setImageToDelete] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
   const [highlightPicturesPreview, setHighlightPicturesPreview] = useState<
@@ -294,6 +299,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
             exclude: string[]
             highlightPicture: string[]
             trekHighlights: string[]
+            itineraryDayPhoto: string[]
             trekItinerary: ItineraryType[]
             faq: FAQType[]
             gallery: (string | File)[]
@@ -324,12 +330,19 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         setInclusion(trekData.trekInclusion ?? [])
         setExclusion(trekData.trekExclusion ?? [])
 
+        if (trekData.highlightPicture) {
+          setHighlightPicturesPreview(trekData.highlightPicture as string[])
+        }
+
         setItineraries(trekData.trekItinerary ?? [])
+        if (trekData.itineraryDayPhoto) {
+          setItineraryDayPhotoPreview(trekData.itineraryDayPhoto as string[])
+        }
+
         setFaqs(trekData.faq ?? [])
         setPreviews(trekData.gallery as string[])
 
         const hTitle = trekData.trekHighlights || []
-        const hPicture = trekData.highlightPicture || []
 
         // Combine highlights and their pictures matching the exact interface
         const combinedHighlights = hTitle.map((title, index) => ({
@@ -339,7 +352,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
 
         // Set the combined highlights
         setHighlights(combinedHighlights)
-        setHighlightPicturesPreview(hPicture)
+        // setHighlightPicturesPreview(hPicture)
 
         //  for booking price details
         if (response.data.data.bookingDetails !== null) {
@@ -440,6 +453,10 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
           formData.append("highlightPicture", highlight.highlightPicture)
         }
       })
+
+      if (imageToDelete.length > 0) {
+        formData.append("galleryToDelete", JSON.stringify(imageToDelete))
+      }
 
       // Send the request to the backend
       const response = await axios.post(
@@ -698,6 +715,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                   <HighlightsInput
                     highlights={highlights}
                     setHighlights={setHighlights}
+                    highlightPicturePreviews={highlightPicturesPreview}
                     error={errors.highlights || ""}
                   />
                 </div>
@@ -712,6 +730,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                   <ItinerariesInput
                     itineraries={itineraries}
                     setItineraries={setItineraries}
+                    previewPhotosCurrentDays={itineraryDayPhotoPreview}
                     error={errors.itinerary || ""}
                   />
                   {/* FAQ  */}
@@ -738,6 +757,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                     setPreviews={setPreviews}
                     imageError={imageError}
                     setImageError={setImageError}
+                    setImageToDelete={setImageToDelete}
                   />
 
                   {/* VIDEO  */}

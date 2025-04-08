@@ -123,7 +123,7 @@ const TripsAndToursManagement: React.FC = () => {
       if (isEditing && selectedTrip) {
         // Edit existing trip/tour
         response = await axios.patch(
-          `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/${selectedTrip._id}`,
+          `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/edit-tour-type/${selectedTrip._id}`,
           formData
         )
       } else {
