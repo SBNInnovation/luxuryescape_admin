@@ -527,17 +527,15 @@ const EditTourForm = ({ slug }: { slug: string }) => {
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="flex gap-4 justify-center items-center text-5xl font-serif text-primary mb-4">
+        <div className="text-center mb-8">
+          <h1 className="flex gap-4  items-center text-5xl font-serif text-primary mb-4">
             <ArrowLeftIcon
               onClick={() => router.back()}
               className="w-8 h-8 text-black"
             />
-            Create Your Luxury Experience
+            Edit Tour
           </h1>
-          <p className="text-lg text-blue-400">
-            Transform Dreams into Extraordinary Journeys
-          </p>
+
           {/* <Button onClick={handleAutofill}>Autofill Form</Button> */}
           <div className="flex items-center space-x-2 ml-4 mt-6">
             {availableBookingPrice ? (

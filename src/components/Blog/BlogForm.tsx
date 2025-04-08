@@ -14,7 +14,15 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 
 // Icons
-import { ImageUp, Save, Plus, X, Link } from "lucide-react"
+import {
+  ImageUp,
+  Save,
+  Plus,
+  X,
+  Link,
+  ArrowLeftIcon,
+  Loader2Icon,
+} from "lucide-react"
 import { FaArrowLeft } from "react-icons/fa6"
 
 // Types
@@ -205,13 +213,14 @@ const BlogForm = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
-            Create Your Blog Post
+        <div className="flex gap-10 items-center text-center mb-8">
+          <ArrowLeftIcon
+            className="h-10 w-10 text-black cursor-pointer"
+            onClick={() => route.back()}
+          />
+          <h1 className="text-4xl font-serif text-primary ">
+            Create Blog Post
           </h1>
-          <p className="text-lg text-blue-400">
-            Share your thoughts and ideas with the world
-          </p>
         </div>
 
         <div className="space-y-8">
@@ -287,7 +296,8 @@ const BlogForm = () => {
           <Card className="backdrop-blur-md border border-white/20">
             <CardContent className="p-8">
               <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">🌍</span> Select Category
+                <span className="text-blue-400">🌍</span> Select Category{" "}
+                <span className="text-red-500 italic text-sm">(required)</span>
               </div>
               <div className="mt-8">
                 <select
@@ -295,6 +305,7 @@ const BlogForm = () => {
                   onChange={(e) => setSelectedTourTypeId(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md"
                   disabled={isSubmitting}
+                  required
                 >
                   <option value="">Select a tour type</option>
                   {tripsTours.map((tour) => (
@@ -424,7 +435,7 @@ const BlogForm = () => {
             >
               {isSubmitting ? (
                 <div className="flex justify-center items-center">
-                  <div className="w-6 h-6 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin" />
+                  <Loader2Icon className="mr-2 animate-spin" /> Creating...
                 </div>
               ) : (
                 "Create Blog Post"

@@ -318,7 +318,10 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {highlights.map((highlight, index) => (
-        <div key={index} className="mb-4 border p-4 rounded-md border-primary">
+        <div
+          key={index}
+          className="mb-4 border p-4 rounded-md border-primary  bg-gray-50"
+        >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-md font-medium">Highlight {index + 1}</h3>
             <Button
@@ -335,6 +338,9 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
           <div className="space-y-4">
             {/* Title Input */}
             <div>
+              <label className="text-sm italic text-gray-400">
+                Highlight Title
+              </label>
               <Input
                 type="text"
                 required
@@ -345,12 +351,15 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
                     highlightsTitle: e.target.value,
                   })
                 }
-                className="w-full"
+                className="w-full bg-white border border-primary"
               />
             </div>
 
             {/* Picture Upload - Keep as uncontrolled component */}
             <div>
+              <label className="text-sm italic text-gray-400">
+                Highlight Image
+              </label>
               <div className="flex items-center space-x-2">
                 <Input
                   type="file"
@@ -361,7 +370,7 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
                       handleFileChange(index, file)
                     }
                   }}
-                  className="w-full"
+                  className="w-full bg-white border border-primary"
                   // Remove value prop for file inputs - they should be uncontrolled
                 />
                 <Button

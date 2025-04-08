@@ -13,9 +13,13 @@ interface Room {
 
 interface RoomInputProps {
   accommodationId: string
+  onAddRoomSuccess?: () => void // Optional callback for success
 }
 
-const RoomInput: React.FC<RoomInputProps> = ({ accommodationId }) => {
+const RoomInput: React.FC<RoomInputProps> = ({
+  accommodationId,
+  onAddRoomSuccess,
+}) => {
   // State for the room details
   const [room, setRoom] = useState<Room>({
     roomTitle: "",
@@ -88,6 +92,10 @@ const RoomInput: React.FC<RoomInputProps> = ({ accommodationId }) => {
       const data = response.data
 
       if (data.success) {
+        // Call the success callback if provided
+        if (onAddRoomSuccess) {
+          onAddRoomSuccess()
+        }
         toast.success(data.message || "Room added successfully")
         // Reset the form
         setRoom({
@@ -117,12 +125,23 @@ const RoomInput: React.FC<RoomInputProps> = ({ accommodationId }) => {
         {/* Room Images */}
         <div>
           <label className="block text-lg font-medium text-gray-700">
-            Room Images (max 5)<span className="text-red-700">*</span>
+            Room Images (max 4)<span className="text-red-700">*</span>
           </label>
+          {room.roomPhotos.length > 0 && (
+            <p className="text-sm text-gray-600 mb-2">
+              {room.roomPhotos.length} image(s) selected
+            </p>
+          )}
+          {room.roomPhotos.length >= 4 && (
+            <p className="text-sm italic text-red-600 mb-2">
+              cannot upload more than 4 images
+            </p>
+          )}
           <input
             type="file"
             onChange={handleRoomImages}
             accept="image/*"
+            disabled={room.roomPhotos.length >= 4}
             multiple
             className="mt-2"
           />

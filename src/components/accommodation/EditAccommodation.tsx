@@ -16,6 +16,7 @@ import RoomInput from "./accommodationForm/RoomInput"
 import EditRoom from "./accommodationForm/EditRoom"
 import { toast } from "sonner"
 import {
+  ArrowLeft,
   DeleteIcon,
   Loader,
   Loader2Icon,
@@ -36,6 +37,7 @@ interface Room {
   roomDescription: string
   roomFacilities: string[]
   accommodationId: string
+  imageToDelete?: string[]
 }
 
 //validation
@@ -74,6 +76,8 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [amenities, setAmenities] = useState<string[]>([""])
   const [images, setImages] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
+  const [oldImagesPreviews, setOldImagesPreviews] = useState<string[]>([])
+  const [imageToDelete, setImageToDelete] = useState<string[]>([])
 
   //for edit room
   const [editRoomDetails, setEditRoomDetails] = useState<Room>({
@@ -85,6 +89,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     roomDescription: "",
     roomFacilities: [],
     accommodationId: "",
+    imageToDelete: [],
   })
   const [isEditMode, setIsEditMode] = useState<boolean>(false)
 
@@ -171,7 +176,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         setOverview(data.data.accommodationDescription)
         setFeatures(data.data.accommodationFeatures)
         setAmenities(data.data.accommodationAmenities)
-        setPreviews(data.data.accommodationPics)
+        setOldImagesPreviews(data.data.accommodationPics)
         setRooms(data.data.rooms)
       }
     } catch (error) {
@@ -195,6 +200,9 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     images.forEach((image, index) => {
       formData.append("accommodationPics", image, `image_${index}`)
     })
+    if (imageToDelete.length > 0) {
+      formData.append("imageToDelete", JSON.stringify(imageToDelete))
+    }
 
     try {
       setLoading(true)
@@ -273,6 +281,11 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     // Update only the edited room in the list
     getSingleAccommodation()
   }
+  //for add room success
+  const onAddRoomSuccess = () => {
+    setShowAddRoomForm(false)
+    getSingleAccommodation()
+  }
 
   //for edit room handle change
   const handleEditRoomChange = (roomDetails: Room) => {
@@ -297,8 +310,12 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         )}
 
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
+        <div className="flex gap-10 items-center text-center mb-8">
+          <ArrowLeft
+            className=" w-10 h-10 cursor-pointer"
+            onClick={() => router.back()}
+          />
+          <h1 className="text-5xl font-serif text-primary ">
             Edit Your Luxury Accommodation
           </h1>
         </div>
@@ -322,7 +339,10 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
                 <span className="text-blue-400">🛏️</span> Add Room
               </div>
               <div className="mt-8">
-                <RoomInput accommodationId={id} />
+                <RoomInput
+                  accommodationId={id}
+                  onAddRoomSuccess={onAddRoomSuccess}
+                />
               </div>
             </CardContent>
           </Card>
@@ -395,6 +415,9 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
                   setImages={setImages}
                   previews={previews}
                   setPreviews={setPreviews}
+                  oldImagesPreviews={oldImagesPreviews}
+                  setOldImagesPreviews={setOldImagesPreviews}
+                  imageToDelete={setImageToDelete}
                   error={errors.images || ""}
                 />
               </div>

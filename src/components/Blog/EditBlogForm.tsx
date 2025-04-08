@@ -14,8 +14,18 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 
 // Icons
-import { ImageUp, Save, Plus, X, Link, Loader } from "lucide-react"
+import {
+  ImageUp,
+  Save,
+  Plus,
+  X,
+  Link,
+  Loader,
+  ArrowLeftIcon,
+  Loader2Icon,
+} from "lucide-react"
 import { FaArrowLeft } from "react-icons/fa6"
+import { set } from "zod"
 
 // Types
 interface BlogLink {
@@ -35,6 +45,7 @@ interface TripsTours {
 }
 
 const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
+  const [blogId, setBlogId] = useState<string>("")
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [image, setImage] = useState<File | null>(null)
@@ -113,9 +124,9 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/blog/edit-blog/${slug}`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/blog/edit/${blogId}`,
         {
-          method: "POST",
+          method: "PATCH",
           body: formData,
         }
       )
@@ -170,7 +181,7 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
       )
       if (response.data.success) {
         const blog = response.data.data
-        console.log(blog)
+        setBlogId(blog._id)
         setTitle(blog.title)
         setDescription(blog.description)
         setImagePreview(blog.thumbnail)
@@ -214,8 +225,12 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
+        <div className="flex gap-10 items-center text-center mb-8">
+          <ArrowLeftIcon
+            className="h-10 w-10 text-black cursor-pointer"
+            onClick={() => route.back()}
+          />
+          <h1 className="text-4xl font-serif text-primary ">
             Update Blog Post
           </h1>
         </div>
@@ -293,7 +308,8 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
           <Card className="backdrop-blur-md border border-white/20">
             <CardContent className="p-8">
               <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">🌍</span> Select Category
+                <span className="text-blue-400">🌍</span> Select Category{" "}
+                <span className="text-red-500 italic text-sm">(required)</span>
               </div>
               <div className="mt-8">
                 <select
@@ -430,7 +446,7 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
             >
               {isSubmitting ? (
                 <div className="flex justify-center items-center">
-                  <Loader className="mr-2 animate-spin" />
+                  <Loader2Icon className="mr-2 animate-spin" /> Updating...
                 </div>
               ) : (
                 "Update Blog Post"

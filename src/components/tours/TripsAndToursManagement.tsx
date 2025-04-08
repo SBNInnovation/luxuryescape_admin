@@ -8,6 +8,7 @@ import {
   Trash2,
   RefreshCw,
   Loader,
+  Loader2Icon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,6 +32,7 @@ import {
 import { toast } from "sonner"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 // Define type for Trip/Tour
 interface TripTour {
@@ -120,8 +122,8 @@ const TripsAndToursManagement: React.FC = () => {
       let response
       if (isEditing && selectedTrip) {
         // Edit existing trip/tour
-        response = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL_DEV}/tour/${selectedTrip._id}`,
+        response = await axios.patch(
+          `${process.env.NEXT_PUBLIC_API_URL_PROD}/tour/${selectedTrip._id}`,
           formData
         )
       } else {
@@ -214,7 +216,7 @@ const TripsAndToursManagement: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="flex flex-col gap-6">
         {/* Create Form */}
         <Card className="w-full">
           <CardHeader>
@@ -286,7 +288,7 @@ const TripsAndToursManagement: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center text-white space-x-2 text-lg"
+                  className="flex items-center text-black space-x-2 text-lg"
                 >
                   {loading ? (
                     <>
@@ -325,8 +327,8 @@ const TripsAndToursManagement: React.FC = () => {
           </CardHeader>
           <CardContent>
             {listLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <Loader width="40px" height="40px" />
+              <div className="flex justify-center items-center h-full mt-6">
+                <Loader2Icon className="h-8 w-8 animate-spin text-secondary" />
               </div>
             ) : tripsTours.length === 0 ? (
               <div className="text-center text-muted-foreground py-4">
@@ -340,9 +342,16 @@ const TripsAndToursManagement: React.FC = () => {
                     className="flex items-center justify-between bg-blue-50 p-4 rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
-                      <img
+                      {/* <img
                         src={trip?.thumbnail}
                         alt={trip?.tourType}
+                        className="w-16 h-16 object-cover rounded-md"
+                      /> */}
+                      <Image
+                        src={trip?.thumbnail || "/going.png"}
+                        alt={trip?.tourType}
+                        width={64}
+                        height={64}
                         className="w-16 h-16 object-cover rounded-md"
                       />
                       <div>
@@ -455,11 +464,12 @@ const TripsAndToursManagement: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center text-lg text-white space-x-2"
+                  className="flex items-center text-lg text-black space-x-2"
                 >
                   {loading ? (
                     <>
-                      Updating... <Loader width="20px" height="20px" />
+                      Updating...{" "}
+                      <Loader2Icon className="w-6 h-6 animate-spin" />
                     </>
                   ) : (
                     <>

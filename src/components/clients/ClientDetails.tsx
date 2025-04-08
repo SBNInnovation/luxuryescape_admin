@@ -7,6 +7,7 @@ import {
   AlertTriangleIcon,
   CheckCircleIcon,
   Globe2Icon,
+  MailIcon,
   Plus,
   SortAsc,
   Trash2,
@@ -14,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { countries } from "./AllCountries"
+import Link from "next/link"
 
 interface UserTypes {
   _id: string
@@ -33,13 +35,14 @@ const ClientDetails = () => {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("")
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(30)
   const router = useRouter()
 
   const getClientDetailsHandler = async () => {
     setLoading(true)
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/agent/get?page=${page}&limit=&search=${search}&country=${country}`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/agent/get?page=${page}&limit=${limit}&search=${search}&country=${country}`
       )
       const data = response.data
       if (data.success) {
@@ -58,30 +61,26 @@ const ClientDetails = () => {
     const confirmation = window.confirm(`Confirm Delete Client : ${name}?`)
     if (!confirmation) return
 
-    const response = axios.delete(
+    setLoading(true)
+
+    const deletePromise = axios.delete(
       `${process.env.NEXT_PUBLIC_API_URL_PROD}/delete-user/${userId}`
     )
-    toast.promise(response, {
+
+    toast.promise(deletePromise, {
       loading: "Deleting, Please wait...",
       success: (response) => {
-        const data = response.data
-        if (data.sucess) {
-          return data.message || "Client Deleted Successfully."
-        } else {
-          return data.message || "Failed to Delete."
-        }
+        // This will be called after successful deletion
+        getClientDetailsHandler()
+        setLoading(false)
+        return response.data.message || "Client Deleted Successfully."
       },
-      error: "Failed to Delete.",
+      error: (error) => {
+        console.error(error)
+        setLoading(false)
+        return "Failed to delete client"
+      },
     })
-    try {
-      setLoading(true)
-      await response
-    } catch (error) {
-      toast.error("Failed to delete tour")
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
   }
 
   useEffect(() => {
@@ -103,13 +102,22 @@ const ClientDetails = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-gray-800">Clients Manager</h2>
-          <Button
-            onClick={() => router.push("/clients/add-client")}
-            className="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Plus size={20} />
-            Add New Client
-          </Button>
+          <div className="flex items-center gap-4">
+            <Link href="/quotes/bulk-mailing">
+              <Button className="bg-primary hover:bg-secondary text-black px-6 py-2 rounded-lg flex items-center gap-2">
+                <MailIcon size={20} />
+                Send Bulk Mail
+              </Button>
+            </Link>
+            {/* add new client  */}
+            <Button
+              onClick={() => router.push("/clients/add-client")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus size={20} />
+              Add New Client
+            </Button>
+          </div>
         </div>
         <p className="text-gray-600">Manage your user details options</p>
       </div>

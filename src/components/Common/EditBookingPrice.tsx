@@ -225,7 +225,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                 value={formData.solo}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -243,7 +242,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.soloThreeStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
               <div className="mb-4">
@@ -260,7 +258,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.soloFourStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
 
@@ -278,7 +275,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.soloFiveStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
             </div>
@@ -304,7 +300,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.singleSupplementaryThreeStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
               <div className="mb-4">
@@ -321,7 +316,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.singleSupplementaryFourStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
 
@@ -339,7 +333,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.singleSupplementaryFiveStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
             </div>
@@ -357,7 +350,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="standardThreeStar"
                 >
-                  Standard 4★ ($) *
+                  Standard 3★ ($) *
                 </label>
                 <input
                   type="number"
@@ -366,7 +359,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.standardThreeStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
               <div className="mb-4">
@@ -383,7 +375,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.standardFourStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
 
@@ -401,7 +392,6 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   value={formData.standardFiveStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
                 />
               </div>
             </div>

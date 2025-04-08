@@ -14,7 +14,7 @@ import AmenitiesInput from "./accommodationForm/AmenitiesInput"
 import AccoImages from "./accommodationForm/AccoImages"
 import RoomInput from "./accommodationForm/RoomInput"
 import { toast } from "sonner"
-import { Loader, Loader2Icon } from "lucide-react"
+import { ArrowLeft, Loader, Loader2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
 import CountryInput from "../Common/CountryInput"
@@ -107,40 +107,6 @@ const AddAccommodation = () => {
     }
   }
 
-  const autofillAccommodation = () => {
-    // Preset data for the accommodation
-    const accommodationData = {
-      title: "Himalayan Retreat",
-      location: "Pokhara, Nepal",
-      rating: 4.8,
-      overview:
-        "A luxurious mountain lodge offering breathtaking views of the Annapurna range. Perfect for trekkers and nature lovers seeking peace and comfort.",
-      features: [
-        "Mountain View",
-        "Trekking Routes",
-        "Yoga Studio",
-        "Organic Garden",
-      ],
-      amenities: [
-        "Free Wi-Fi",
-        "Airport Shuttle",
-        "Breakfast Included",
-        "24/7 Reception",
-        "Spa Services",
-      ],
-    }
-
-    // Set form values
-    setTitle(accommodationData.title)
-    setLocation(accommodationData.location)
-    setRating(accommodationData.rating)
-    setOverview(accommodationData.overview)
-    setFeatures(accommodationData.features)
-    setAmenities(accommodationData.amenities)
-
-    toast.success("Form autofilled with Himalayan Retreat data")
-  }
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData()
@@ -190,16 +156,14 @@ const AddAccommodation = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif text-primary mb-4">
+        <div className="flex gap-10 items-center text-center mb-8">
+          <ArrowLeft
+            className=" w-10 h-10 cursor-pointer"
+            onClick={() => router.back()}
+          />
+          <h1 className="text-5xl font-serif text-primary ">
             Create Your Luxury Accommodation
           </h1>
-          <p className="text-lg text-blue-400">
-            Transform Spaces into Unforgettable Experiences
-          </p>
-          <Button onClick={autofillAccommodation} type="button">
-            Autofill Demo Data
-          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">

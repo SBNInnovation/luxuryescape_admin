@@ -54,10 +54,10 @@ const TrekkingHome: React.FC = () => {
   const sortOptions = [
     // { value: "name_asc", label: "Title (A-Z)" },
     // { value: "name_desc", label: "Title (Z-A)" },
-    { value: "createdAt_asc", label: "Date (Oldest First)" },
-    { value: "createdAt_desc", label: "Date (Newest First)" },
-    { value: "price_asc", label: "Price (Low to High)" },
-    { value: "price_desc", label: "Price (High to Low)" },
+    { value: "createdAtasc", label: "Date (Oldest First)" },
+    { value: "createdAtdesc", label: "Date (Newest First)" },
+    { value: "asc", label: "Price (Low to High)" },
+    { value: "desc", label: "Price (High to Low)" },
   ]
 
   const handleGetAllTreks = async () => {
@@ -180,7 +180,7 @@ const TrekkingHome: React.FC = () => {
               <option value="Nepal">Nepal</option>
               <option value="Bhutan">Bhutan</option>
               <option value="Tibet">Tibet</option>
-              <option value="Multidestination">Multi-destination</option>
+              <option value="Multidestinations">Multi-destination</option>
             </select>
           </div>
           <div className="relative">
@@ -190,7 +190,7 @@ const TrekkingHome: React.FC = () => {
               value={activation}
               onChange={(e) => setActivation(e.target.value)}
             >
-              <option value="">Activation</option>
+              <option value="">Activation (all)</option>
               <option value="active">Activated</option>
               <option value="inactive">Inactivated</option>
             </select>

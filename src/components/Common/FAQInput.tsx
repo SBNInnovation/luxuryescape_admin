@@ -41,20 +41,28 @@ const FAQInput: React.FC<FAQProps> = ({ faqs, setFaqs }) => {
         >
           <h2 className="text-lg font-bold mb-2">FAQ {index + 1}</h2>
           <div className="flex flex-col gap-4">
-            <Input
-              type="text"
-              placeholder="Question"
-              value={faq.question}
-              onChange={(e) =>
-                handleUpdateFAQ(index, "question", e.target.value)
-              }
-            />
-            <Input
-              type="text"
-              placeholder="Answer"
-              value={faq.answer}
-              onChange={(e) => handleUpdateFAQ(index, "answer", e.target.value)}
-            />
+            <div>
+              <label className="text-sm italic text-gray-400">Question:</label>
+              <Input
+                type="text"
+                placeholder="Question"
+                value={faq.question}
+                onChange={(e) =>
+                  handleUpdateFAQ(index, "question", e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <label className="text-sm italic text-gray-400">Answer:</label>
+              <Input
+                type="text"
+                placeholder="Answer"
+                value={faq.answer}
+                onChange={(e) =>
+                  handleUpdateFAQ(index, "answer", e.target.value)
+                }
+              />
+            </div>
           </div>
           <Button
             type="button"

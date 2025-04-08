@@ -190,7 +190,7 @@ const TourHome: React.FC = () => {
               <option value="Nepal">Nepal</option>
               <option value="Bhutan">Bhutan</option>
               <option value="Tibet">Tibet</option>
-              <option value="Multidestination">Multi-destination</option>
+              <option value="Multidestinations">Multi-destination</option>
             </select>
           </div>
 
@@ -233,7 +233,7 @@ const TourHome: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search treks..."
+              placeholder="Search tours..."
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
             />
           </div>

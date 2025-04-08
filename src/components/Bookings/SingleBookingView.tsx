@@ -98,6 +98,18 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
     }
   }
 
+  //use the switch case
+  const handleClientPageRoute = (route: string) => {
+    switch (route) {
+      case "Tour":
+        return "tours"
+      case "Trekking":
+        return "luxury-treks"
+      default:
+        return "tours"
+    }
+  }
+
   useEffect(() => {
     handleGetBookingRequest(id)
   }, [id])
@@ -294,7 +306,7 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                         <Link
                           href={`${
                             process.env.NEXT_PUBLIC_USER_URL_PROD
-                          }/${booking.adventureType.toLowerCase()}/${
+                          }/${handleClientPageRoute(booking.adventureType)}/${
                             booking.adventureSlug
                           }`}
                           target="_blank"
