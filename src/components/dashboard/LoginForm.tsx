@@ -2,7 +2,13 @@
 
 import Cookies from "js-cookie"
 import axios from "axios"
-import { KeyIcon, Loader2, MailIcon } from "lucide-react"
+import {
+  EyeClosedIcon,
+  EyeIcon,
+  KeyIcon,
+  Loader2,
+  MailIcon,
+} from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState, useEffect } from "react"
@@ -18,6 +24,7 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [viewPassword, setViewPassword] = useState(false)
 
   const { setAdminInfo } = useAdminDetails()
 
@@ -131,7 +138,7 @@ const LoginForm: React.FC = () => {
           <div className="relative mb-4">
             <KeyIcon className="absolute top-4 left-2 z-10 w-6 h-6" />
             <input
-              type="password"
+              type={viewPassword ? "text" : "password"}
               id="password"
               placeholder="Enter your password"
               value={password}
@@ -139,6 +146,19 @@ const LoginForm: React.FC = () => {
               className="  w-full p-3 pl-10 border border-gray-300 rounded focus:outline-none focus:border-primary"
               required
             />
+            <div>
+              {viewPassword ? (
+                <EyeIcon
+                  className="absolute top-4 right-2 z-10 w-6 h-6 cursor-pointer"
+                  onClick={() => setViewPassword(false)}
+                />
+              ) : (
+                <EyeClosedIcon
+                  className="absolute top-4 right-2 z-10 w-6 h-6 cursor-pointer"
+                  onClick={() => setViewPassword(true)}
+                />
+              )}
+            </div>
           </div>
 
           {/* Error Message */}
