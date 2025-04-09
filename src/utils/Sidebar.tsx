@@ -11,6 +11,7 @@ import {
   Hotel,
   Users2Icon,
   Mails,
+  Train,
 } from "lucide-react"
 
 import { signOut, useSession } from "next-auth/react"
@@ -53,8 +54,9 @@ export function AppSidebar() {
   // Menu items
   const items = [
     { title: "Home", url: "/", icon: Home },
-    { title: "Trekkings", url: "/trekkings", icon: MountainSnow },
+    { title: "Trekkings", url: "/trekkings", icon: Train },
     { title: "Tours", url: "/tours", icon: Binoculars },
+    { title: "Destinations", url: "/destinations", icon: MountainSnow },
     { title: "Accommodations", url: "/accommodations", icon: Hotel },
     { title: "Blogs", url: "/blogs", icon: BookOpen },
     { title: "Tailor Made", url: "/tailor-made", icon: Bus },
