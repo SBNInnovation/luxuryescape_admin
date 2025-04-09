@@ -30,7 +30,8 @@ const handler = NextAuth({
 
         try {
           const res = await axios.post<AuthResponse>(
-            `${process.env.NEXT_PUBLIC_API_URL_PROD}/login`,
+            `${process.env.NEXT_PUBLIC_API_URL_PROD_AUTH}/login`,
+
             {
               email: credentials.identifier,
               password: credentials.password,
