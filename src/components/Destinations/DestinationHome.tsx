@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
-import { Switch } from "@/components/ui/switch"
+
 import {
   Trash2,
   Plus,
@@ -21,20 +21,13 @@ import MainSpinner from "@/utils/MainLoader"
 import { toast } from "sonner"
 import axios from "axios"
 import Image from "next/image"
+import { DestinationTypes } from "../Types/Types"
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
 type SortOption = {
   field: SortField
   order: SortOrder
-}
-
-interface DestinationTypes {
-  _id: string
-  image: string
-  slug: string
-  title: string
-  description: string
 }
 
 const DestinationHome: React.FC = () => {
@@ -231,7 +224,7 @@ const DestinationHome: React.FC = () => {
 
       {/* Loading and Empty States */}
       {loading && (
-        <div className="flex justify-center  mt-40">
+        <div className="flex justify-center">
           <MainSpinner />
         </div>
       )}

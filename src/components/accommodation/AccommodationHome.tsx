@@ -20,6 +20,7 @@ import { CustomPagination } from "@/utils/Pagination"
 import MainSpinner from "@/utils/MainLoader"
 import { toast } from "sonner"
 import axios from "axios"
+import { DestinationTypes } from "../Types/Types"
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
@@ -34,6 +35,10 @@ interface AccommodationType {
   accommodationLocation: string
   accommodationRating: number
   country: string
+  destination?: {
+    _id: string
+    title: string
+  }
   accommodationPics: string[]
   rooms: {
     roomTitle: string
@@ -54,6 +59,8 @@ const AccommodationHome: React.FC = () => {
   const [accommodations, setAccommodations] = useState<AccommodationType[]>([])
   const [search, setSearch] = useState<string>("")
   const [country, setCountry] = useState<string>("")
+  const [destinationFilter, setDestinationFilter] = useState<string>("")
+  const [desti, setDesti] = useState<DestinationTypes[]>([])
   const [rating, setRating] = useState<string>("")
 
   const [sortOption, setSortOption] = useState<string>("")
@@ -68,10 +75,28 @@ const AccommodationHome: React.FC = () => {
 
   const totalPages = Math.ceil(accommodations?.length / 10)
 
+  //get destinations
+  const getDestinations = async () => {
+    setLoading(true)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations`,
+      {
+        method: "GET",
+      }
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      setDesti(data.data)
+    }
+
+    setLoading(false)
+  }
+
   const getAccommodations = async () => {
     setLoading(true)
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-selected-data?page=${page}&limit=${limit}&search=${search}&location=${country}&sort=${sortOption}&rating=${rating}`,
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-selected-data?page=${page}&limit=${limit}&search=${search}&location=${country}&sort=${sortOption}&rating=${rating}&destination=${destinationFilter}`,
       {
         method: "GET",
       }
@@ -121,7 +146,11 @@ const AccommodationHome: React.FC = () => {
 
   useEffect(() => {
     getAccommodations()
-  }, [page, country, sortOption, rating])
+  }, [page, country, sortOption, rating, destinationFilter])
+
+  useEffect(() => {
+    getDestinations()
+  }, [])
 
   //debouncing for search
   useEffect(() => {
@@ -142,7 +171,7 @@ const AccommodationHome: React.FC = () => {
           </h2>
           <div className="flex  gap-6">
             <Button
-              onClick={() => router.push("accommodations/add-accommodation")}
+              onClick={() => router.push("/accommodations/add-accommodation")}
               className="bg-primary hover:bg-primary/90 px-6 py-2 rounded-full flex items-center gap-2"
             >
               <Plus size={20} />
@@ -189,6 +218,27 @@ const AccommodationHome: React.FC = () => {
               <option value="Bhutan">Bhutan</option>
               <option value="Tibet">Tibet</option>
               <option value="Multidestination">Multidestination</option>
+            </select>
+          </div>
+          <div className="relative">
+            <MapIcon
+              className="absolute left-3 top-2 text-gray-400"
+              size={20}
+            />
+            <select
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-full bg-white text-gray-700 shadow-sm focus:ring-2 focus:ring-primary/20"
+              value={destinationFilter}
+              onChange={(e) => setDestinationFilter(e.target.value)}
+            >
+              <option value="">Destination (all)</option>
+              {desti &&
+                desti.map((d) => {
+                  return (
+                    <option key={d._id} value={d._id}>
+                      {d.title}
+                    </option>
+                  )
+                })}
             </select>
           </div>
 
@@ -261,7 +311,8 @@ const AccommodationHome: React.FC = () => {
                           <div className="flex items-center gap-2 mt-1">
                             <Badge variant="outline" className="text-xs">
                               <MapPin size={10} className="mr-1" />
-                              {acco?.accommodationLocation}, {acco?.country}
+                              {acco?.accommodationLocation},
+                              {acco?.destination?.title}, {acco?.country}
                             </Badge>
                           </div>
                           <div className="mt-1 space-x-2">
@@ -318,7 +369,7 @@ const AccommodationHome: React.FC = () => {
 
       {/* Loading and Empty States */}
       {loading && (
-        <div className="flex justify-center  mt-40">
+        <div className="flex justify-center">
           <MainSpinner />
         </div>
       )}

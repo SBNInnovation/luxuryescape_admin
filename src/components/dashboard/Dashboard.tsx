@@ -70,18 +70,27 @@ export default function Dashboard() {
   const [dashboardContent, setDashboardContent] = useState<DashboardData | {}>(
     {}
   )
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { data: session } = useSession()
 
   const handleGetDashboardContent = async () => {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/dashboard`
-    )
-    const data = response.data
-    if (data.success) {
-      setDashboardContent(data.data)
-    } else {
+    try {
+      setLoading(true)
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/dashboard`
+      )
+      const data = response.data
+      if (data.success) {
+        setDashboardContent(data.data)
+      } else {
+        setDashboardContent({})
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard content:", error)
       setDashboardContent({})
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -124,6 +133,13 @@ export default function Dashboard() {
                 Here's what's happening with your travel business today
               </p>
             </div>
+          </div>
+          <div>
+            {loading && (
+              <div className="animate-pulse flex flex-col items-center mb-6">
+                Loading your Luxury Experience, Please wait...
+              </div>
+            )}
           </div>
 
           {/* Stats Overview */}

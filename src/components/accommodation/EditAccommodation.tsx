@@ -27,6 +27,7 @@ import {
 } from "lucide-react"
 import CountryInput from "../Common/CountryInput"
 import { useRouter } from "next/navigation"
+import DestinationSelect from "./accommodationForm/DestinationSelect"
 
 interface Room {
   _id: string
@@ -69,6 +70,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [id, setId] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [location, setLocation] = useState<string>("")
+  const [destination, setDestination] = useState<string>("")
   const [country, setCountry] = useState<string>("")
   const [rating, setRating] = useState<number>(1)
   const [overview, setOverview] = useState<string>("")
@@ -172,6 +174,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         setTitle(data.data.accommodationTitle)
         setLocation(data.data.accommodationLocation)
         setCountry(data.data.country)
+        setDestination(data.data.destination)
         setRating(data.data.accommodationRating)
         setOverview(data.data.accommodationDescription)
         setFeatures(data.data.accommodationFeatures)
@@ -192,6 +195,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     formData.append("accommodationTitle", title)
     formData.append("accommodationLocation", location)
     formData.append("country", country)
+    formData.append("destination", destination)
     formData.append("accommodationRating", rating.toString())
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))
@@ -384,6 +388,10 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
                     location={location}
                     setLocation={setLocation}
                     error={errors.location || ""}
+                  />
+                  <DestinationSelect
+                    destination={destination}
+                    setDestination={setDestination}
                   />
                   <CountryInput
                     country={country}

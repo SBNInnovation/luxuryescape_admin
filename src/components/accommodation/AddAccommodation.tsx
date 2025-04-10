@@ -18,6 +18,7 @@ import { ArrowLeft, Loader, Loader2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
 import CountryInput from "../Common/CountryInput"
+import DestinationSelect from "./accommodationForm/DestinationSelect"
 
 //validation
 const formSchema = z.object({
@@ -47,6 +48,7 @@ const AddAccommodation = () => {
   const [overview, setOverview] = useState<string>("")
   const [features, setFeatures] = useState<string[]>([""])
   const [amenities, setAmenities] = useState<string[]>([""])
+  const [destination, setDestination] = useState<string>("")
   const [images, setImages] = useState<File[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -115,6 +117,7 @@ const AddAccommodation = () => {
     formData.append("accommodationTitle", title)
     formData.append("accommodationLocation", location)
     formData.append("country", country)
+    formData.append("destination", destination)
     formData.append("accommodationRating", rating.toString())
     formData.append("accommodationDescription", overview)
     formData.append("accommodationFeatures", JSON.stringify(features))
@@ -186,6 +189,11 @@ const AddAccommodation = () => {
                     setLocation={setLocation}
                     error={errors.location || ""}
                   />
+                  <DestinationSelect
+                    destination={destination}
+                    setDestination={setDestination}
+                  />
+
                   <CountryInput
                     country={country}
                     setCountry={setCountry}

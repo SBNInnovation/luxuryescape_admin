@@ -76,3 +76,12 @@ export interface sessionData {
   }
   jwt: string
 }
+
+export interface DestinationTypes {
+  _id: string
+  image: string
+  slug: string
+  title: string
+
+  description: string
+}
