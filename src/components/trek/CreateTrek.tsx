@@ -58,6 +58,7 @@ import DifficultyInput from "../Common/DifficultyInput"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Exclusions from "../Common/Exclusions"
+import RouteMapImage from "../Common/RouteMapImage"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -128,6 +129,8 @@ const CreateTrekForm = () => {
   const [location, setLocation] = useState<string>("")
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
+
+  const [routeImage, setRouteImage] = useState<File | null>(null)
 
   const [difficulty, setDifficulty] = useState("")
 
@@ -268,6 +271,11 @@ const CreateTrekForm = () => {
         formData.append("thumbnail", thumbnail)
       }
 
+      // Append route image if provided
+      if (routeImage) {
+        formData.append("routeMap", routeImage)
+      }
+
       // Append gallery images if provided
       if (images.length > 0) {
         images.forEach((image) => {
@@ -399,6 +407,11 @@ const CreateTrekForm = () => {
                     setThumbnail={setThumbnail}
                     thumbnailPreview={null}
                     error={errors.thumbnail || ""}
+                  />
+                  <RouteMapImage
+                    routeImage={routeImage}
+                    setRouteImage={setRouteImage}
+                    routeImagePreview={null}
                   />
                 </div>
                 <div className="space-y-6 mt-8">

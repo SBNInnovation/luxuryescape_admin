@@ -4,25 +4,25 @@ import { Input } from "../ui/input"
 import Image from "next/image"
 
 interface ThumbnailInputProps {
-  thumbnail: File | null
-  setThumbnail: React.Dispatch<React.SetStateAction<File | null>>
-  thumbnailPreview: string | null
-  error: string
+  routeImage: File | null
+  setRouteImage: React.Dispatch<React.SetStateAction<File | null>>
+  routeImagePreview: string | null
+  error?: string
 }
 
-const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
-  thumbnail,
-  setThumbnail,
-  thumbnailPreview,
+const RouteMapImage: React.FC<ThumbnailInputProps> = ({
+  routeImage,
+  setRouteImage,
+  routeImagePreview,
   error,
 }) => {
   const [preview, setPreview] = useState<string | null>(
-    thumbnail ? URL.createObjectURL(thumbnail) : null
+    routeImage ? URL.createObjectURL(routeImage) : null
   )
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null
-    setThumbnail(file)
+    setRouteImage(file)
     if (file) {
       setPreview(URL.createObjectURL(file))
     } else {
@@ -33,7 +33,7 @@ const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
   return (
     <div className="mb-4">
       <label className="block text-lg font-medium text-gray-700">
-        Thumbnail <span className="text-red-700">*</span>
+        Route Map Image
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <Input
@@ -47,23 +47,25 @@ const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
           <label className="block text-lg font-medium text-gray-700">
             New:
           </label>
-          <img
+          <Image
             src={preview}
-            alt="Thumbnail Preview"
+            alt="Route Map Preview"
+            width={384}
+            height={224}
             className="h-56 w-96 object-cover rounded-md border border-gray-300"
           />
         </div>
       )}
-      {thumbnailPreview && (
+      {routeImagePreview && (
         <div className="mt-2">
           <label className="block text-lg font-medium text-gray-700">
             Current:
           </label>
           <Image
-            src={thumbnailPreview}
+            src={routeImagePreview}
             alt="Thumbnail Preview"
             width={384}
-            height={384}
+            height={224}
             className="h-56 w-96 object-cover rounded-md border border-gray-300"
           />
         </div>
@@ -72,4 +74,4 @@ const ThumbnailInput: React.FC<ThumbnailInputProps> = ({
   )
 }
 
-export default ThumbnailInput
+export default RouteMapImage

@@ -171,7 +171,7 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
               )}
 
               {/* Picture Preview from props */}
-              {/* {highlight.highlightPicturePreview && (
+              {highlight.highlightPicturePreview && (
                 <div className="mt-2">
                   <img
                     src={highlight.highlightPicturePreview}
@@ -181,7 +181,7 @@ const HighlightsInput: React.FC<HighlightsInputProps> = ({
                     className="mt-2 max-h-32 rounded-md border border-gray-200"
                   />
                 </div>
-              )} */}
+              )}
               <div className="flex gap-2 items-center">
                 {/* for edit preview  */}
                 {highlightPicturePreviews && (

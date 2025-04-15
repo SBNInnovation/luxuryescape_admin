@@ -58,6 +58,7 @@ import Exclusions from "../Common/Exclusions"
 import { BookingPriceInterface } from "../Types/Types"
 import AddBookingPrice from "../Common/AddBookingPrice"
 import UpdateBookingPrice from "../Common/EditBookingPrice"
+import RouteMapImage from "../Common/RouteMapImage"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -130,6 +131,9 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
   const [days, setDays] = useState<number>(0)
   const [thumbnail, setThumbnail] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("")
+
+  const [routeImage, setRouteImage] = useState<File | null>(null)
+  const [routeImagePreview, setRouteImagePreview] = useState<string>("")
 
   const [difficulty, setDifficulty] = useState("")
 
@@ -290,6 +294,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
             location: string
             duration: number
             thumbnail: File | string
+            routeMap: File | string
             difficultyLevel: string
             idealTime: string[]
             trekOverview: string
@@ -320,7 +325,13 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         setCountry(trekData.country)
         setLocation(trekData.location)
         setDays(trekData.duration)
-        setThumbnailPreview(trekData.thumbnail as string)
+        if (trekData.thumbnail) {
+          setThumbnailPreview(trekData.thumbnail as string)
+        }
+        if (trekData.routeMap) {
+          setRouteImagePreview(trekData.routeMap as string)
+        }
+
         setDifficulty(trekData.difficultyLevel)
         setSelectedSeasons(trekData.idealTime)
         setOverview(trekData.trekOverview)
@@ -409,6 +420,10 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
       // Append thumbnail if provided
       if (thumbnail) {
         formData.append("thumbnail", thumbnail)
+      }
+      // Append route image if provided
+      if (routeImage) {
+        formData.append("routeMap", routeImage)
       }
 
       // Append gallery images if provided
@@ -650,6 +665,11 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                       setThumbnail={setThumbnail}
                       thumbnailPreview={thumbnailPreview}
                       error={errors.thumbnail || ""}
+                    />
+                    <RouteMapImage
+                      routeImage={routeImage}
+                      setRouteImage={setRouteImage}
+                      routeImagePreview={routeImagePreview}
                     />
                   </div>
                   <div className="space-y-6 mt-8">

@@ -3,9 +3,9 @@ import Image from "next/image"
 
 const MainSpinner = () => {
   return (
-    <div className="flex items-center justify-center h-screen w-full relative bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="flex items-center justify-center mt-20 w-full relative bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Spinner Container */}
-      <div className="absolute w-32 h-32 border-4 border-gray-300 border-t-blue-500 border-opacity-100 rounded-full animate-spin"></div>
+      <div className="absolute w-20 h-20 border-4 border-gray-300 border-t-blue-500 border-opacity-100 rounded-full animate-spin"></div>
 
       {/* Logo */}
       <div className="z-10 flex items-center justify-center">
