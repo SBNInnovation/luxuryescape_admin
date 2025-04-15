@@ -346,7 +346,7 @@ const TourHome: React.FC = () => {
 
       {/* Loading and Empty States */}
       {loading && (
-        <div className="flex justify-center  mt-40">
+        <div className="flex justify-center">
           <MainSpinner />
         </div>
       )}
