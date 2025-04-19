@@ -16,11 +16,13 @@ interface RoomDetails {
 
 interface EditRoomProps {
   roomDetails: RoomDetails
+  setShowEditRoomForm: React.Dispatch<React.SetStateAction<boolean>>
   onUpdateSuccess?: () => void
 }
 
 const EditRoom: React.FC<EditRoomProps> = ({
   roomDetails,
+  setShowEditRoomForm,
   onUpdateSuccess,
 }) => {
   // State for the room details form
@@ -154,47 +156,94 @@ const EditRoom: React.FC<EditRoomProps> = ({
     }
   }
 
-  return (
-    <div className="mb-4">
-      <form onSubmit={handleUpdateRoom} className="space-y-4">
-        {/* Room Images */}
-        <div>
-          <label className="block text-lg font-medium text-gray-700">
-            Room Images (max 5)<span className="text-red-700">*</span>
-          </label>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            {/* new photo preview */}
+  // Handle cancel button click
+  const handleCancel = () => {
+    setShowEditRoomForm(false)
+  }
 
-            <div>
-              {/* New Photos Upload */}
-              <div className="mt-4">
-                <input
-                  type="file"
-                  onChange={handleRoomImages}
-                  accept="image/*"
-                  multiple
-                  className="mt-2"
-                />
-              </div>
+  return (
+    <div className="max-w-6xl mx-auto p-6 ">
+      <h1 className="text-2xl font-bold text-center mb-6">
+        Update Room Details
+      </h1>
+
+      <div className="mb-4">
+        <form onSubmit={handleUpdateRoom} className="space-y-4">
+          {/* Room Images */}
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Room Images (max 5)<span className="text-red-700">*</span>
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              {/* new photo preview */}
               <div>
-                {/* Newly Uploaded Images Preview */}
-                {newPhotos.length > 0 && (
+                {/* New Photos Upload */}
+                <div className="mt-4">
+                  <input
+                    type="file"
+                    onChange={handleRoomImages}
+                    accept="image/*"
+                    multiple
+                    className="mt-2"
+                    disabled={existingPhotos.length + newPhotos.length >= 5}
+                  />
+                  {existingPhotos.length + newPhotos.length >= 5 && (
+                    <p className="text-sm italic text-red-600 mt-1">
+                      Maximum number of images reached (5)
+                    </p>
+                  )}
+                </div>
+                <div>
+                  {/* Newly Uploaded Images Preview */}
+                  {newPhotos.length > 0 && (
+                    <>
+                      <h3 className="mt-4 font-medium">New Images:</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                        {newPhotos.map((photo, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(photo)}
+                              alt={`New Room Image ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeNewPhoto(index)}
+                              className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* old photo  */}
+              <div>
+                {/* Existing Photos */}
+                {existingPhotos.length > 0 && (
                   <>
-                    <h3 className="mt-4 font-medium">New Images:</h3>
-                    <div className="grid grid-cols-3 gap-4 mt-2">
-                      {newPhotos.map((photo, index) => (
-                        <div key={index} className="relative">
+                    <h3 className="mt-2 font-medium">Current Images:</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                      {existingPhotos.map((photoUrl, index) => (
+                        <div key={`existing-${index}`} className="relative">
                           <img
-                            src={URL.createObjectURL(photo)}
-                            alt={`New Room Image ${index + 1}`}
+                            src={photoUrl}
+                            alt={`Room Image ${index + 1}`}
                             className="w-full h-32 object-cover rounded-lg"
                           />
                           <button
                             type="button"
-                            onClick={() => removeNewPhoto(index)}
+                            onClick={() => removeExistingPhoto(photoUrl)}
                             className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                            disabled={
+                              existingPhotos.length + newPhotos.length <= 1
+                            }
                           >
-                            Remove
+                            <Trash2Icon className="h-4 w-4" />
                           </button>
                         </div>
                       ))}
@@ -203,143 +252,116 @@ const EditRoom: React.FC<EditRoomProps> = ({
                 )}
               </div>
             </div>
-            {/* old photo  */}
-            <div>
-              {/* Existing Photos */}
-              {existingPhotos.length > 0 && (
-                <>
-                  <h3 className="mt-2 font-medium">Current Images:</h3>
-                  <div className="grid grid-cols-3 gap-4 mt-2">
-                    {existingPhotos.map((photoUrl, index) => (
-                      <div key={`existing-${index}`} className="relative">
-                        <img
-                          src={photoUrl}
-                          alt={`Room Image ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeExistingPhoto(photoUrl)}
-                          className="absolute top-2 right-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                        >
-                          <Trash2Icon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          {/* Room Details */}
-          <div>
-            {/* Room Title */}
-            <div>
-              <label className="block text-lg font-medium text-gray-700">
-                Room Title <span className="text-red-700">*</span>
-              </label>
-              <input
-                type="text"
-                value={roomTitle}
-                onChange={(e) => setRoomTitle(e.target.value)}
-                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-                required
-              />
-            </div>
-
-            {/* Room Standard */}
-            <div>
-              <label className="block text-lg font-medium text-gray-700">
-                Room Standard <span className="text-red-700">*</span>
-              </label>
-              <input
-                type="text"
-                value={roomStandard}
-                onChange={(e) => setRoomStandard(e.target.value)}
-                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-                required
-              />
-            </div>
-
-            {/* Room Description */}
-            <div>
-              <label className="block text-lg font-medium text-gray-700">
-                Room Description <span className="text-red-700">*</span>
-              </label>
-              <textarea
-                value={roomDescription}
-                onChange={(e) => setRoomDescription(e.target.value)}
-                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
-                required
-                minLength={10}
-              />
-            </div>
           </div>
 
-          {/* Room Facilities */}
-          <div>
-            <label className="block text-lg font-medium text-gray-700">
-              Room Facilities <span className="text-red-700">*</span>
-            </label>
-            {roomFacilities.map((facility, index) => (
-              <div key={index} className="flex gap-2 mt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {/* Room Details */}
+            <div>
+              {/* Room Title */}
+              <div className="mb-4">
+                <label className="block text-lg font-medium text-gray-700">
+                  Room Title <span className="text-red-700">*</span>
+                </label>
                 <input
                   type="text"
-                  value={facility}
-                  onChange={(e) => updateFacility(index, e.target.value)}
+                  value={roomTitle}
+                  onChange={(e) => setRoomTitle(e.target.value)}
                   className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => removeFacility(index)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  disabled={roomFacilities.length <= 1}
-                >
-                  Remove
-                </button>
               </div>
-            ))}
+
+              {/* Room Standard */}
+              <div className="mb-4">
+                <label className="block text-lg font-medium text-gray-700">
+                  Room Standard <span className="text-red-700">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={roomStandard}
+                  onChange={(e) => setRoomStandard(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                  required
+                />
+              </div>
+
+              {/* Room Description */}
+              <div>
+                <label className="block text-lg font-medium text-gray-700">
+                  Room Description <span className="text-red-700">*</span>
+                </label>
+                <textarea
+                  value={roomDescription}
+                  onChange={(e) => setRoomDescription(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full h-32"
+                  required
+                  minLength={10}
+                />
+              </div>
+            </div>
+
+            {/* Room Facilities */}
+            <div>
+              <label className="block text-lg font-medium text-gray-700">
+                Room Facilities <span className="text-red-700">*</span>
+              </label>
+              {roomFacilities.map((facility, index) => (
+                <div key={index} className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={facility}
+                    onChange={(e) => updateFacility(index, e.target.value)}
+                    className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFacility(index)}
+                    className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    disabled={roomFacilities.length <= 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addFacility}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Add Facility
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-4 mt-6">
+            {/* Cancel Button */}
             <button
               type="button"
-              onClick={addFacility}
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onClick={handleCancel}
+              className="flex justify-center items-center px-4 py-2 w-full border border-red-700 bg-red-50 text-red-700 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
             >
-              Add Facility
+              Cancel
+            </button>
+
+            {/* Update Room Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex justify-center items-center px-4 py-2 w-full bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-green-300"
+            >
+              {loading ? (
+                <p className="flex gap-4">
+                  <Loader2Icon className="h-6 w-6 animate-spin" />
+                  Updating...
+                </p>
+              ) : (
+                <p>Update Room</p>
+              )}
             </button>
           </div>
-        </div>
-
-        <div className="flex gap-4 mt-4">
-          {/* cancel Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            onClick={onUpdateSuccess}
-            className="flex justify-center items-center mt-16 px-4 py-2 w-full  border border-red-700 bg-red-50 text-red-700 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            Cancel
-          </button>
-          {/* update room  */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex justify-center items-center mt-16 px-4 py-2 w-full text bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            {loading ? (
-              <p className="flex gap-4">
-                <Loader2Icon className="h-6 w-6 animate-spin" />
-                Updating...
-              </p>
-            ) : (
-              <p>Update Room</p>
-            )}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }

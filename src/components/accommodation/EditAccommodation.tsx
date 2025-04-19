@@ -24,6 +24,7 @@ import {
   PlusCircle,
   PlusIcon,
   Trash2Icon,
+  XIcon,
 } from "lucide-react"
 import CountryInput from "../Common/CountryInput"
 import { useRouter } from "next/navigation"
@@ -93,7 +94,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     accommodationId: "",
     imageToDelete: [],
   })
-  const [isEditMode, setIsEditMode] = useState<boolean>(false)
 
   const [rooms, setRooms] = useState<Room[]>([])
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -101,6 +101,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [loading, setLoading] = useState<boolean>(false)
 
   const [showAddRoomForm, setShowAddRoomForm] = useState<boolean>(false)
+  const [showEditRoomForm, setShowEditRoomForm] = useState<boolean>(false)
 
   const router = useRouter()
 
@@ -280,7 +281,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
 
   // In EditRoom success callback
   const onUpdateSuccess = () => {
-    setIsEditMode(false)
+    setShowEditRoomForm(false)
     setShowAddRoomForm(false)
     // Update only the edited room in the list
     getSingleAccommodation()
@@ -293,7 +294,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
 
   //for edit room handle change
   const handleEditRoomChange = (roomDetails: Room) => {
-    setIsEditMode(true)
+    setShowEditRoomForm(true)
     setShowAddRoomForm(false)
     setEditRoomDetails({ ...roomDetails, accommodationId: id })
   }
@@ -305,14 +306,6 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-12 relative">
-        {/* Overlay for darkening the background */}
-        {showAddRoomForm && (
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10"
-            onClick={() => setShowAddRoomForm(false)} // Close the form when clicking outside
-          />
-        )}
-
         {/* Header */}
         <div className="flex gap-10 items-center text-center mb-8">
           <ArrowLeft
@@ -326,18 +319,45 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
 
         {/* Button for adding room */}
         <div className="flex justify-start mb-8">
-          <button
-            className="flex bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 
-            transition-all duration-200"
-            onClick={() => setShowAddRoomForm(!showAddRoomForm)}
-          >
-            <PlusIcon className="w-6 h-6 mr-2" /> Add Room
-          </button>
+          {!showEditRoomForm && (
+            <button
+              className="flex  "
+              onClick={() => setShowAddRoomForm(!showAddRoomForm)}
+            >
+              {showAddRoomForm ? (
+                <div
+                  className="flex items-center gap-2 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 
+            transition-all duration-200 bg-red-600"
+                >
+                  <XIcon className="w-6 h-6 mr-2" /> Close Form
+                </div>
+              ) : (
+                <div
+                  className="flex items-center gap-2 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 
+            transition-all duration-200 bg-blue-600"
+                >
+                  <PlusIcon className="w-6 h-6 mr-2" /> Add Room
+                </div>
+              )}
+            </button>
+          )}
         </div>
+        {/* button for edit room  */}
+        {showEditRoomForm && (
+          <div className="flex justify-start mb-8">
+            <button
+              className="flex bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 
+            transition-all duration-200"
+              onClick={() => setShowEditRoomForm(false)}
+            >
+              <XIcon className="w-6 h-6 mr-2" /> Close Form
+            </button>
+          </div>
+        )}
 
         {/* Room Form */}
         {showAddRoomForm && (
-          <Card className="backdrop-blur-md border border-white/20 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-11/12 max-w-2xl">
+          <Card className="">
             <CardContent className="p-8">
               <div className="flex gap-2 text-2xl font-semibold">
                 <span className="text-blue-400">🛏️</span> Add Room
@@ -352,8 +372,8 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
           </Card>
         )}
         {/* Edit Room Form */}
-        {isEditMode && (
-          <Card className="backdrop-blur-md border bg-gray-200 border-white/20 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-11/12 max-w-2xl">
+        {showEditRoomForm && (
+          <Card className="">
             <CardContent className="p-8">
               <div className="flex gap-2 text-2xl font-semibold">
                 <span className="text-blue-400">🛏️</span> Edit Room
@@ -361,6 +381,7 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
               <div className="mt-8">
                 <EditRoom
                   roomDetails={editRoomDetails}
+                  setShowEditRoomForm={setShowEditRoomForm}
                   onUpdateSuccess={onUpdateSuccess}
                 />
               </div>
@@ -369,248 +390,256 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         )}
 
         {/* Main Form */}
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">🏨</span> Basic Information
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                <div className="space-y-6">
-                  {/* Left column inputs */}
-                  <TitleInput
-                    title={title}
-                    setTitle={setTitle}
-                    error={errors.title || ""}
-                  />
-                  <LocationInput
-                    location={location}
-                    setLocation={setLocation}
-                    error={errors.location || ""}
-                  />
-                  <DestinationSelect
-                    destination={destination}
-                    setDestination={setDestination}
-                  />
-                  <CountryInput
-                    country={country}
-                    setCountry={setCountry}
-                    error={errors.location || ""}
-                  />
-                </div>
-                <div className="space-y-6">
-                  {/* Right column inputs */}
-                  <RatingInput
-                    rating={rating}
-                    setRating={setRating}
-                    error={errors.rating || ""}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {!showAddRoomForm && !showEditRoomForm && (
+          <>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Basic Information Section */}
+              <Card className="backdrop-blur-md border border-white/20">
+                <CardContent className="p-8">
+                  <div className="flex gap-2 text-2xl font-semibold">
+                    <span className="text-blue-400">🏨</span> Basic Information
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                    <div className="space-y-6">
+                      {/* Left column inputs */}
+                      <TitleInput
+                        title={title}
+                        setTitle={setTitle}
+                        error={errors.title || ""}
+                      />
+                      <LocationInput
+                        location={location}
+                        setLocation={setLocation}
+                        error={errors.location || ""}
+                      />
+                      <DestinationSelect
+                        destination={destination}
+                        setDestination={setDestination}
+                      />
+                      <CountryInput
+                        country={country}
+                        setCountry={setCountry}
+                        error={errors.location || ""}
+                      />
+                    </div>
+                    <div className="space-y-6">
+                      {/* Right column inputs */}
+                      <RatingInput
+                        rating={rating}
+                        setRating={setRating}
+                        error={errors.rating || ""}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Accommodation Images Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">📸</span> Accommodation Images
-              </div>
-              <div className="mt-8">
-                <AccoImages
-                  images={images}
-                  setImages={setImages}
-                  previews={previews}
-                  setPreviews={setPreviews}
-                  oldImagesPreviews={oldImagesPreviews}
-                  setOldImagesPreviews={setOldImagesPreviews}
-                  imageToDelete={setImageToDelete}
-                  error={errors.images || ""}
-                />
-              </div>
-            </CardContent>
-          </Card>
+              {/* Accommodation Images Section */}
+              <Card className="backdrop-blur-md border border-white/20">
+                <CardContent className="p-8">
+                  <div className="flex gap-2 text-2xl font-semibold">
+                    <span className="text-blue-400">📸</span> Accommodation
+                    Images
+                  </div>
+                  <div className="mt-8">
+                    <AccoImages
+                      images={images}
+                      setImages={setImages}
+                      previews={previews}
+                      setPreviews={setPreviews}
+                      oldImagesPreviews={oldImagesPreviews}
+                      setOldImagesPreviews={setOldImagesPreviews}
+                      imageToDelete={setImageToDelete}
+                      error={errors.images || ""}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Overview Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">📝</span> Overview
-              </div>
-              <div className="mt-8">
-                <OverviewInput
-                  overview={overview}
-                  setOverview={setOverview}
-                  error={errors.overview || ""}
-                />
-              </div>
-            </CardContent>
-          </Card>
+              {/* Overview Section */}
+              <Card className="backdrop-blur-md border border-white/20">
+                <CardContent className="p-8">
+                  <div className="flex gap-2 text-2xl font-semibold">
+                    <span className="text-blue-400">📝</span> Overview
+                  </div>
+                  <div className="mt-8">
+                    <OverviewInput
+                      overview={overview}
+                      setOverview={setOverview}
+                      error={errors.overview || ""}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Features Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">✨</span> Features
-              </div>
-              <div className="mt-8">
-                <FeatureInput
-                  features={features}
-                  setFeatures={setFeatures}
-                  error={errors.features || ""}
-                />
-              </div>
-            </CardContent>
-          </Card>
+              {/* Features Section */}
+              <Card className="backdrop-blur-md border border-white/20">
+                <CardContent className="p-8">
+                  <div className="flex gap-2 text-2xl font-semibold">
+                    <span className="text-blue-400">✨</span> Features
+                  </div>
+                  <div className="mt-8">
+                    <FeatureInput
+                      features={features}
+                      setFeatures={setFeatures}
+                      error={errors.features || ""}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Amenities Section */}
-          <Card className="backdrop-blur-md border border-white/20">
-            <CardContent className="p-8">
-              <div className="flex gap-2 text-2xl font-semibold">
-                <span className="text-blue-400">🛁</span> Amenities
-              </div>
-              <div className="mt-8">
-                <AmenitiesInput
-                  amenities={amenities}
-                  setAmenities={setAmenities}
-                  error={errors.amenities || ""}
-                />
-              </div>
-            </CardContent>
-          </Card>
+              {/* Amenities Section */}
+              <Card className="backdrop-blur-md border border-white/20">
+                <CardContent className="p-8">
+                  <div className="flex gap-2 text-2xl font-semibold">
+                    <span className="text-blue-400">🛁</span> Amenities
+                  </div>
+                  <div className="mt-8">
+                    <AmenitiesInput
+                      amenities={amenities}
+                      setAmenities={setAmenities}
+                      error={errors.amenities || ""}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Submit Button */}
-          <div className="pt-8">
-            <button
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
+              {/* Submit Button */}
+              <div className="pt-8">
+                <button
+                  type="submit"
+                  className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-medium 
               rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.01] transition-all duration-200 
               shadow-lg hover:shadow-xl hover:shadow-blue-500/20"
-            >
-              {loading ? (
-                <div className="flex justify-center items-center">
-                  Updating...{" "}
-                  <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
-                </div>
-              ) : (
-                "Update Accommodation"
-              )}
-            </button>
-          </div>
-        </form>
-
-        {/* room data  */}
-        <div className="mt-8">
-          <Card>
-            <CardContent>
-              <div>
-                <div className="flex justify-between items-center mb-6 mt-6">
-                  {/* Rooms section */}
-                  <h2 className="text-xl font-bold mb-6">Available Rooms</h2>
-                  <div className="flex justify-start mb-8">
-                    <button
-                      className="flex bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 
-            transition-all duration-200"
-                      onClick={() => setShowAddRoomForm(!showAddRoomForm)}
-                    >
-                      <PlusIcon className="w-6 h-6 mr-2" /> Add Room
-                    </button>
-                  </div>
-                </div>
-
-                {rooms.length === 0 ? (
-                  <p className="text-gray-500">
-                    No rooms available for this accommodation.
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {rooms.map((room) => (
-                      <div
-                        key={room._id}
-                        className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
-                      >
-                        {/* Room image */}
-                        <div className="relative h-48 w-full">
-                          {room.roomPhotos && room.roomPhotos.length > 0 ? (
-                            <img
-                              src={room.roomPhotos[0]}
-                              alt={room.roomTitle}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500">
-                                No image available
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Room details */}
-                        <div className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-xl font-semibold">
-                              {room.roomTitle}
-                            </h3>
-                            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                              {room.roomStandard}
-                            </span>
-                          </div>
-
-                          <p className="text-gray-600 mb-4">
-                            {room.roomDescription}
-                          </p>
-
-                          {/* Facilities */}
-                          <div className="mb-4">
-                            <h4 className="text-sm font-medium text-gray-900 mb-2">
-                              Facilities:
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {room.roomFacilities.map((facility, index) => (
-                                <span
-                                  key={index}
-                                  className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
-                                >
-                                  {facility}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex gap-4 justify-between items-center bg-gray-100 p-4">
-                          <button
-                            disabled={deleteLoading}
-                            onClick={() => handleEditRoomChange(room)}
-                            className="flex w-full items-center justify-center bg-blue-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-blue-600 transition-all duration-200"
-                          >
-                            <PenBox className="w-6 h-6" />
-                            <span className="ml-2">Edit</span>
-                          </button>
-                          {/* delete  */}
-                          <button
-                            disabled={deleteLoading}
-                            onClick={() =>
-                              handleRoomDelete({
-                                roomId: room._id,
-                                roomName: room.roomTitle,
-                              })
-                            }
-                            className="flex w-full items-center justify-center bg-red-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-red-600 transition-all duration-200"
-                          >
-                            <Trash2Icon className="w-6 h-6" />
-                            <span className="ml-2">Delete</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                >
+                  {loading ? (
+                    <div className="flex justify-center items-center">
+                      Updating...{" "}
+                      <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    "Update Accommodation"
+                  )}
+                </button>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </form>
+            {/* room data  */}
+            <div className="mt-8">
+              <Card>
+                <CardContent>
+                  <div>
+                    <div className="flex justify-between items-center mb-6 mt-6">
+                      {/* Rooms section */}
+                      <h2 className="text-xl font-bold mb-6">
+                        Available Rooms
+                      </h2>
+                      <div className="flex justify-start mb-8">
+                        <button
+                          className="flex bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 
+            transition-all duration-200"
+                          onClick={() => setShowAddRoomForm(!showAddRoomForm)}
+                        >
+                          <PlusIcon className="w-6 h-6 mr-2" /> Add Room
+                        </button>
+                      </div>
+                    </div>
+
+                    {rooms.length === 0 ? (
+                      <p className="text-gray-500">
+                        No rooms available for this accommodation.
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {rooms.map((room) => (
+                          <div
+                            key={room._id}
+                            className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
+                          >
+                            {/* Room image */}
+                            <div className="relative h-48 w-full">
+                              {room.roomPhotos && room.roomPhotos.length > 0 ? (
+                                <img
+                                  src={room.roomPhotos[0]}
+                                  alt={room.roomTitle}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                  <span className="text-gray-500">
+                                    No image available
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Room details */}
+                            <div className="p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-xl font-semibold">
+                                  {room.roomTitle}
+                                </h3>
+                                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                  {room.roomStandard}
+                                </span>
+                              </div>
+
+                              <p className="text-gray-600 mb-4">
+                                {room.roomDescription}
+                              </p>
+
+                              {/* Facilities */}
+                              <div className="mb-4">
+                                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                                  Facilities:
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {room.roomFacilities.map(
+                                    (facility, index) => (
+                                      <span
+                                        key={index}
+                                        className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+                                      >
+                                        {facility}
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex gap-4 justify-between items-center bg-gray-100 p-4">
+                              <button
+                                disabled={deleteLoading}
+                                onClick={() => handleEditRoomChange(room)}
+                                className="flex w-full items-center justify-center bg-blue-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-blue-600 transition-all duration-200"
+                              >
+                                <PenBox className="w-6 h-6" />
+                                <span className="ml-2">Edit</span>
+                              </button>
+                              {/* delete  */}
+                              <button
+                                disabled={deleteLoading}
+                                onClick={() =>
+                                  handleRoomDelete({
+                                    roomId: room._id,
+                                    roomName: room.roomTitle,
+                                  })
+                                }
+                                className="flex w-full items-center justify-center bg-red-500 text-white font-medium py-2 px-4 rounded-b-lg hover:bg-red-600 transition-all duration-200"
+                              >
+                                <Trash2Icon className="w-6 h-6" />
+                                <span className="ml-2">Delete</span>
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
