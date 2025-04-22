@@ -54,8 +54,8 @@ export function AppSidebar() {
   // Menu items
   const items = [
     { title: "Home", url: "/", icon: Home },
-    { title: "Trekkings", url: "/trekkings", icon: Train },
-    { title: "Tours", url: "/tours", icon: Binoculars },
+    { title: "Luxury Treks", url: "/trekkings", icon: Train },
+    { title: "Luxury Tours", url: "/tours", icon: Binoculars },
     { title: "Destinations", url: "/destinations", icon: MountainSnow },
     { title: "Accommodations", url: "/accommodations", icon: Hotel },
     { title: "Blogs", url: "/blogs", icon: BookOpen },

@@ -175,7 +175,7 @@ const DestinationHome: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-4">
                         <Image
-                          src={desti?.image || "/going.png"}
+                          src={desti?.thumbnail || "/going.png"}
                           alt={desti?.title}
                           width={80}
                           height={80}

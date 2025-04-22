@@ -10,7 +10,7 @@ const page = () => {
   const slugString = Array.isArray(slug) ? slug[0] : slug || ""
 
   return (
-    <div>
+    <div className="w-full">
       <EditBlogForm slug={slugString} />
     </div>
   )

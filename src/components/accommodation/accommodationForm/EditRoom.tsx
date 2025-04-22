@@ -163,10 +163,6 @@ const EditRoom: React.FC<EditRoomProps> = ({
 
   return (
     <div className="max-w-6xl mx-auto p-6 ">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Update Room Details
-      </h1>
-
       <div className="mb-4">
         <form onSubmit={handleUpdateRoom} className="space-y-4">
           {/* Room Images */}

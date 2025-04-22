@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { FaArrowLeft } from "react-icons/fa6"
 import { set } from "zod"
+import { Textarea } from "../ui/textarea"
 
 // Types
 interface BlogLink {
@@ -341,7 +342,7 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
                   onInit={(evt, editor) => {
                     editorRef.current = editor
                   }}
-                  initialValue={description || ""}
+                  value={description}
                   onEditorChange={(content) => setDescription(content)}
                   init={{
                     height: 300,
@@ -375,6 +376,17 @@ const EditBlogForm: React.FC<EditBlogFormProps> = ({ slug }) => {
                   }}
                 />
               </div>
+              {/* text area  */}
+              {/* <div className="mt-8">
+                <Textarea
+                  placeholder="Enter Blog Description"
+                  value={description}
+                  required
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full text-lg h-96"
+                  disabled={isSubmitting}
+                />
+              </div> */}
             </CardContent>
           </Card>
 

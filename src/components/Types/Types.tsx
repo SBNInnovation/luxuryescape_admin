@@ -77,11 +77,15 @@ export interface sessionData {
   jwt: string
 }
 
+interface DestinationsArrayTypes {
+  caption: string
+  image: string
+}
 export interface DestinationTypes {
   _id: string
-  image: string
+  thumbnail: string
   slug: string
   title: string
-
   description: string
+  destinations?: DestinationsArrayTypes[]
 }
