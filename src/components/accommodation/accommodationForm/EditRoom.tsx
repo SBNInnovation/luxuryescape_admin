@@ -256,7 +256,7 @@ const EditRoom: React.FC<EditRoomProps> = ({
               {/* Room Title */}
               <div className="mb-4">
                 <label className="block text-lg font-medium text-gray-700">
-                  Room Title <span className="text-red-700">*</span>
+                  Room Category <span className="text-red-700">*</span>
                 </label>
                 <input
                   type="text"
@@ -268,7 +268,7 @@ const EditRoom: React.FC<EditRoomProps> = ({
               </div>
 
               {/* Room Standard */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-lg font-medium text-gray-700">
                   Room Standard <span className="text-red-700">*</span>
                 </label>
@@ -279,7 +279,7 @@ const EditRoom: React.FC<EditRoomProps> = ({
                   className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
                   required
                 />
-              </div>
+              </div> */}
 
               {/* Room Description */}
               <div>
