@@ -36,6 +36,7 @@ interface ItinerariesInputProps {
   itineraries: ItineraryType[] | ItineraryWithAccommodationObjectsType[]
   setItineraries: React.Dispatch<React.SetStateAction<ItineraryType[]>>
   previewPhotosCurrentDays?: string[]
+  setDayImagesToRemove?: React.Dispatch<React.SetStateAction<string[]>>
   error: string
 }
 
@@ -43,6 +44,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   itineraries: initialItineraries,
   setItineraries,
   previewPhotosCurrentDays,
+  setDayImagesToRemove,
   error,
 }) => {
   const [accommodations, setAccommodations] = useState<
@@ -127,6 +129,21 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     updateItinerary(index, updatedItinerary)
   }
 
+  // const handleFileChange = (
+  //   index: number,
+  //   event: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   const file = event.target.files?.[0]
+  //   if (file) {
+  //     const updatedItinerary = { ...formattedItineraries[index] }
+  //     // Store the actual file object
+  //     updatedItinerary.itineraryDayPhoto = file
+  //     // Create a temporary URL for preview purposes only
+  //     updatedItinerary.itineraryDayPhotoPreview = URL.createObjectURL(file)
+  //     updateItinerary(index, updatedItinerary)
+  //   }
+  // }
+
   const handleFileChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>
@@ -134,10 +151,30 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     const file = event.target.files?.[0]
     if (file) {
       const updatedItinerary = { ...formattedItineraries[index] }
+
+    
+      if (
+        previewPhotosCurrentDays &&
+        previewPhotosCurrentDays[index] &&
+        typeof previewPhotosCurrentDays[index] === "string"
+      ) {
+        console.log("Found image to remove:", previewPhotosCurrentDays[index])
+
+        // Add the current photo URL to imagesToRemove array
+        if (setDayImagesToRemove) {
+          setDayImagesToRemove((prev) => [
+            ...prev,
+            previewPhotosCurrentDays[index],
+          ])
+          console.log("Added to remove list:", previewPhotosCurrentDays[index])
+        }
+      }
+
       // Store the actual file object
       updatedItinerary.itineraryDayPhoto = file
       // Create a temporary URL for preview purposes only
       updatedItinerary.itineraryDayPhotoPreview = URL.createObjectURL(file)
+
       updateItinerary(index, updatedItinerary)
     }
   }
