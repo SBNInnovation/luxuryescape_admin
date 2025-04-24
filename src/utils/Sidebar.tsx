@@ -12,6 +12,7 @@ import {
   Users2Icon,
   Mails,
   Train,
+  HandshakeIcon,
 } from "lucide-react"
 
 import { signOut, useSession } from "next-auth/react"
@@ -56,13 +57,14 @@ export function AppSidebar() {
     { title: "Home", url: "/", icon: Home },
     { title: "Luxury Treks", url: "/trekkings", icon: Train },
     { title: "Luxury Tours", url: "/tours", icon: Binoculars },
-    { title: "Destinations", url: "/destinations", icon: MountainSnow },
+    { title: "Explore Nepal", url: "/destinations", icon: MountainSnow },
     { title: "Accommodations", url: "/accommodations", icon: Hotel },
     { title: "Blogs", url: "/blogs", icon: BookOpen },
     { title: "Tailor Made", url: "/tailor-made", icon: Bus },
     { title: "Quotes", url: "/quotes", icon: Mails },
     { title: "Bookings", url: "/bookings", icon: TicketsPlane },
     { title: "Clients Info", url: "/clients", icon: Users2Icon },
+    { title: "Affiliated Patners", url: "/affiliated", icon: HandshakeIcon },
   ]
 
   const logoutHandler = () => {

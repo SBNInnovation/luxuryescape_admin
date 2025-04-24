@@ -89,3 +89,10 @@ export interface DestinationTypes {
   description: string
   destinations?: DestinationsArrayTypes[]
 }
+
+export interface AffiliateTypes {
+  id: number | null
+  title: string
+  thumbnail: string | null
+  link: string
+}
