@@ -211,14 +211,12 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
 
     try {
       setLoading(true)
-      const response = await fetch(
+
+      const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/edit/${id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
+        formData
       )
-      const data = await response.json()
+      const data = response.data
       if (data.success) {
         toast.success("Accommodation updated successfully")
         router.back()

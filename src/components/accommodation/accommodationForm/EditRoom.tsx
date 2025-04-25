@@ -92,7 +92,7 @@ const EditRoom: React.FC<EditRoomProps> = ({
     e.preventDefault()
 
     // Validate form
-    if (!roomTitle || !roomStandard || !roomDescription) {
+    if (!roomTitle || !roomDescription) {
       toast.error("Please fill all required fields")
       return
     }
