@@ -19,7 +19,7 @@ const OverviewInput: React.FC<InputProps> = ({
   return (
     <div className="mb-4">
       <label className="block text-lg font-medium text-gray-700">
-        Overview <span className="text-red-700">*</span>
+        Overview (min 10 words)<span className="text-red-700">*</span>
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <Textarea

@@ -21,10 +21,6 @@ const DestinationSelect = ({
   const [loading, setLoading] = useState(false)
   const [destinations, setDestinations] = useState<DestinationTypes[]>([])
 
-  useEffect(() => {
-    getDestinations()
-  }, [])
-
   const getDestinations = async () => {
     setLoading(true)
     try {
@@ -45,6 +41,9 @@ const DestinationSelect = ({
       setLoading(false)
     }
   }
+  useEffect(() => {
+    getDestinations()
+  }, [])
 
   return (
     <div className="w-full">

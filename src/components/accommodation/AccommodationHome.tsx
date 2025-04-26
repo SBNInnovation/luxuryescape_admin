@@ -21,6 +21,7 @@ import MainSpinner from "@/utils/MainLoader"
 import { toast } from "sonner"
 import axios from "axios"
 import { DestinationTypes } from "../Types/Types"
+import Image from "next/image"
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
@@ -303,6 +304,8 @@ const AccommodationHome: React.FC = () => {
                           src={acco?.accommodationPics[0] || "/going.png"}
                           alt={acco?.accommodationTitle}
                           className="h-24 w-32 object-cover rounded-lg shadow-sm"
+                          // width={100}
+                          // height={100}
                         />
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">
