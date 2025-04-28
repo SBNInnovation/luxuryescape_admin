@@ -158,7 +158,7 @@ const AccoImages: React.FC<AccoImagesProps> = ({
   imageToDelete,
   error,
   maxImages = 5,
-  maxFileSize = 1 * 1024 * 1024, // 1MB default
+  maxFileSize = 2 * 1024 * 1024, // 2MB default
 }) => {
   // Handle creating and cleaning up image previews
   useEffect(() => {

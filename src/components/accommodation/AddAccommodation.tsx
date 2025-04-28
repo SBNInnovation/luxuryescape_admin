@@ -50,6 +50,7 @@ const AddAccommodation = () => {
   const [amenities, setAmenities] = useState<string[]>([""])
   const [destination, setDestination] = useState<string>("")
   const [images, setImages] = useState<File[]>([])
+  const [previews, setPreviews] = useState<string[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -222,6 +223,8 @@ const AddAccommodation = () => {
                 <AccoImages
                   images={images}
                   setImages={setImages}
+                  setPreviews={setPreviews}
+                  previews={previews}
                   error={errors.images || ""}
                 />
               </div>
