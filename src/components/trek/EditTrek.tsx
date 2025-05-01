@@ -511,7 +511,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
     try {
       setLoading(true)
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL_DEV}/booking/delete-booking-price/${bookingPriceData?._id}`
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/delete-booking-price/${bookingPriceData?._id}`
       )
 
       if (response.data.success) {

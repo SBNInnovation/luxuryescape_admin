@@ -597,6 +597,7 @@ const CreateTourForm = () => {
             <CardContent className="p-8">
               {/* <SectionHeader icon={Sparkles} title="Highlights & Services" /> */}
               <div className="flex gap-2 text-2xl font-semibold">
+                git
                 <Sparkles className="w-8 h-8 text-blue-400" /> Highlights &
                 Services
               </div>
