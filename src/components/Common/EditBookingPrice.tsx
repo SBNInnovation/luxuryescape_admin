@@ -1,4 +1,5 @@
 import axios from "axios"
+import { on } from "events"
 import React, { useState, FC, useEffect } from "react"
 import { toast } from "sonner"
 
@@ -22,6 +23,7 @@ interface BookingPriceDetails {
 interface UpdateBookingPriceProps {
   adventureType: string
   adventureId: string
+  onSuccess?: () => void
   bookingPriceDetails: BookingPriceDetails
 }
 
@@ -51,6 +53,7 @@ interface StatusState {
 const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
   adventureType,
   adventureId,
+  onSuccess,
   bookingPriceDetails,
 }) => {
   const [formData, setFormData] = useState<FormData>({
@@ -175,6 +178,8 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
 
       setStatus({ loading: false, success: true, error: null })
       toast.success(data.message || "Booking price updated successfully!")
+      //calling the onSuccess function if provided
+      onSuccess && onSuccess()
     } catch (error) {
       setStatus({
         loading: false,

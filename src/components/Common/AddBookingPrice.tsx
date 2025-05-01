@@ -5,6 +5,7 @@ import { toast } from "sonner"
 interface AddBookingPriceProps {
   adventureType: string
   adventureId: string
+  onSuccess?: () => void
 }
 
 interface FormData {
@@ -33,6 +34,7 @@ interface StatusState {
 const AddBookingPrice: FC<AddBookingPriceProps> = ({
   adventureType,
   adventureId,
+  onSuccess,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     adventureType,
@@ -98,6 +100,8 @@ const AddBookingPrice: FC<AddBookingPriceProps> = ({
         standardFourStar: "",
         standardFiveStar: "",
       })
+      //calling on success function if provided
+      onSuccess && onSuccess()
     } catch (error) {
       setStatus({
         loading: false,

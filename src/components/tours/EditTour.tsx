@@ -507,6 +507,14 @@ const EditTourForm = ({ slug }: { slug: string }) => {
     setEditBookingPriceOpen(!editBookingPriceOpen)
     setIsOpen(!isOpen)
   }
+
+  const onSuccess = () => {
+    getTourData()
+    setAddBookingPriceOpen(false)
+    setEditBookingPriceOpen(false)
+    setIsOpen(true)
+  }
+
   const handleDeleteBookingPrice = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete the booking price?"
@@ -607,7 +615,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         {/* for add booking price component */}
         {!availableBookingPrice && addBookingPriceOpen && (
           <div className="absolute top-52 left-1/3 z-100 mt-6">
-            <AddBookingPrice adventureType="Tour" adventureId={id} />
+            <AddBookingPrice
+              adventureType="Tour"
+              adventureId={id}
+              onSuccess={onSuccess}
+            />
           </div>
         )}
         {/* for edit booking price component */}
@@ -617,6 +629,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
               adventureType="Tour"
               adventureId={id}
               bookingPriceDetails={bookingPriceData}
+              onSuccess={onSuccess}
             />
           </div>
         )}
