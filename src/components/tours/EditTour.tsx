@@ -160,7 +160,9 @@ const EditTourForm = ({ slug }: { slug: string }) => {
   const [imageToDelete, setImageToDelete] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
+
   const [loading, setLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
 
   const [addBookingPriceOpen, setAddBookingPriceOpen] = useState<boolean>(false)
@@ -521,26 +523,26 @@ const EditTourForm = ({ slug }: { slug: string }) => {
     )
     if (!confirmDelete) return
     try {
-      setLoading(true)
+      setDeleteLoading(true)
       const response = await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL_PROD}/delete-booking-price/${bookingPriceData?._id}`
       )
 
       if (response.data.success) {
         toast.success(response.data.message || "Booking Price Removed")
-        setLoading(false)
+
         setAvailableBookingPrice(false)
       } else {
         toast.error(
           response.data.message ||
             "Unable to Delete Booking Price, Please Try Again!"
         )
-        setLoading(false)
       }
     } catch (error) {
       console.error("Error:", error)
       toast.error("Error occurred while deleting the booking price.")
-      setLoading(false)
+    } finally {
+      setDeleteLoading(false)
     }
   }
 
@@ -589,7 +591,8 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                   onClick={() => handleDeleteBookingPrice()}
                   className="bg-red-600 hover:bg-red-700 text-white"
                 >
-                  <Trash2Icon className="w-6 h-6" /> Delete Price
+                  <Trash2Icon className="w-6 h-6" />{" "}
+                  {deleteLoading ? "Deeleting..." : "Delete Booking Price"}
                 </Button>
               </>
             ) : (
