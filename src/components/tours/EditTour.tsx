@@ -701,12 +701,6 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                       error={errors.overview || ""}
                     />
 
-                    {/* accommodation */}
-                    <AccommodationInput
-                      accommodations={accommodations}
-                      setAccommodations={setAccommodations}
-                      error={errors.accommodations || ""}
-                    />
                     {/* things to know */}
                     <Inclusion
                       inclusion={inclusion}
