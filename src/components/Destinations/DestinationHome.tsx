@@ -35,6 +35,8 @@ const DestinationHome: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState<number>(10)
+  const [totalPages, setTotalPages] = useState<number>(0)
+
   const [destinations, setDestinations] = useState<DestinationTypes[]>([])
   const [search, setSearch] = useState<string>("")
 
@@ -47,12 +49,11 @@ const DestinationHome: React.FC = () => {
     { value: "desc", label: "Date (Newest First)" },
   ]
 
-  const totalPages = Math.ceil(destinations?.length / 10)
-
   const getDestinations = async () => {
     setLoading(true)
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations?page=${page}&limit=${limit}&search=${search}`,
+
       {
         method: "GET",
       }
@@ -60,7 +61,8 @@ const DestinationHome: React.FC = () => {
     const data = await response.json()
 
     if (data.success) {
-      setDestinations(data.data)
+      setDestinations(data.data.destinations)
+      setTotalPages(data.data.pagination.totalPages)
     }
 
     setLoading(false)

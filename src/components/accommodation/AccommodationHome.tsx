@@ -56,6 +56,7 @@ const AccommodationHome: React.FC = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [limit, setLimit] = useState<number>(10)
   const [accommodations, setAccommodations] = useState<AccommodationType[]>([])
   const [search, setSearch] = useState<string>("")
@@ -73,8 +74,6 @@ const AccommodationHome: React.FC = () => {
     { value: "asc", label: "Date (Oldest First)" },
     { value: "desc", label: "Date (Newest First)" },
   ]
-
-  const totalPages = Math.ceil(accommodations?.length / 10)
 
   //get destinations
   const getDestinations = async () => {
@@ -106,6 +105,7 @@ const AccommodationHome: React.FC = () => {
 
     if (data.success) {
       setAccommodations(data.data.formattedData)
+      setTotalPages(data.data.pagination.totalPages)
     }
 
     setLoading(false)
