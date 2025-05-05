@@ -87,7 +87,7 @@ const AccommodationHome: React.FC = () => {
     const data = await response.json()
 
     if (data.success) {
-      setDesti(data.data)
+      setDesti(data.data.destinations)
     }
 
     setLoading(false)
