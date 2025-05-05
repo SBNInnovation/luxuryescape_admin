@@ -25,7 +25,7 @@ const DestinationSelect = ({
     setLoading(true)
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations?limit=1000`,
         {
           method: "GET",
         }
