@@ -33,7 +33,7 @@ const DestinationSelect = ({
       const data = await response.json()
 
       if (data.success) {
-        setDestinations(data.data)
+        setDestinations(data.data.destinations)
       }
     } catch (error) {
       console.error("Failed to fetch destinations:", error)
