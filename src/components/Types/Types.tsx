@@ -5,7 +5,7 @@ interface Link {
 
 export interface HighlightType {
   highlightsTitle: string
-  highlightPicture: File | null
+  // highlightPicture: File | null
 }
 
 interface Link {

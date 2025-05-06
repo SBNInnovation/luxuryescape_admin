@@ -460,12 +460,12 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         (highlight) => highlight.highlightsTitle
       )
       formData.append("tourHighlights", JSON.stringify(highlightTitles))
-      highlights.forEach((highlight) => {
-        if (highlight.highlightPicture instanceof File) {
-          // Use the same field name for all highlight pictures
-          formData.append("highlightPicture", highlight.highlightPicture)
-        }
-      })
+      // highlights.forEach((highlight) => {
+      //   if (highlight.highlightPicture instanceof File) {
+      //     // Use the same field name for all highlight pictures
+      //     formData.append("highlightPicture", highlight.highlightPicture)
+      //   }
+      // })
 
       //for deleting itinerary day photo
       if (dayImagesToDelete.length > 0) {
@@ -747,7 +747,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                   <HighlightsInput
                     highlights={highlights}
                     setHighlights={setHighlights}
-                    highlightPicturePreviews={highlightPicturesPreview}
+                    // highlightPicturePreviews={highlightPicturesPreview}
                     error={errors.highlights || ""}
                   />
                 </div>

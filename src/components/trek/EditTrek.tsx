@@ -463,12 +463,6 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
         (highlight) => highlight.highlightsTitle
       )
       formData.append("trekHighlights", JSON.stringify(highlightTitles))
-      highlights.forEach((highlight) => {
-        if (highlight.highlightPicture instanceof File) {
-          // Use the same field name for all highlight pictures
-          formData.append("highlightPicture", highlight.highlightPicture)
-        }
-      })
 
       if (imageToDelete.length > 0) {
         formData.append("galleryToDelete", JSON.stringify(imageToDelete))
@@ -751,7 +745,6 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                   <HighlightsInput
                     highlights={highlights}
                     setHighlights={setHighlights}
-                    highlightPicturePreviews={highlightPicturesPreview}
                     error={errors.highlights || ""}
                   />
                 </div>

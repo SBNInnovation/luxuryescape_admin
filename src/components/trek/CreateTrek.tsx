@@ -312,12 +312,6 @@ const CreateTrekForm = () => {
         (highlight) => highlight.highlightsTitle
       )
       formData.append("trekHighlights", JSON.stringify(highlightTitles))
-      highlights.forEach((highlight) => {
-        if (highlight.highlightPicture instanceof File) {
-          // Use the same field name for all highlight pictures
-          formData.append("highlightPicture", highlight.highlightPicture)
-        }
-      })
 
       // Send the request to the backend
       const response = await axios.post(
