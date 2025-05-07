@@ -152,7 +152,6 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     if (file) {
       const updatedItinerary = { ...formattedItineraries[index] }
 
-    
       if (
         previewPhotosCurrentDays &&
         previewPhotosCurrentDays[index] &&
@@ -255,7 +254,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     try {
       setLoading(true)
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-all-accommodation`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/get-all-accommodation?limit=1000`,
         {
           method: "GET",
         }
@@ -388,43 +387,45 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
               </p>
             )}
             {filteredAccommodations.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredAccommodations.map((acc, accIndex) => (
-                  <div
-                    key={accIndex}
-                    className={`flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer ${
-                      itinerary.accommodation.includes(acc._id)
-                        ? "bg-blue-50 border-blue-300"
-                        : ""
-                    }`}
-                    onClick={() => toggleAccommodation(index, acc._id)}
-                  >
-                    <div className="flex-shrink-0">
-                      <img
-                        src={acc.accommodationPics[0]}
-                        alt={acc.accommodationTitle}
-                        className="w-20 h-20 object-cover rounded-md"
-                      />
-                    </div>
-                    <div className="ml-4 flex-1">
-                      <div className="flex items-center">
-                        <HotelIcon size={20} className="mr-2 text-gray-600" />
-                        <p className="font-semibold text-gray-700">
-                          {acc.accommodationTitle}
-                        </p>
+              <div className="h-96 overflow-y-auto pr-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredAccommodations.map((acc, accIndex) => (
+                    <div
+                      key={accIndex}
+                      className={`flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer ${
+                        itinerary.accommodation.includes(acc._id)
+                          ? "bg-blue-50 border-blue-300"
+                          : ""
+                      }`}
+                      onClick={() => toggleAccommodation(index, acc._id)}
+                    >
+                      <div className="flex-shrink-0">
+                        <img
+                          src={acc.accommodationPics[0]}
+                          alt={acc.accommodationTitle}
+                          className="w-20 h-20 object-cover rounded-md"
+                        />
                       </div>
-                      <div className="flex items-center mt-1 gap-4">
-                        <p className="flex text-sm text-blue-500">
-                          <MapPin size={10} className="mr-1" />
-                          {acc.accommodationLocation}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Rating: {acc.accommodationRating}
-                        </p>
+                      <div className="ml-4 flex-1">
+                        <div className="flex items-center">
+                          <HotelIcon size={20} className="mr-2 text-gray-600" />
+                          <p className="font-semibold text-gray-700">
+                            {acc.accommodationTitle}
+                          </p>
+                        </div>
+                        <div className="flex items-center mt-1 gap-4">
+                          <p className="flex text-sm text-blue-500">
+                            <MapPin size={10} className="mr-1" />
+                            {acc.accommodationLocation}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Rating: {acc.accommodationRating}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
