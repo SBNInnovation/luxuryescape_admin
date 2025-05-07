@@ -59,6 +59,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Exclusions from "../Common/Exclusions"
 import RouteMapImage from "../Common/RouteMapImage"
+import ScrollNavigation from "../Common/ScrollNavigation"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -539,6 +540,7 @@ const CreateTrekForm = () => {
             </button>
           </div>
         </form>
+        <ScrollNavigation />
       </div>
     </div>
   )

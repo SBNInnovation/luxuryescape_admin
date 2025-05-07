@@ -62,6 +62,7 @@ import axios from "axios"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Exclusions from "../Common/Exclusions"
+import ScrollNavigation from "../Common/ScrollNavigation"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -559,6 +560,7 @@ const CreateTourForm = () => {
             </button>
           </div>
         </form>
+        <ScrollNavigation />
       </div>
     </div>
   )

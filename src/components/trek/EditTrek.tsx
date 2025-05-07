@@ -59,6 +59,7 @@ import { BookingPriceInterface } from "../Types/Types"
 import AddBookingPrice from "../Common/AddBookingPrice"
 import UpdateBookingPrice from "../Common/EditBookingPrice"
 import RouteMapImage from "../Common/RouteMapImage"
+import ScrollNavigation from "../Common/ScrollNavigation"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -816,6 +817,8 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
             </div>
           </form>
         )}
+
+        <ScrollNavigation />
       </div>
     </div>
   )

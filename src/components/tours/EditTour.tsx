@@ -61,6 +61,7 @@ import Exclusions from "../Common/Exclusions"
 import { BookingPriceInterface } from "../Types/Types"
 import AddBookingPrice from "../Common/AddBookingPrice"
 import UpdateBookingPrice from "../Common/EditBookingPrice"
+import ScrollNavigation from "../Common/ScrollNavigation"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -552,9 +553,6 @@ const EditTourForm = ({ slug }: { slug: string }) => {
 
   return (
     <div className="min-h-screen ">
-      {/* Top accent line */}
-      <div className="h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600" />
-
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-8">
@@ -821,7 +819,10 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             </div>
           </form>
         )}
+        <ScrollNavigation />
       </div>
+
+      {/* scroll navigation top buttom  */}
     </div>
   )
 }
