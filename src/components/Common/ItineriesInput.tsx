@@ -941,8 +941,13 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
                             <MapPin size={10} className="mr-1" />
                             {acc.accommodationLocation}
                           </p>
-                          <p className="text-sm text-gray-500">
-                            ⭐{acc.accommodationRating}
+                          <p className="text-sm text-gray-500 font-semibold">
+                            ⭐
+                            {Number(acc?.accommodationRating) <= 5 ? (
+                              <span>{acc?.accommodationRating}</span>
+                            ) : (
+                              <span>Premium 5 star</span>
+                            )}
                           </p>
                         </div>
                       </div>

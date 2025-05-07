@@ -47,6 +47,7 @@ const FAQInput: React.FC<FAQProps> = ({ faqs, setFaqs }) => {
                 type="text"
                 placeholder="Question"
                 value={faq.question}
+                required
                 onChange={(e) =>
                   handleUpdateFAQ(index, "question", e.target.value)
                 }
@@ -58,6 +59,7 @@ const FAQInput: React.FC<FAQProps> = ({ faqs, setFaqs }) => {
                 type="text"
                 placeholder="Answer"
                 value={faq.answer}
+                required
                 onChange={(e) =>
                   handleUpdateFAQ(index, "answer", e.target.value)
                 }

@@ -321,7 +321,11 @@ const AccommodationHome: React.FC = () => {
                           <div className="mt-1 space-x-2">
                             <Badge variant="secondary" className="text-xs">
                               <Star size={10} className="mr-1" />
-                              {acco?.accommodationRating}
+                              {acco?.accommodationRating <= 5 ? (
+                                <span>{acco?.accommodationRating}</span>
+                              ) : (
+                                <span>Premium 5 star</span>
+                              )}
                             </Badge>
                             <Badge
                               variant="outline"
