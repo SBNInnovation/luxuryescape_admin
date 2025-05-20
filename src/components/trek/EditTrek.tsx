@@ -152,6 +152,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
   const [itineraryDayPhotoPreview, setItineraryDayPhotoPreview] = useState<
     string[]
   >([])
+  const [dayImagesToDelete, setDayImagesToDelete] = useState<string[]>([])
 
   const [faqs, setFaqs] = useState<FAQType[]>([])
   const [images, setImages] = useState<(string | File)[]>([])
@@ -465,6 +466,13 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
       )
       formData.append("trekHighlights", JSON.stringify(highlightTitles))
 
+      if (dayImagesToDelete.length > 0) {
+        formData.append(
+          "itineraryDayPhotoToDelete",
+          JSON.stringify(dayImagesToDelete)
+        )
+      }
+
       if (imageToDelete.length > 0) {
         formData.append("galleryToDelete", JSON.stringify(imageToDelete))
       }
@@ -761,6 +769,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
                     itineraries={itineraries}
                     setItineraries={setItineraries}
                     previewPhotosCurrentDays={itineraryDayPhotoPreview}
+                    setDayImagesToRemove={setDayImagesToDelete}
                     error={errors.itinerary || ""}
                   />
                   {/* FAQ  */}
