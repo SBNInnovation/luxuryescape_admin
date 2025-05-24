@@ -36,6 +36,7 @@ interface AccommodationType {
   accommodationLocation: string
   accommodationRating: number
   country: string
+  logo?: string
   destination?: {
     _id: string
     title: string
@@ -300,16 +301,25 @@ const AccommodationHome: React.FC = () => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-4">
-                        <img
+                        <Image
                           src={acco?.accommodationPics[0] || "/going.png"}
                           alt={acco?.accommodationTitle}
                           className="h-24 w-32 object-cover rounded-lg shadow-sm"
-                          // width={100}
-                          // height={100}
+                          width={128}
+                          height={96}
                         />
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900">
+                          <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                             {acco?.accommodationTitle}
+                            {acco?.logo && (
+                              <Image
+                                src={acco?.logo}
+                                alt={acco?.accommodationTitle}
+                                className=" object-cover rounded-full shadow-sm"
+                                width={20}
+                                height={20}
+                              />
+                            )}
                           </h3>
                           <div className="flex items-center gap-2 mt-1">
                             <Badge variant="outline" className="text-xs">

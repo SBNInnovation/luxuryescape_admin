@@ -62,6 +62,7 @@ import { BookingPriceInterface } from "../Types/Types"
 import AddBookingPrice from "../Common/AddBookingPrice"
 import UpdateBookingPrice from "../Common/EditBookingPrice"
 import ScrollNavigation from "../Common/ScrollNavigation"
+import RouteMapImage from "../Common/RouteMapImage"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -161,6 +162,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
   const [imageToDelete, setImageToDelete] = useState<string[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
+
+  const [routeImage, setRouteImage] = useState<File | null>(null)
+  const [routeImagePreview, setRouteImagePreview] = useState<string | null>(
+    null
+  )
 
   const [loading, setLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -326,6 +332,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             faq: FAQType[]
             gallery?: (string | File)[]
             thumbnail?: string | File
+            routeImage?: string | File
             itineraryDayPhoto?: string[]
             highlightPicture?: string[]
           }
@@ -344,6 +351,10 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         setCountry(tourData.country)
         setLocation(tourData.location)
         setThumbnailPreview(tourData.thumbnail as string)
+        if (tourData.routeImage) {
+          setRouteImagePreview(tourData.routeImage as string)
+        }
+
         setTripTourId(tourData.tourTypes)
         setPrice(tourData.cost)
         setDays(tourData.duration)
@@ -679,6 +690,11 @@ const EditTourForm = ({ slug }: { slug: string }) => {
                       setThumbnail={setThumbnail}
                       thumbnailPreview={thumbnailPreview}
                       error={errors.thumbnail || ""}
+                    />
+                    <RouteMapImage
+                      routeImage={routeImage}
+                      setRouteImage={setRouteImage}
+                      routeImagePreview={routeImagePreview}
                     />
                   </div>
                   <div className="space-y-6 mt-8">

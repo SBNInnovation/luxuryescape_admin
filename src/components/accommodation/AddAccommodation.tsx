@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "../ui/button"
 import CountryInput from "../Common/CountryInput"
 import DestinationSelect from "./accommodationForm/DestinationSelect"
+import LogoInput from "./accommodationForm/LogoInput"
 
 //validation
 const formSchema = z.object({
@@ -51,6 +52,9 @@ const AddAccommodation = () => {
   const [destination, setDestination] = useState<string>("")
   const [images, setImages] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
+
+  const [logo, setLogo] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -215,6 +219,14 @@ const AddAccommodation = () => {
 
           {/* Accommodation Images Section */}
           <Card className="backdrop-blur-md border border-white/20">
+            <CardContent className="p-8">
+              <div className="flex gap-2 text-2xl font-semibold">
+                <span className="text-blue-400">📸</span> Logo
+              </div>
+              <div className="mt-8">
+                <LogoInput logo={logo} setLogo={setLogo} />
+              </div>
+            </CardContent>
             <CardContent className="p-8">
               <div className="flex gap-2 text-2xl font-semibold">
                 <span className="text-blue-400">📸</span> Accommodation Images

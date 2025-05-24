@@ -485,6 +485,7 @@ import { Input } from "@/components/ui/input"
 import { Trash2, Camera, Hotel, MapPin, Search, X } from "lucide-react"
 import { ItineraryType } from "../Types/Types"
 import Image from "next/image"
+import { Textarea } from "../ui/textarea"
 
 interface AccommodationResponseType {
   _id: string
@@ -500,6 +501,7 @@ interface ItineraryWithAccommodationObjectsType {
   day: string
   title: string
   description: string
+  note?: string
   itineraryDayPhoto?: File | string | null
   itineraryDayPhotoPreview?: string
 
@@ -551,6 +553,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
           day: item.day || "",
           title: item.title || "",
           description: item.description || "",
+          note: item.note || "", // Optional field for note
           itineraryDayPhoto: item.itineraryDayPhoto || null,
           itineraryDayPhotoPreview: item.itineraryDayPhotoPreview || "",
 
@@ -569,6 +572,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
       day: "",
       title: "",
       description: "",
+      note: "", // Optional field for note
       itineraryDayPhoto: null,
       itineraryDayPhotoPreview: "",
       accommodation: [],
@@ -784,12 +788,23 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
             className="mb-4 bg-white border border-primary"
             required
           />
+          <label className="text-sm italic text-gray-400">
+            Note (optional)
+          </label>
+          <Textarea
+            className="w-full p-2 bg-white border border-primary rounded-md mb-4"
+            placeholder="Enter day note"
+            value={itinerary.note || ""}
+            onChange={(e) => updateField(index, "note", e.target.value)}
+            rows={2}
+          />
           <label className="text-sm italic text-gray-400">Description</label>
-          <textarea
+          <Textarea
             className="w-full p-2 bg-white border border-primary rounded-md mb-4"
             placeholder="Enter day description"
             value={itinerary.description}
             onChange={(e) => updateField(index, "description", e.target.value)}
+            rows={3}
             required
           />
 

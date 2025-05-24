@@ -63,6 +63,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import Exclusions from "../Common/Exclusions"
 import ScrollNavigation from "../Common/ScrollNavigation"
+import RouteMapImage from "../Common/RouteMapImage"
 
 // Define Zod schema for form validation
 const formSchema = z.object({
@@ -157,6 +158,8 @@ const CreateTourForm = () => {
   const [images, setImages] = useState<(string | File)[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [imageError, setImageError] = useState("")
+
+  const [routeImage, setRouteImage] = useState<File | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<ErrorsType>({})
@@ -305,6 +308,11 @@ const CreateTourForm = () => {
         formData.append("thumbnail", thumbnail)
       }
 
+      // Append route image if provided
+      if (routeImage) {
+        formData.append("routeMap", routeImage)
+      }
+
       // Append gallery images if provided
       if (images.length > 0) {
         images.forEach((image) => {
@@ -425,6 +433,11 @@ const CreateTourForm = () => {
                     setThumbnail={setThumbnail}
                     thumbnailPreview={null}
                     error={errors.thumbnail || ""}
+                  />
+                  <RouteMapImage
+                    routeImage={routeImage}
+                    setRouteImage={setRouteImage}
+                    routeImagePreview={null}
                   />
                 </div>
                 <div className="space-y-6 mt-8">

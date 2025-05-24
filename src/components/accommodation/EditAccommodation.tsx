@@ -29,6 +29,7 @@ import {
 import CountryInput from "../Common/CountryInput"
 import { useRouter } from "next/navigation"
 import DestinationSelect from "./accommodationForm/DestinationSelect"
+import LogoInput from "./accommodationForm/LogoInput"
 
 interface Room {
   _id: string
@@ -81,6 +82,9 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
   const [previews, setPreviews] = useState<string[]>([])
   const [oldImagesPreviews, setOldImagesPreviews] = useState<string[]>([])
   const [imageToDelete, setImageToDelete] = useState<string[]>([])
+
+  const [logo, setLogo] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
 
   //for edit room
   const [editRoomDetails, setEditRoomDetails] = useState<Room>({
@@ -182,6 +186,9 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
         setAmenities(data.data.accommodationAmenities)
         setOldImagesPreviews(data.data.accommodationPics)
         setRooms(data.data.rooms)
+        if (data.data.logo) {
+          setLogoPreview(data.data.logo)
+        }
       }
     } catch (error) {
       console.error(error)
@@ -207,6 +214,10 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
     })
     if (imageToDelete.length > 0) {
       formData.append("imageToDelete", JSON.stringify(imageToDelete))
+    }
+
+    if (logo) {
+      formData.append("logo", logo)
     }
 
     try {
@@ -434,6 +445,18 @@ const EditAccommodation: React.FC<EditAccommodationProps> = ({ slug }) => {
 
               {/* Accommodation Images Section */}
               <Card className="backdrop-blur-md border border-white/20">
+                <CardContent className="p-8">
+                  <div className="flex gap-2 text-2xl font-semibold">
+                    <span className="text-blue-400">📸</span> Logo
+                  </div>
+                  <div className="mt-8">
+                    <LogoInput
+                      logo={logo}
+                      setLogo={setLogo}
+                      logoPreview={logoPreview}
+                    />
+                  </div>
+                </CardContent>
                 <CardContent className="p-8">
                   <div className="flex gap-2 text-2xl font-semibold">
                     <span className="text-blue-400">📸</span> Accommodation

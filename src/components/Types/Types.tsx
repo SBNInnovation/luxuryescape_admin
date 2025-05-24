@@ -33,6 +33,7 @@ export interface ItineraryType {
   day: string
   title: string
   description: string
+  note?: string
   itineraryDayPhoto: File | string | null
   itineraryDayPhotoPreview?: string
   accommodation: string[]
