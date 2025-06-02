@@ -238,7 +238,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="soloThreeStar"
                 >
-                  Solo 3★ ($) *
+                  Solo 4★ ($) *
                 </label>
                 <input
                   type="number"
@@ -254,7 +254,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="soloFourStar"
                 >
-                  Solo 4★ ($) *
+                  Solo 5★ ($) *
                 </label>
                 <input
                   type="number"
@@ -271,7 +271,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="soloFiveStar"
                 >
-                  Solo 5★ ($) *
+                  Solo Premium 5★ ($) *
                 </label>
                 <input
                   type="number"
@@ -296,7 +296,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryThreeStar"
                 >
-                  Single Supplementary 3★ ($) *
+                  Single Supplementary 4★ ($) *
                 </label>
                 <input
                   type="number"
@@ -312,7 +312,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryFourStar"
                 >
-                  Single Supplementary 4★ ($) *
+                  Single Supplementary 5★ ($) *
                 </label>
                 <input
                   type="number"
@@ -329,7 +329,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryFiveStar"
                 >
-                  Single Supplementary 5★ ($) *
+                  Single Supplementary Premium 5★ ($) *
                 </label>
                 <input
                   type="number"
@@ -355,7 +355,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="standardThreeStar"
                 >
-                  Standard 3★ ($) *
+                  Standard 4★ ($) *
                 </label>
                 <input
                   type="number"
@@ -371,7 +371,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="standardFourStar"
                 >
-                  Standard 4★ ($) *
+                  Standard 5★ ($) *
                 </label>
                 <input
                   type="number"
@@ -388,7 +388,7 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="standardFiveStar"
                 >
-                  Standard 5★ ($) *
+                  Standard Premium 5★ ($) *
                 </label>
                 <input
                   type="number"

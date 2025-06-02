@@ -32,6 +32,7 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/utils/AuthValidation"
 import { useAdminDetails } from "@/utils/AuthContext"
+import { useSidebarData } from "@/Contexts/SidebarContext"
 
 interface DashboardData {
   tourCount: number
@@ -73,6 +74,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { data: session } = useSession()
+  const { setSidebarData } = useSidebarData()
 
   const handleGetDashboardContent = async () => {
     try {
@@ -83,6 +85,12 @@ export default function Dashboard() {
       const data = response.data
       if (data.success) {
         setDashboardContent(data.data)
+        const sidebarData = {
+          tailorMade: data.data.tailerMade || 0,
+          quotes: data.data.quotes || 0,
+          bookings: data.data.bookings || 0,
+        }
+        setSidebarData(sidebarData)
       } else {
         setDashboardContent({})
       }

@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation"
 import { AdminDetailsProvider } from "@/utils/AuthContext"
 import { AuthProvider } from "@/utils/AuthValidation"
 import { Provider } from "@/providers/Providers"
+import { SidebarDataProvider } from "@/Contexts/SidebarContext"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,22 +47,24 @@ export default function RootLayout({
       >
         <Provider>
           <AuthProvider>
-            <AdminDetailsProvider>
-              <Providers />
-              <SidebarProvider>
-                {!isLoginPage &&
-                  !isForgotPasswordPage &&
-                  !isVerifyPage &&
-                  !isChangePasswordPage && (
-                    <>
-                      <AppSidebar />
-                      <SidebarTrigger />
-                    </>
-                  )}
+            <SidebarDataProvider>
+              <AdminDetailsProvider>
+                <Providers />
+                <SidebarProvider>
+                  {!isLoginPage &&
+                    !isForgotPasswordPage &&
+                    !isVerifyPage &&
+                    !isChangePasswordPage && (
+                      <>
+                        <AppSidebar />
+                        <SidebarTrigger />
+                      </>
+                    )}
 
-                {children}
-              </SidebarProvider>
-            </AdminDetailsProvider>
+                  {children}
+                </SidebarProvider>
+              </AdminDetailsProvider>
+            </SidebarDataProvider>
           </AuthProvider>
         </Provider>
       </body>

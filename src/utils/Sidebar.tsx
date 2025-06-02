@@ -40,6 +40,7 @@ import {
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "./AuthValidation"
 import { useEffect } from "react"
+import { useSidebarData } from "@/Contexts/SidebarContext"
 
 export function AppSidebar() {
   const pathname = usePathname()
@@ -52,6 +53,28 @@ export function AppSidebar() {
 
   const { data: session } = useSession()
 
+  const { sidebarData, setSidebarData } = useSidebarData()
+
+  //get the noti details
+  useEffect(() => {
+    const fetchSidebarData = async () => {
+      try {
+        // const response = await fetch('/api/sidebar-data'); // your API route
+        // const data = await response.json();
+        const data = {
+          tailorMade: 2,
+          quotes: 5,
+          bookings: 1,
+        }
+        setSidebarData(data)
+      } catch (error) {
+        console.error("Failed to fetch sidebar data", error)
+      }
+    }
+
+    fetchSidebarData()
+  }, [])
+
   // Menu items
   const items = [
     { title: "Home", url: "/", icon: Home },
@@ -60,9 +83,19 @@ export function AppSidebar() {
     { title: "Explore Nepal", url: "/destinations", icon: MountainSnow },
     { title: "Accommodations", url: "/accommodations", icon: Hotel },
     { title: "Blogs", url: "/blogs", icon: BookOpen },
-    { title: "Tailor Made", url: "/tailor-made", icon: Bus },
-    { title: "Quotes", url: "/quotes", icon: Mails },
-    { title: "Bookings", url: "/bookings", icon: TicketsPlane },
+    {
+      title: "Tailor Made",
+      url: "/tailor-made",
+      icon: Bus,
+      value: sidebarData.tailorMade,
+    },
+    { title: "Quotes", url: "/quotes", icon: Mails, value: sidebarData.quotes },
+    {
+      title: "Bookings",
+      url: "/bookings",
+      icon: TicketsPlane,
+      value: sidebarData.bookings,
+    },
     { title: "Clients Info", url: "/clients", icon: Users2Icon },
     { title: "Affiliated Patners", url: "/affiliated", icon: HandshakeIcon },
   ]
@@ -99,6 +132,11 @@ export function AppSidebar() {
                       >
                         <item.icon />
                         <span className="text-xl ml-2">{item.title}</span>
+                        {item.value ? (
+                          <span className="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {item.value}
+                          </span>
+                        ) : null}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
