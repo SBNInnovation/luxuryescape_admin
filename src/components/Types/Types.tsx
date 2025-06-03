@@ -55,17 +55,17 @@ export interface BookingPriceInterface {
   _id: string
   adventureId: string
   adventureType: string
-  solo: string
-  soloThreeStar: string
-  soloFourStar: string
-  soloFiveStar: string
-  singleSupplementary: string
-  singleSupplementaryThreeStar: string
-  singleSupplementaryFourStar: string
-  singleSupplementaryFiveStar: string
-  standardThreeStar: string
-  standardFourStar: string
-  standardFiveStar: string
+  solo: ""
+  soloPremiumFiveStar: ""
+  soloFourStar: ""
+  soloFiveStar: ""
+  singleSupplementary: ""
+  singleSupplementaryPremiumFiveStar: ""
+  singleSupplementaryFourStar: ""
+  singleSupplementaryFiveStar: ""
+  standardPremiumFiveStar: ""
+  standardFourStar: ""
+  standardFiveStar: ""
 }
 
 export interface sessionData {

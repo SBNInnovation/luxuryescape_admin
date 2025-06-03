@@ -53,27 +53,7 @@ export function AppSidebar() {
 
   const { data: session } = useSession()
 
-  const { sidebarData, setSidebarData } = useSidebarData()
-
-  //get the noti details
-  useEffect(() => {
-    const fetchSidebarData = async () => {
-      try {
-        // const response = await fetch('/api/sidebar-data'); // your API route
-        // const data = await response.json();
-        const data = {
-          tailorMade: 2,
-          quotes: 5,
-          bookings: 1,
-        }
-        setSidebarData(data)
-      } catch (error) {
-        console.error("Failed to fetch sidebar data", error)
-      }
-    }
-
-    fetchSidebarData()
-  }, [])
+  const { sidebarData } = useSidebarData()
 
   // Menu items
   const items = [

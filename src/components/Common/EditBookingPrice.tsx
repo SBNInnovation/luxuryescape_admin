@@ -8,14 +8,14 @@ interface BookingPriceDetails {
   adventureId: string
 
   solo: string
-  soloThreeStar: string
+  soloPremiumFiveStar: string
   soloFourStar: string
   soloFiveStar: string
   singleSupplementary: string
-  singleSupplementaryThreeStar: string
+  singleSupplementaryPremiumFiveStar: string
   singleSupplementaryFourStar: string
   singleSupplementaryFiveStar: string
-  standardThreeStar: string
+  standardPremiumFiveStar: string
   standardFourStar: string
   standardFiveStar: string
 }
@@ -32,14 +32,14 @@ interface FormData {
   adventureId: string
 
   solo: string
-  soloThreeStar: string
+  soloPremiumFiveStar: string
   soloFourStar: string
   soloFiveStar: string
   singleSupplementary: string
-  singleSupplementaryThreeStar: string
+  singleSupplementaryPremiumFiveStar: string
   singleSupplementaryFourStar: string
   singleSupplementaryFiveStar: string
-  standardThreeStar: string
+  standardPremiumFiveStar: string
   standardFourStar: string
   standardFiveStar: string
 }
@@ -61,14 +61,14 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
     adventureId,
 
     solo: "",
-    soloThreeStar: "",
+    soloPremiumFiveStar: "",
     soloFourStar: "",
     soloFiveStar: "",
     singleSupplementary: "",
-    singleSupplementaryThreeStar: "",
+    singleSupplementaryPremiumFiveStar: "",
     singleSupplementaryFourStar: "",
     singleSupplementaryFiveStar: "",
-    standardThreeStar: "",
+    standardPremiumFiveStar: "",
     standardFourStar: "",
     standardFiveStar: "",
   })
@@ -86,17 +86,18 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
         adventureType,
         adventureId,
         solo: bookingPriceDetails.solo || "",
-        soloThreeStar: bookingPriceDetails.soloThreeStar || "",
+        soloPremiumFiveStar: bookingPriceDetails.soloPremiumFiveStar || "",
         soloFourStar: bookingPriceDetails.soloFourStar || "",
         soloFiveStar: bookingPriceDetails.soloFiveStar || "",
         singleSupplementary: bookingPriceDetails.singleSupplementary || "",
-        singleSupplementaryThreeStar:
-          bookingPriceDetails.singleSupplementaryThreeStar || "",
+        singleSupplementaryPremiumFiveStar:
+          bookingPriceDetails.singleSupplementaryPremiumFiveStar || "",
         singleSupplementaryFourStar:
           bookingPriceDetails.singleSupplementaryFourStar || "",
         singleSupplementaryFiveStar:
           bookingPriceDetails.singleSupplementaryFiveStar || "",
-        standardThreeStar: bookingPriceDetails.standardThreeStar || "",
+        standardPremiumFiveStar:
+          bookingPriceDetails.standardPremiumFiveStar || "",
         standardFourStar: bookingPriceDetails.standardFourStar || "",
         standardFiveStar: bookingPriceDetails.standardFiveStar || "",
       })
@@ -122,17 +123,17 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
           adventureType,
           adventureId,
           solo: details.solo || "",
-          soloThreeStar: details.soloThreeStar || "",
+          soloPremiumFiveStar: details.soloPremiumFiveStar || "",
           soloFourStar: details.soloFourStar || "",
           soloFiveStar: details.soloFiveStar || "",
           singleSupplementary: details.singleSupplementary || "",
-          singleSupplementaryThreeStar:
-            details.singleSupplementaryThreeStar || "",
+          singleSupplementaryPremiumFiveStar:
+            details.singleSupplementaryPremiumFiveStar || "",
           singleSupplementaryFourStar:
             details.singleSupplementaryFourStar || "",
           singleSupplementaryFiveStar:
             details.singleSupplementaryFiveStar || "",
-          standardThreeStar: details.standardThreeStar || "",
+          standardPremiumFiveStar: details.standardPremiumFiveStar || "",
           standardFourStar: details.standardFourStar || "",
           standardFiveStar: details.standardFiveStar || "",
         })
@@ -236,25 +237,9 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
               <div className="mb-4">
                 <label
                   className="block text-gray-700 mb-2"
-                  htmlFor="soloThreeStar"
-                >
-                  Solo 4★ ($) *
-                </label>
-                <input
-                  type="number"
-                  id="soloThreeStar"
-                  name="soloThreeStar"
-                  value={formData.soloThreeStar}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 mb-2"
                   htmlFor="soloFourStar"
                 >
-                  Solo 5★ ($) *
+                  Solo 4★ ($) *
                 </label>
                 <input
                   type="number"
@@ -271,13 +256,30 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="soloFiveStar"
                 >
-                  Solo Premium 5★ ($) *
+                  Solo 5★ ($) *
                 </label>
                 <input
                   type="number"
                   id="soloFiveStar"
                   name="soloFiveStar"
                   value={formData.soloFiveStar}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 mb-2"
+                  htmlFor="soloPremiumFiveStar"
+                >
+                  Solo Premium 5★ ($) *
+                </label>
+                <input
+                  type="number"
+                  id="soloPremiumFiveStar"
+                  name="soloPremiumFiveStar"
+                  value={formData.soloPremiumFiveStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -294,25 +296,9 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
               <div className="mb-4">
                 <label
                   className="block text-gray-700 mb-2"
-                  htmlFor="singleSupplementaryThreeStar"
-                >
-                  Single Supplementary 4★ ($) *
-                </label>
-                <input
-                  type="number"
-                  id="singleSupplementaryThreeStar"
-                  name="singleSupplementaryThreeStar"
-                  value={formData.singleSupplementaryThreeStar}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryFourStar"
                 >
-                  Single Supplementary 5★ ($) *
+                  Single Supplementary 4★ ($) *
                 </label>
                 <input
                   type="number"
@@ -329,13 +315,30 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="singleSupplementaryFiveStar"
                 >
-                  Single Supplementary Premium 5★ ($) *
+                  Single Supplementary 5★ ($) *
                 </label>
                 <input
                   type="number"
                   id="singleSupplementaryFiveStar"
                   name="singleSupplementaryFiveStar"
                   value={formData.singleSupplementaryFiveStar}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 mb-2"
+                  htmlFor="singleSupplementaryPremiumFiveStar"
+                >
+                  Single Supplementary Premium 5★ ($) *
+                </label>
+                <input
+                  type="number"
+                  id="singleSupplementaryPremiumFiveStar"
+                  name="singleSupplementaryPremiumFiveStar"
+                  value={formData.singleSupplementaryPremiumFiveStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -353,25 +356,9 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
               <div className="mb-4">
                 <label
                   className="block text-gray-700 mb-2"
-                  htmlFor="standardThreeStar"
-                >
-                  Standard 4★ ($) *
-                </label>
-                <input
-                  type="number"
-                  id="standardThreeStar"
-                  name="standardThreeStar"
-                  value={formData.standardThreeStar}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 mb-2"
                   htmlFor="standardFourStar"
                 >
-                  Standard 5★ ($) *
+                  Standard 4★ ($) *
                 </label>
                 <input
                   type="number"
@@ -388,13 +375,30 @@ const UpdateBookingPrice: FC<UpdateBookingPriceProps> = ({
                   className="block text-gray-700 mb-2"
                   htmlFor="standardFiveStar"
                 >
-                  Standard Premium 5★ ($) *
+                  Standard 5★ ($) *
                 </label>
                 <input
                   type="number"
                   id="standardFiveStar"
                   name="standardFiveStar"
                   value={formData.standardFiveStar}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 mb-2"
+                  htmlFor="standardPremiumFiveStar"
+                >
+                  Standard Premium 5★ ($) *
+                </label>
+                <input
+                  type="number"
+                  id="standardPremiumFiveStar"
+                  name="standardPremiumFiveStar"
+                  value={formData.standardPremiumFiveStar}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
