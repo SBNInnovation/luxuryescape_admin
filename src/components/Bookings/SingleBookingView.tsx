@@ -114,6 +114,8 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
     }
   }
 
+  console.log(booking)
+
   useEffect(() => {
     handleGetBookingRequest(id)
   }, [id])
@@ -280,11 +282,11 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                       </div>
                     )}
                     <div className="flex items-center gap-3 mt-6 pt-3 border-t">
-                      <span className="text-gray-500">
-                        <DollarSign className="h-6 w-6" />
+                      <span className="flex text-gray-500">
+                        <DollarSign className="h-6 w-6" /> US
                       </span>
                       <span className="text-2xl font-bold text-gray-900">
-                        ${booking.totalPrice.toFixed(2)}
+                        {booking.totalPrice.toFixed(2)}
                       </span>
                     </div>
                   </div>

@@ -43,7 +43,8 @@ const RatingInput: React.FC<RatingInputProps> = ({
             <SelectItem value="4">4 star</SelectItem>
             <SelectItem value="5">5 star</SelectItem>
             <SelectItem value="6">Premium 5 star</SelectItem>
-            <SelectItem value="7">Premium Boutique</SelectItem>
+            <SelectItem value="7">Boutique</SelectItem>
+            <SelectItem value="8">Premium Boutique</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
