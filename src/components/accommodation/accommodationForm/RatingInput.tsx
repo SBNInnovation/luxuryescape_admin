@@ -27,7 +27,7 @@ const RatingInput: React.FC<RatingInputProps> = ({
   return (
     <div className="mb-4">
       <label className="block text-lg font-medium text-gray-700">
-        Rating (1-5)<span className="text-red-700">*</span>
+        Rating<span className="text-red-700">*</span>
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
 

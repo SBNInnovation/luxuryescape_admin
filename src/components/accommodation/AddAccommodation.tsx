@@ -45,7 +45,7 @@ const AddAccommodation = () => {
   const [title, setTitle] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [country, setCountry] = useState<string>("")
-  const [rating, setRating] = useState<number>(1)
+  const [rating, setRating] = useState<number>(4)
   const [overview, setOverview] = useState<string>("")
   const [features, setFeatures] = useState<string[]>([""])
   const [amenities, setAmenities] = useState<string[]>([""])
