@@ -37,9 +37,9 @@ const RatingInput: React.FC<RatingInputProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="1">1 star</SelectItem>
+            {/* <SelectItem value="1">1 star</SelectItem>
             <SelectItem value="2">2 star</SelectItem>
-            <SelectItem value="3">3 star</SelectItem>
+            <SelectItem value="3">3 star</SelectItem> */}
             <SelectItem value="4">4 star</SelectItem>
             <SelectItem value="5">5 star</SelectItem>
             <SelectItem value="6">Premium 5 star</SelectItem>
