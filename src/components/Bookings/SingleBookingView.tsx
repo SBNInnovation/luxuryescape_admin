@@ -24,12 +24,20 @@ import {
   CheckIcon,
   User2Icon,
   ArrowLeftIcon,
+  Settings,
 } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import axios from "axios"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import BookingMailSend from "./BookingMailSend"
+
+interface SupplementaryConfig {
+  numberOfSupplementaryRooms?: number
+  supplementaryRoomType?: string
+  _id: string
+  [key: string]: any // For any additional properties
+}
 
 interface Booking {
   _id: string
@@ -47,6 +55,10 @@ interface Booking {
   soloStandard?: string
   totalPrice: number
   updatedAt?: string
+  numberOfPerson?: number
+  country?: string
+  accommodationType?: string
+  supplementaryConfigs?: SupplementaryConfig[]
   tourId?: {
     _id: string
     country: string
@@ -80,9 +92,14 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
     switch (status) {
       case "pending":
         return "bg-amber-100 text-amber-800 border-amber-200"
-
-      default:
+      case "viewed":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "accepted":
         return "bg-green-100 text-green-800 border-green-200"
+      case "rejected":
+        return "bg-red-100 text-red-800 border-red-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
   }
 
@@ -112,6 +129,14 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
       default:
         return "tours"
     }
+  }
+
+  // Function to format field names for display
+  const formatFieldName = (fieldName: string): string => {
+    return fieldName
+      .replace(/([A-Z])/g, " $1") // Add space before capital letters
+      .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+      .trim()
   }
 
   console.log(booking)
@@ -187,6 +212,8 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                 ? "bg-emerald-50"
                 : booking.status === "rejected"
                 ? "bg-red-50"
+                : booking.status === "viewed"
+                ? "bg-blue-50"
                 : "bg-amber-50"
             }`}
           >
@@ -243,6 +270,28 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                       </span>
                       <span className="text-base">{booking.address}</span>
                     </div>
+                    {booking.numberOfPerson && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-500">
+                          <User2Icon className="h-5 w-5" />
+                        </span>
+                        <span className="text-base">
+                          <span className="font-medium">Number of Person:</span>{" "}
+                          {booking.numberOfPerson}
+                        </span>
+                      </div>
+                    )}
+                    {booking.country && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-500">
+                          <MapPin className="h-5 w-5" />
+                        </span>
+                        <span className="text-base">
+                          <span className="font-medium">Country:</span>{" "}
+                          {booking.country}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -251,6 +300,21 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                     Services & Pricing
                   </h3>
                   <div className="space-y-4">
+                    {booking.accommodationType && (
+                      <div className="flex items-start gap-3">
+                        <span className="text-gray-500 mt-1">
+                          <Package className="h-5 w-5" />
+                        </span>
+                        <div>
+                          <span className="font-medium text-base">
+                            Accommodation Type:
+                          </span>
+                          <p className="text-gray-600 mt-1">
+                            {booking.accommodationType}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {booking.extraServices && (
                       <div className="flex items-start gap-3">
                         <span className="text-gray-500 mt-1">
@@ -281,6 +345,50 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
                         </div>
                       </div>
                     )}
+
+                    {/* Supplementary Configurations */}
+                    {booking.supplementaryConfigs &&
+                      booking.supplementaryConfigs.length > 0 && (
+                        <div className="flex items-start gap-3">
+                          <span className="text-gray-500 mt-1">
+                            <Settings className="h-5 w-5" />
+                          </span>
+                          <div className="flex-1">
+                            <span className="font-medium text-base">
+                              Supplementary Details:
+                            </span>
+                            <div className="mt-2 space-y-3">
+                              {booking.supplementaryConfigs.map(
+                                (config, index) => (
+                                  <div
+                                    key={index}
+                                    className="bg-gray-50 p-3 rounded-lg"
+                                  >
+                                    <div className="space-y-1">
+                                      {Object.entries(config)
+                                        .filter(([key]) => key !== "_id") // Exclude _id
+                                        .map(([key, value]) => (
+                                          <div
+                                            key={key}
+                                            className="flex justify-between items-center text-sm"
+                                          >
+                                            <span className="font-medium text-gray-700">
+                                              {formatFieldName(key)}:
+                                            </span>
+                                            <span className="text-gray-600">
+                                              {String(value)}
+                                            </span>
+                                          </div>
+                                        ))}
+                                    </div>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                     <div className="flex items-center gap-3 mt-6 pt-3 border-t">
                       <span className="flex text-gray-500">
                         <DollarSign className="h-6 w-6" /> US
