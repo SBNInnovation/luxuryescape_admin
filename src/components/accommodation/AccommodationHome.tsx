@@ -140,7 +140,6 @@ const AccommodationHome: React.FC = () => {
       await response
     } catch (error) {
       toast.error("Failed to delete Accommodation")
-      console.log(error)
     } finally {
       setLoading(false)
     }

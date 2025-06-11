@@ -152,8 +152,6 @@ const MyProfile: React.FC = () => {
           contactEmails: response.data.data.contactEmails || [],
           otherWebsites: response.data.data.otherWebsites || [],
         }))
-      } else {
-        console.log(response.data.message)
       }
     } catch (error) {
       console.error("Error fetching profile:", error)

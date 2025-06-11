@@ -69,11 +69,10 @@ const TrekkingHome: React.FC = () => {
       const data = response.data
       if (data.success) {
         setTreks(data.data.treks)
-        // console.log(data.data.treks)
         setTotalPages(data.data.pagination.totalPages)
       }
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      console.error(error.response.data.message || "Failed to fetch treks")
     } finally {
       setLoading(false)
     }
@@ -136,8 +135,8 @@ const TrekkingHome: React.FC = () => {
     try {
       setLoading(true)
       await response
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      console.error(error.response.data.message || "Failed to delete trek")
     } finally {
       setLoading(false)
     }

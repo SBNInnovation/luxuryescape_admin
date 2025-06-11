@@ -56,21 +56,6 @@ const TailorMadeHome: React.FC = () => {
     customizePending: 0,
   })
 
-  //   // Fetch counts
-  //   const getCounts = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${process.env.NEXT_PUBLIC_API_URL_DEV}/quote/get`
-  //       )
-
-  //       if (response.data.success) {
-  //         setCounts(response.data.data)
-  //       }
-  //     } catch (error) {
-  //       console.log("Failed to fetch counts")
-  //     }
-  //   }
-
   // Fetch requests data with filters
   const getRequests = async () => {
     try {
@@ -92,8 +77,10 @@ const TailorMadeHome: React.FC = () => {
         setRequests(response.data.data)
         // setTotalPages(response.data.totalPages)
       }
-    } catch (error) {
-      console.log("Failed to fetch request data")
+    } catch (error: any) {
+      console.error(
+        error.response.data.message || "Failed to fetch request data"
+      )
     } finally {
       setLoading(false)
     }

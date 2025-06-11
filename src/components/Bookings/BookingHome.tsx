@@ -85,7 +85,6 @@ const BookingHome: React.FC = () => {
         setLoading(false)
       }
     } catch (error) {
-      console.log("Failed to fetch booking data")
       setLoading(false)
     } finally {
       setLoading(false)

@@ -85,8 +85,10 @@ const Quotes: React.FC = () => {
         setRequests(response.data.data)
         // setTotalPages(response.data.totalPages)
       }
-    } catch (error) {
-      console.log("Failed to fetch request data")
+    } catch (error: any) {
+      console.error(
+        error.response.data.message || "Failed to fetch request data"
+      )
     } finally {
       setLoading(false)
     }

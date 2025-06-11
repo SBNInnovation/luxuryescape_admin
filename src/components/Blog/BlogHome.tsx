@@ -71,8 +71,6 @@ const BlogHome: React.FC = () => {
       if (response.data.success) {
         setBlogs(response.data.data.blogs)
         setTotalPages(response.data.data.pagination.totalPages)
-      } else {
-        console.log(response.data.message)
       }
     } catch (error) {
       console.error(error)
@@ -95,12 +93,11 @@ const BlogHome: React.FC = () => {
         getBlogHandler()
         toast.success(response.data.message || "Blog deleted successfully")
       } else {
-        console.log(response.data.message)
         toast.error(response.data.message || "Failed to delete blog")
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
-      toast.error("Something went wrong")
+      toast.error(error.response.data.message || "Something went wrong")
     } finally {
       setDeleteLoading(false)
     }
@@ -124,7 +121,6 @@ const BlogHome: React.FC = () => {
           response.data.message || "Visibility updated successfully"
         )
       } else {
-        console.log(response.data.message)
         toast.error(response.data.message || "Failed to update visibility")
       }
     } catch (error) {

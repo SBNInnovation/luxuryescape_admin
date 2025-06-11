@@ -503,10 +503,10 @@ const EditTourForm = ({ slug }: { slug: string }) => {
       } else {
         toast.error(response.data.message || "Failed to add tour")
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting form:", error)
       toast.error(
-        error instanceof Error ? error.message : "An unexpected error occurred"
+        error ? error.response.data.message : "An unexpected error occurred"
       )
     } finally {
       setLoading(false)

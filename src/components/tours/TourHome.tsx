@@ -72,8 +72,8 @@ const TourHome: React.FC = () => {
 
         setTotalPages(data.data.pagination.totalPages)
       }
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      console.error(error.response.data.message || "Failed to fetch tours")
     } finally {
       setLoading(false)
     }
@@ -109,7 +109,6 @@ const TourHome: React.FC = () => {
     return () => clearTimeout(timeOutId)
   }, [search])
 
-  // console.log("Tour Data", tours)
   const handleDeleteTour = async (tourId: string, tourName: string) => {
     const confirmDelete = confirm(
       `Are you sure you want to delete "${tourName}"?`
@@ -138,9 +137,8 @@ const TourHome: React.FC = () => {
 
     try {
       await response
-    } catch (error) {
-      toast.error("Failed to delete tour")
-      console.log(error)
+    } catch (error: any) {
+      toast.error(error.response.data.message || "Failed to delete tour")
     } finally {
       setLoading(false)
     }

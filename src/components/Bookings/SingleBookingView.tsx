@@ -139,8 +139,6 @@ const SingleBookingView: React.FC<SingleBookingViewProps> = ({ id }) => {
       .trim()
   }
 
-  console.log(booking)
-
   useEffect(() => {
     handleGetBookingRequest(id)
   }, [id])

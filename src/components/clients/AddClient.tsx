@@ -56,9 +56,10 @@ const AddClient = () => {
       } else {
         toast.error(data.message || "Unable to Create User, Try Again")
       }
-    } catch (error) {
-      toast.error("Unable to Create User, Try Again")
-      console.log("Error while creating user", error)
+    } catch (error: any) {
+      toast.error(
+        error.response.data.message || "Unable to Create User, Try Again"
+      )
     } finally {
       setLoading(false)
     }

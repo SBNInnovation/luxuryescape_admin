@@ -94,9 +94,8 @@ const DestinationHome: React.FC = () => {
 
     try {
       await response
-    } catch (error) {
-      toast.error("Failed to delete destination")
-      console.log(error)
+    } catch (error: any) {
+      toast.error(error.response.data.message || "Failed to delete destination")
     } finally {
       setLoading(false)
     }

@@ -155,8 +155,6 @@ const MultiImageInput: React.FC<MultiImageInputProps> = ({
   const removeImage = (index: number) => {
     const updatedImages = [...images]
     const updatedPreviews = [...previews]
-    console.log("index", index)
-    console.log("updatedPreviews", updatedPreviews[index])
 
     if (typeof updatedPreviews[index] === "string" && setImageToDelete) {
       const imageUrl = updatedPreviews[index] as string
