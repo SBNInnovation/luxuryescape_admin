@@ -22,6 +22,7 @@ export interface AffiliateTypes {
   thumbnail: string | null
   link: string
   category?: string
+  destination?: string
 }
 
 interface FormDataType {
@@ -30,6 +31,7 @@ interface FormDataType {
   thumbnail: File | null | string
   link: string
   category?: string
+  destination?: string
 }
 
 const AffiliatedHome = () => {
@@ -47,9 +49,28 @@ const AffiliatedHome = () => {
     thumbnail: null,
     link: "",
     category: "",
+    destination: "",
   })
   const [isEditing, setIsEditing] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [destination, setDestination] = useState<any[]>([])
+
+  const getDestinations = async () => {
+    setLoading(true)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations`,
+      {
+        method: "GET",
+      }
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      setDestination(data.data.destinations)
+    }
+
+    setLoading(false)
+  }
 
   const handleAddNewClick = () => {
     setFormData({
@@ -58,6 +79,7 @@ const AffiliatedHome = () => {
       thumbnail: null,
       link: "",
       category: "",
+      destination: "",
     })
     setPreviewUrl(null)
     setIsEditing(false)
@@ -147,6 +169,10 @@ const AffiliatedHome = () => {
         formDataToSend.append("thumbnail", formData.thumbnail)
       }
 
+      if (formData.destination) {
+        formDataToSend.append("destination", formData.destination)
+      }
+
       if (formData.category) {
         formDataToSend.append("category", formData.category)
       }
@@ -192,6 +218,10 @@ const AffiliatedHome = () => {
         formDataToSend.append("thumbnail", formData.thumbnail)
       }
 
+      if (formData.destination) {
+        formDataToSend.append("destination", formData.destination)
+      }
+
       if (formData.category) {
         formDataToSend.append("category", formData.category)
       }
@@ -230,6 +260,7 @@ const AffiliatedHome = () => {
       thumbnail: null,
       link: "",
       category: "",
+      destination: "",
     })
     setPreviewUrl(null)
   }
@@ -287,6 +318,7 @@ const AffiliatedHome = () => {
 
   useEffect(() => {
     handleGetAllAffiliates()
+    getDestinations()
   }, [])
 
   return (
@@ -346,6 +378,7 @@ const AffiliatedHome = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* title  */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Title
@@ -359,7 +392,7 @@ const AffiliatedHome = () => {
                 required
               />
             </div>
-
+            {/* thumbnail  */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Thumbnail
@@ -384,6 +417,28 @@ const AffiliatedHome = () => {
               </div>
             </div>
 
+            {/* destination name dropdown  */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Destination
+              </label>
+              <select
+                name="destination"
+                value={formData.destination || ""}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select Destination</option>
+                {destination &&
+                  destination.map((dest) => (
+                    <option key={dest._id} value={dest.title}>
+                      {dest.title}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            {/* link  */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Link
@@ -460,6 +515,11 @@ const AffiliatedHome = () => {
                 {affiliate.category && (
                   <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-2">
                     {affiliate.category}
+                  </span>
+                )}
+                {affiliate.destination && (
+                  <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 mr-2 rounded-full mb-2">
+                    {affiliate.destination}
                   </span>
                 )}
                 {affiliate.link && (
