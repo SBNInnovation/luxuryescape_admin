@@ -58,7 +58,7 @@ const AffiliatedHome = () => {
   const getDestinations = async () => {
     setLoading(true)
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations`,
+      `${process.env.NEXT_PUBLIC_API_URL_PROD}/destinations?page=1&limit=1000`,
       {
         method: "GET",
       }
