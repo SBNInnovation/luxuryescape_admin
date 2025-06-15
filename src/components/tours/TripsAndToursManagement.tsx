@@ -352,7 +352,7 @@ const TripsAndToursManagement: React.FC = () => {
                         alt={trip?.tourType}
                         width={64}
                         height={64}
-                        className="w-16 h-16 object-cover rounded-md"
+                        className=" object-cover rounded-md"
                       />
                       <div>
                         <h3 className="font-semibold">{trip?.tourType}</h3>

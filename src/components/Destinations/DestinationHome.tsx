@@ -180,7 +180,7 @@ const DestinationHome: React.FC = () => {
                           alt={desti?.title}
                           width={80}
                           height={80}
-                          className="w-16 h-16 rounded-md object-cover"
+                          className=" rounded-md object-cover"
                         />
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">

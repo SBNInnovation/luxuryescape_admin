@@ -13,8 +13,11 @@ import {
 } from "lucide-react"
 import axios from "axios"
 import { toast } from "sonner"
-import { set } from "zod"
 import MainSpinner from "@/utils/MainLoader"
+import Image from "next/image"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { boolean } from "zod"
 
 export interface AffiliateTypes {
   _id: string | null
@@ -23,6 +26,7 @@ export interface AffiliateTypes {
   link: string
   category?: string
   destination?: string
+  isFeature?: boolean
 }
 
 interface FormDataType {
@@ -32,6 +36,7 @@ interface FormDataType {
   link: string
   category?: string
   destination?: string
+  isFeature?: boolean
 }
 
 const AffiliatedHome = () => {
@@ -50,6 +55,7 @@ const AffiliatedHome = () => {
     link: "",
     category: "",
     destination: "",
+    isFeature: false,
   })
   const [isEditing, setIsEditing] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -80,6 +86,7 @@ const AffiliatedHome = () => {
       link: "",
       category: "",
       destination: "",
+      isFeature: false,
     })
     setPreviewUrl(null)
     setIsEditing(false)
@@ -261,6 +268,7 @@ const AffiliatedHome = () => {
       link: "",
       category: "",
       destination: "",
+      isFeature: false,
     })
     setPreviewUrl(null)
   }
@@ -295,6 +303,36 @@ const AffiliatedHome = () => {
         toast.error("Failed to delete affiliate")
       } finally {
         setDeleteLoading(false)
+        handleGetAllAffiliates()
+      }
+    }
+  }
+
+  const handleUpdateFeatureStatus = async (
+    id: string | null,
+    isFeature: boolean
+  ) => {
+    if (id !== null) {
+      try {
+        setLoading(true)
+        const response = await axios.patch(
+          `${
+            process.env.NEXT_PUBLIC_API_URL_PROD
+          }/recommend/update/${id}?isfeature=${!isFeature}`
+        )
+        const data = response.data
+
+        if (data.success) {
+          toast.success(
+            data.data?.message || "Affiliate feature status updated"
+          )
+        } else {
+          toast.error(data.data?.message || "Failed to update feature status")
+        }
+      } catch (error) {
+        toast.error("Failed to update feature status")
+      } finally {
+        setLoading(false)
         handleGetAllAffiliates()
       }
     }
@@ -376,6 +414,22 @@ const AffiliatedHome = () => {
               <X size={20} />
             </button>
           </div>
+
+          {/* for isfeature  */}
+          {isEditing && (
+            <div className="mb-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is-feature"
+                  checked={formData.isFeature}
+                  onCheckedChange={(checked) =>
+                    handleUpdateFeatureStatus(formData._id, !checked)
+                  }
+                />
+                <Label htmlFor="is-feature">Featured</Label>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* title  */}
@@ -487,10 +541,12 @@ const AffiliatedHome = () => {
               className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200"
             >
               <div className="relative h-48">
-                <img
+                <Image
                   src={affiliate.thumbnail || ""}
                   alt={affiliate.affiliatedAccommodation}
                   className="w-full h-full object-cover"
+                  width={400}
+                  height={200}
                 />
                 <div className="absolute top-2 right-2 flex space-x-2">
                   <button
@@ -509,8 +565,15 @@ const AffiliatedHome = () => {
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-medium text-lg mb-1">
+                <h3 className="flex gap-4 items-center font-medium text-lg mb-1">
                   {affiliate.affiliatedAccommodation}
+                  <div>
+                    {affiliate.isFeature && (
+                      <span className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full mb-2">
+                        Featured
+                      </span>
+                    )}
+                  </div>
                 </h3>
                 {affiliate.category && (
                   <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-2">
@@ -529,7 +592,9 @@ const AffiliatedHome = () => {
                     rel="noopener noreferrer"
                     className="text-blue-600 text-sm hover:underline break-words"
                   >
-                    {affiliate.link}
+                    {affiliate.link.length > 30
+                      ? `${affiliate.link.substring(0, 30)}...`
+                      : affiliate.link}
                   </a>
                 )}
               </div>

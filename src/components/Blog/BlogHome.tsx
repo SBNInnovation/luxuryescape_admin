@@ -244,7 +244,7 @@ const BlogHome: React.FC = () => {
                         <img
                           src={blog.thumbnail || "/going.png"}
                           alt={blog.title}
-                          className="h-24 w-32 object-cover rounded-lg shadow-sm"
+                          className=" object-cover rounded-lg shadow-sm"
                         />
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900 truncate max-w-lg">

@@ -22,6 +22,7 @@ import { toast } from "sonner"
 import axios from "axios"
 import { DestinationTypes } from "../Types/Types"
 import Image from "next/image"
+import { Label } from "../ui/label"
 
 type SortField = "name" | "createdAt" | "price"
 type SortOrder = "asc" | "desc"
@@ -50,6 +51,7 @@ interface AccommodationType {
     roomFacilities: string[]
   }[]
   isActivated: boolean
+  isFeature: boolean
   slug: string
 }
 
@@ -142,6 +144,37 @@ const AccommodationHome: React.FC = () => {
       toast.error("Failed to delete Accommodation")
     } finally {
       setLoading(false)
+    }
+  }
+
+  //update feature status
+  const handleUpdateFeatureStatus = async (
+    id: string | null,
+    isFeature: boolean
+  ) => {
+    if (id !== null) {
+      try {
+        // setLoading(true)
+        const response = await axios.patch(
+          `${
+            process.env.NEXT_PUBLIC_API_URL_PROD
+          }/accommodation/update/${id}?isfeature=${!isFeature}`
+        )
+        const data = response.data
+
+        if (data.success) {
+          toast.success(
+            data.data?.message || "Accommodation feature status updated"
+          )
+        } else {
+          toast.error(data.data?.message || "Failed to update feature status")
+        }
+      } catch (error) {
+        toast.error("Failed to update feature status")
+      } finally {
+        // setLoading(false)
+        getAccommodations()
+      }
     }
   }
 
@@ -286,6 +319,10 @@ const AccommodationHome: React.FC = () => {
                 </th>
 
                 <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Featured
+                </th>
+
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -303,7 +340,7 @@ const AccommodationHome: React.FC = () => {
                         <Image
                           src={acco?.accommodationPics[0] || "/going.png"}
                           alt={acco?.accommodationTitle}
-                          className="h-24 w-32 object-cover rounded-lg shadow-sm"
+                          className=" object-cover rounded-lg shadow-sm"
                           width={128}
                           height={96}
                         />
@@ -346,6 +383,21 @@ const AccommodationHome: React.FC = () => {
                             </Badge>
                           </div>
                         </div>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 ">
+                      <div className="flex gap-4 items-center justify-center">
+                        <Switch
+                          id="is-feature"
+                          checked={acco.isFeature}
+                          onCheckedChange={(checked) =>
+                            handleUpdateFeatureStatus(acco._id, !checked)
+                          }
+                        />
+                        <Label htmlFor="is-feature">
+                          {acco.isFeature ? "Featured" : "Not Featured"}
+                        </Label>
                       </div>
                     </td>
 
