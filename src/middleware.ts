@@ -14,12 +14,11 @@ export async function middleware(request: NextRequest) {
     "/tours",
     "/accommodations",
     "/destinations",
-    "/blogs",
     "/tailor-made",
     "/bookings",
     "/quotes",
     "/clients",
-    "/test",
+    "/affiliated",
   ]
 
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -41,11 +40,10 @@ export const config = {
     "/tours/:path*",
     "/accommodations/:path*",
     "/destinations/:path*",
-    "/blogs/:path*",
     "/tailor-made/:path*",
     "/quotes/:path*",
     "/bookings/:path*",
     "/clients/:path*",
-    "/test/:path*",
+    "/affiliated/:path*",
   ],
 }
