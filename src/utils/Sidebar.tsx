@@ -13,6 +13,7 @@ import {
   Mails,
   Train,
   HandshakeIcon,
+  CookieIcon,
 } from "lucide-react"
 
 import { signOut, useSession } from "next-auth/react"
@@ -62,6 +63,7 @@ export function AppSidebar() {
     { title: "Luxury Tours", url: "/tours", icon: Binoculars },
     { title: "Explore Nepal", url: "/destinations", icon: MountainSnow },
     { title: "Accommodations", url: "/accommodations", icon: Hotel },
+    { title: "Fine Dining", url: "/dinings", icon: CookieIcon },
     {
       title: "Tailor Made",
       url: "/tailor-made",
