@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest) {
     "/quotes",
     "/clients",
     "/affiliated",
+    "/dinings",
   ]
 
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -45,5 +46,6 @@ export const config = {
     "/bookings/:path*",
     "/clients/:path*",
     "/affiliated/:path*",
+    "/dinings/:path*",
   ],
 }
