@@ -6,20 +6,19 @@ import axios from "axios"
 import { set, z } from "zod"
 import TitleInput from "../Common/TitleInput"
 import LocationInput from "../Common/LocationInput"
-import RatingInput from "./accommodationForm/RatingInput"
+
 import OverviewInput from "../Common/OverviewInput"
 
-import FeatureInput from "./accommodationForm/FeaturesInput"
-import AmenitiesInput from "./accommodationForm/AmenitiesInput"
-import AccoImages from "./accommodationForm/AccoImages"
-import RoomInput from "./accommodationForm/RoomInput"
 import { toast } from "sonner"
 import { ArrowLeft, Loader, Loader2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { Button } from "../ui/button"
+import DestinationSelect from "../accommodation/accommodationForm/DestinationSelect"
 import CountryInput from "../Common/CountryInput"
-import DestinationSelect from "./accommodationForm/DestinationSelect"
-import LogoInput from "./accommodationForm/LogoInput"
+import RatingInput from "../accommodation/accommodationForm/RatingInput"
+import LogoInput from "../accommodation/accommodationForm/LogoInput"
+import AccoImages from "../accommodation/accommodationForm/AccoImages"
+import FeatureInput from "../accommodation/accommodationForm/FeaturesInput"
+import AmenitiesInput from "../accommodation/accommodationForm/AmenitiesInput"
 
 //validation
 const formSchema = z.object({
@@ -41,7 +40,7 @@ const formSchema = z.object({
   ),
 })
 
-const AddAccommodation = () => {
+const AddDining = () => {
   const [title, setTitle] = useState<string>("")
   const [location, setLocation] = useState<string>("")
   const [country, setCountry] = useState<string>("")
@@ -119,20 +118,21 @@ const AddAccommodation = () => {
     const formData = new FormData()
 
     // Append basic accommodation details
-    formData.append("accommodationTitle", title)
-    formData.append("accommodationLocation", location)
+    formData.append("title", title)
+    formData.append("location", location)
     formData.append("country", country)
     formData.append("destination", destination)
-    formData.append("accommodationRating", rating.toString())
-    formData.append("accommodationDescription", overview)
-    formData.append("accommodationFeatures", JSON.stringify(features))
-    formData.append("accommodationAmenities", JSON.stringify(amenities))
+    formData.append("rating", rating.toString())
+    formData.append("description", overview)
+    formData.append("features", JSON.stringify(features))
+    formData.append("amenities", JSON.stringify(amenities))
 
     // Append accommodation images
     images.forEach((image, index) => {
-      formData.append("accommodationPics", image, `image_${index}`)
+      formData.append("pics", image, `image_${index}`)
     })
 
+    // Append logo if available
     if (logo) {
       formData.append("logo", logo, "logo")
     }
@@ -140,7 +140,7 @@ const AddAccommodation = () => {
     try {
       setLoading(true)
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL_PROD}/accommodation/add-accommodation`,
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/finedining/add`,
         {
           method: "POST",
           body: formData,
@@ -148,10 +148,10 @@ const AddAccommodation = () => {
       )
       const data = await response.json()
       if (data.success) {
-        toast.success("Accommodation added successfully")
-        router.push("/accommodations")
+        toast.success("Fine Dining added successfully")
+        router.push("/dinings")
       } else {
-        toast.error("Failed to add accommodation")
+        toast.error("Failed to add fine dining")
       }
     } catch (error) {
       console.error(error)
@@ -174,7 +174,7 @@ const AddAccommodation = () => {
             onClick={() => router.back()}
           />
           <h1 className="text-5xl font-serif text-primary ">
-            Create Your Luxury Accommodation
+            Create Your Luxury Dining Experience
           </h1>
         </div>
 
@@ -308,7 +308,7 @@ const AddAccommodation = () => {
                   <Loader2Icon className="w-6 h-6  rounded-full animate-spin" />
                 </div>
               ) : (
-                "Add Accommodation"
+                "Add Dining"
               )}
             </button>
           </div>
@@ -318,4 +318,4 @@ const AddAccommodation = () => {
   )
 }
 
-export default AddAccommodation
+export default AddDining
