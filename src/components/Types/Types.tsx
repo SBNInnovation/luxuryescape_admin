@@ -37,6 +37,7 @@ export interface ItineraryType {
   itineraryDayPhoto: File | string | null
   itineraryDayPhotoPreview?: string
   accommodation: string[]
+  fineDining: string[]
 
   links: Array<{ text: string; url: string }>
 }

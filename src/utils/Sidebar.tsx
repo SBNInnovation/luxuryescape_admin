@@ -62,7 +62,7 @@ export function AppSidebar() {
     { title: "Luxury Treks", url: "/trekkings", icon: Train },
     { title: "Luxury Tours", url: "/tours", icon: Binoculars },
     { title: "Explore Nepal", url: "/destinations", icon: MountainSnow },
-    { title: "Accommodations", url: "/accommodations", icon: Hotel },
+    { title: "Hotel/Resort", url: "/accommodations", icon: Hotel },
     { title: "Fine Dining", url: "/dinings", icon: CookieIcon },
     {
       title: "Tailor Made",

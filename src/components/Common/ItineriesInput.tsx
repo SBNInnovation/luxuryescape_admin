@@ -3,7 +3,15 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Trash2, Camera, Hotel, MapPin, Search, X } from "lucide-react"
+import {
+  Trash2,
+  Camera,
+  Hotel,
+  MapPin,
+  Search,
+  X,
+  CookieIcon,
+} from "lucide-react"
 import { ItineraryType } from "../Types/Types"
 import Image from "next/image"
 import { Textarea } from "../ui/textarea"
@@ -15,6 +23,15 @@ interface AccommodationResponseType {
   accommodationLocation: string
   accommodationRating: string
   slug: string
+}
+
+interface FineDiningResponseType {
+  _id: string
+  title: string
+  pics: string[]
+  location: string
+  slug: string
+  rating: string
 }
 
 // Create a new type for the incoming data format
@@ -32,6 +49,12 @@ interface ItineraryWithAccommodationObjectsType {
     accommodationTitle: string
     slug: string
   }[]
+  fineDining: {
+    _id: string
+    pics: string[]
+    title: string
+    slug: string
+  }
   links: { text: string; url: string }[]
 }
 
@@ -53,7 +76,9 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
   const [accommodations, setAccommodations] = useState<
     AccommodationResponseType[]
   >([])
+  const [fineDining, setFineDining] = useState<FineDiningResponseType[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [searchFineDiningQuery, setSearchFineDiningQuery] = useState("")
   const [loading, setLoading] = useState(false)
   const [formattedItineraries, setFormattedItineraries] = useState<
     ItineraryType[]
@@ -70,6 +95,12 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
             )
           : []
 
+        const fineDiningIds = Array.isArray(item.fineDining)
+          ? item.fineDining.map((fine: any) =>
+              typeof fine === "object" && fine._id ? fine._id : fine
+            )
+          : []
+
         return {
           day: item.day || "",
           title: item.title || "",
@@ -79,6 +110,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
           itineraryDayPhotoPreview: item.itineraryDayPhotoPreview || "",
 
           accommodation: accommodationIds,
+          fineDining: fineDiningIds,
           links: item.links || [],
         }
       })
@@ -97,6 +129,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
       itineraryDayPhoto: null,
       itineraryDayPhotoPreview: "",
       accommodation: [],
+      fineDining: [],
       links: [],
     }
     setItineraries([...formattedItineraries, newItinerary])
@@ -124,6 +157,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     key: keyof Omit<
       ItineraryType,
       | "accommodation"
+      | "fineDining"
       | "links"
       | "itineraryDayPhoto"
       | "itineraryDayPhotoPreview"
@@ -207,6 +241,30 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     updateItinerary(index, updatedItinerary)
   }
 
+  const toggleFineDining = (index: number, fineDiningId: string) => {
+    const updatedItinerary = { ...formattedItineraries[index] }
+    const currentFineDining = [...updatedItinerary.fineDining]
+
+    // Check if this fine dining is already selected
+    if (currentFineDining.includes(fineDiningId)) {
+      // If already selected, remove it
+      updatedItinerary.fineDining = currentFineDining.filter(
+        (id) => id !== fineDiningId
+      )
+    } else {
+      // If not selected and less than 3 fine dining are selected, add it
+      if (currentFineDining.length < 3) {
+        updatedItinerary.fineDining = [...currentFineDining, fineDiningId]
+      } else {
+        // If 3 already selected, show an alert and don't change the selection
+        alert("Maximum 3 fine dining allowed per itinerary day")
+        return
+      }
+    }
+
+    updateItinerary(index, updatedItinerary)
+  }
+
   const addLink = (index: number) => {
     const updatedLinks = [
       ...formattedItineraries[index].links,
@@ -249,6 +307,10 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     acc.accommodationTitle.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const filteredFineDining = fineDining.filter((fine) =>
+    fine.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   const getAccommodations = async () => {
     try {
       setLoading(true)
@@ -270,8 +332,30 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
     }
   }
 
+  const getFineDining = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL_PROD}/finedining/get-all-details?limit=1000`,
+        {
+          method: "GET",
+        }
+      )
+      const data = await response.json()
+
+      if (data.success) {
+        setFineDining(data.data.formattedData)
+      }
+    } catch (error) {
+      console.error("Error fetching fine dining:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     getAccommodations()
+    getFineDining()
   }, [])
 
   return (
@@ -368,7 +452,7 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
               )}
             </div>
           </div>
-
+          {/* Accommodation section  */}
           <div className="mb-4">
             <h3 className="text-lg font-bold">Accommodations</h3>
 
@@ -476,6 +560,128 @@ const ItinerariesInput: React.FC<ItinerariesInputProps> = ({
                             ⭐
                             {Number(acc?.accommodationRating) <= 5 ? (
                               <span>{acc?.accommodationRating}</span>
+                            ) : (
+                              <span>Premium 5 star</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* fine dining section  */}
+          <div className="mb-4 mt-10">
+            <h3 className="text-lg font-bold">Fine Dining</h3>
+
+            {/* Selected Fine dining Section */}
+            {itinerary.fineDining.length > 0 && (
+              <div className="mt-2 mb-3">
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  Selected Fine Dining:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {itinerary.fineDining.map((fineId) => {
+                    const selectedFine = fineDining.find(
+                      (fine) => fine._id === fineId
+                    )
+                    return selectedFine ? (
+                      <div
+                        key={fineId}
+                        className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                      >
+                        <CookieIcon size={14} className="mr-1" />
+                        {selectedFine.title}
+                        <button
+                          className="ml-1 text-blue-600 hover:text-blue-800"
+                          onClick={() => toggleFineDining(index, fineId)}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ) : null
+                  })}
+                </div>
+                <p className="text-md text-gray-500 mt-1">
+                  {3 - itinerary.fineDining.length} more fine dining
+                  {3 - itinerary.fineDining.length !== 1 ? "s" : ""} can be
+                  selected
+                  {3 - itinerary.fineDining.length === 0 && (
+                    <span className="text-red-500">
+                      {" "}
+                      (Max limit reached, cannot select more then 3)
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+
+            <label className="text-sm italic text-gray-400 mb-2 block">
+              Note: Click on card to select fine dining (max 3)
+            </label>
+
+            <div className="mb-4 mt-2">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search fine dining..."
+                  value={searchFineDiningQuery}
+                  onChange={(e) => setSearchFineDiningQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+            {/* for loading */}
+            {loading && fineDining.length === 0 && (
+              <p className="text-gray-500">Loading fine dining...</p>
+            )}
+            {/* for no fine dining */}
+            {!loading && filteredFineDining.length === 0 && (
+              <p className="text-gray-500">No fine dining found. Try adding!</p>
+            )}
+            {filteredFineDining.length > 0 && (
+              <div className="h-96 overflow-y-auto pr-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredFineDining.map((fine, fineIndex) => (
+                    <div
+                      key={fineIndex}
+                      className={`flex items-center p-3 border rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer ${
+                        itinerary.fineDining.includes(fine._id)
+                          ? "bg-blue-50 border-blue-300"
+                          : ""
+                      }`}
+                      onClick={() => toggleFineDining(index, fine._id)}
+                    >
+                      <div className="flex-shrink-0">
+                        <img
+                          src={fine.pics[0]}
+                          alt={fine.title}
+                          className="w-20 h-20 object-cover rounded-md"
+                        />
+                      </div>
+                      <div className="ml-4 flex-1">
+                        <div className="flex items-center">
+                          <CookieIcon
+                            size={20}
+                            className="mr-2 text-gray-600"
+                          />
+                          <p className="font-semibold text-gray-700">
+                            {fine.title}
+                          </p>
+                        </div>
+                        <div className="flex items-center mt-1 gap-4">
+                          <p className="flex text-sm text-blue-500">
+                            <MapPin size={10} className="mr-1" />
+                            {fine.location}
+                          </p>
+                          <p className="text-sm text-gray-500 font-semibold">
+                            ⭐
+                            {Number(fine.rating) <= 5 ? (
+                              <span>{fine.rating}</span>
                             ) : (
                               <span>Premium 5 star</span>
                             )}
