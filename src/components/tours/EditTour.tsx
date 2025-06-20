@@ -203,7 +203,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
     try {
       formSchema.parse({
         title,
-        price,
+        // price,
         country,
         location,
         days,
@@ -227,9 +227,9 @@ const EditTourForm = ({ slug }: { slug: string }) => {
             newErrors.title = error.message
           }
 
-          if (error.path[0] === "price") {
-            newErrors.price = error.message
-          }
+          // if (error.path[0] === "price") {
+          //   newErrors.price = error.message
+          // }
           if (error.path[0] === "country") {
             newErrors.country = error.message
           }
@@ -415,7 +415,7 @@ const EditTourForm = ({ slug }: { slug: string }) => {
         !country ||
         !location ||
         !tripTourId ||
-        !price ||
+        // !price ||
         !days ||
         !overview
       ) {

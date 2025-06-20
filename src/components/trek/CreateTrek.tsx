@@ -161,7 +161,7 @@ const CreateTrekForm = () => {
     try {
       formSchema.parse({
         title,
-        price,
+        // price,
         country,
         location,
         days,
@@ -185,9 +185,9 @@ const CreateTrekForm = () => {
             newErrors.title = error.message
           }
 
-          if (error.path[0] === "price") {
-            newErrors.price = error.message
-          }
+          // if (error.path[0] === "price") {
+          //   newErrors.price = error.message
+          // }
           if (error.path[0] === "country") {
             newErrors.country = error.message
           }
@@ -254,7 +254,7 @@ const CreateTrekForm = () => {
       setLoading(true)
       // Validation checks
 
-      if (!title || !country || !location || !price || !days || !overview) {
+      if (!title || !country || !location || !days || !overview) {
         throw new Error("Please fill in all required fields")
       }
 

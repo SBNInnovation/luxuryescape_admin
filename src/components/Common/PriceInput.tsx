@@ -14,7 +14,7 @@ const PriceInput: React.FC<TitleInputProps> = ({ price, setPrice, error }) => {
   return (
     <div className="mb-4">
       <label className="block text-lg font-medium text-gray-700">
-        Price ($) <span className="text-red-700">*</span>
+        Price ($) <span className="text-gray-700">(optional)</span>
       </label>
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <Input

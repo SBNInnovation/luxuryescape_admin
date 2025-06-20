@@ -198,7 +198,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
     try {
       formSchema.parse({
         title,
-        price,
+        // price,
         country,
         location,
         days,
@@ -220,9 +220,9 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
             newErrors.title = error.message
           }
 
-          if (error.path[0] === "price") {
-            newErrors.price = error.message
-          }
+          // if (error.path[0] === "price") {
+          //   newErrors.price = error.message
+          // }
           if (error.path[0] === "country") {
             newErrors.country = error.message
           }
@@ -407,7 +407,7 @@ const EditTrekForm = ({ slug }: { slug: string }) => {
       setLoading(true)
       // Validation checks
 
-      if (!title || !country || !location || !price || !days || !overview) {
+      if (!title || !country || !location || !days || !overview) {
         throw new Error("Please fill in all required fields")
       }
 

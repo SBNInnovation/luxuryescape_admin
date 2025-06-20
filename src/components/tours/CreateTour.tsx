@@ -171,7 +171,7 @@ const CreateTourForm = () => {
     try {
       formSchema.parse({
         title,
-        price,
+        // price,
         country,
         location,
         days,
@@ -287,7 +287,6 @@ const CreateTourForm = () => {
         !country ||
         !location ||
         !tripTourId ||
-        !price ||
         !days ||
         !overview
       ) {
